@@ -51,40 +51,17 @@
 	const onSubmit = async () => {
 		passwordFormRef.value.validate(async (valid) => {
 			if (valid) {
-				if(sessionTable.value == 'users'){
-					if (form.value.mima1 != user.value.password) {
-						context?.$toolUtil.message('原密码不正确','error')
-						return false
-					}
-					user.value.password = form.value.mima
-				}else{
-					if(sessionTable.value == 'xuesheng'){
-						if(form.value.mima1 != user.value.mima){
-							context?.$toolUtil.message('原密码不正确', 'error')
-							return false
-						}
-					}
-					if(sessionTable.value == 'jiaoshi'){
-						if(form.value.mima1 != user.value.jiaoshimima){
-							context?.$toolUtil.message('原密码不正确', 'error')
-							return false
-						}
-					}
-				}
 				if (form.value.mima2 != form.value.mima) {
 					context?.$toolUtil.message('两次密码输入不一致','error')
 					return false
 				}
-				if(sessionTable.value == 'xuesheng'){
-					user.value.mima = form.value.mima
-				}
-				if(sessionTable.value == 'jiaoshi'){
-					user.value.jiaoshimima = form.value.mima
-				}
 				context?.$http({
-					url: `${sessionTable.value}/update`,
+					url: `${sessionTable.value}/updatePassword`,
 					method: 'post',
-					data: user.value
+					data: {
+						oldPassword: form.value.mima1,
+						newPassword: form.value.mima
+					}
 				}).then(res => {
 					context?.$toolUtil.message('修改成功，下次登录将使用新密码登录','success')
 				})

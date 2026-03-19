@@ -36,6 +36,7 @@ import com.cl.utils.PageUtils;
 import com.cl.utils.R;
 import com.cl.utils.MPUtil;
 import com.cl.utils.CommonUtil;
+import com.cl.utils.EncryptUtil;
 import java.io.IOException;
 
 /**
@@ -64,9 +65,13 @@ public class XueshengController {
 	@RequestMapping(value = "/login")
 	public R login(String username, String password, String captcha, HttpServletRequest request) {
 		XueshengEntity u = xueshengService.selectOne(new EntityWrapper<XueshengEntity>().eq("xuehao", username));
-        if(u==null || !u.getMima().equals(password)) {
+        if(u==null || !EncryptUtil.verifyPassword(password, u.getMima())) {
             return R.error("账号或密码不正确");
         }
+		if (!EncryptUtil.isPasswordHashed(u.getMima())) {
+			u.setMima(EncryptUtil.hashPassword(password));
+			xueshengService.updateById(u);
+		}
 		String token = tokenService.generateToken(u.getId(), username,"xuesheng",  "学生" );
 		return R.ok().put("token", token);
 	}
@@ -84,6 +89,10 @@ public class XueshengController {
 		if(u!=null) {
 			return R.error("注册用户已存在");
 		}
+		if (!EncryptUtil.isValidPassword(xuesheng.getMima())) {
+			return R.error("密码格式不符合要求");
+		}
+		xuesheng.setMima(EncryptUtil.hashPassword(xuesheng.getMima()));
 		Long uId = new Date().getTime();
 		xuesheng.setId(uId);
         xueshengService.insert(xuesheng);
@@ -107,23 +116,47 @@ public class XueshengController {
     public R getCurrUser(HttpServletRequest request){
     	Long id = (Long)request.getSession().getAttribute("userId");
         XueshengEntity u = xueshengService.selectById(id);
+		sanitize(u);
         return R.ok().put("data", u);
     }
     
     /**
      * 密码重置
      */
-    @IgnoreAuth
 	@RequestMapping(value = "/resetPass")
-    public R resetPass(String username, HttpServletRequest request){
+    public R resetPass(String username, @RequestParam(required = false) String password, HttpServletRequest request){
+		Object roleObj = request.getSession().getAttribute("role");
+		if (roleObj == null || !"管理员".equals(String.valueOf(roleObj))) {
+			return R.error(403, "无权限");
+		}
     	XueshengEntity u = xueshengService.selectOne(new EntityWrapper<XueshengEntity>().eq("xuehao", username));
     	if(u==null) {
     		return R.error("账号不存在");
     	}
-        u.setMima("123456");
+		String nextPassword = (password == null || password.trim().isEmpty()) ? EncryptUtil.generateRandomPassword() : password.trim();
+		if (!EncryptUtil.isValidPassword(nextPassword)) {
+			return R.error("密码格式不符合要求");
+		}
+        u.setMima(EncryptUtil.hashPassword(nextPassword));
         xueshengService.updateById(u);
-        return R.ok("密码已重置为：123456");
+        return R.ok().put("data", nextPassword);
     }
+
+	@RequestMapping(value = "/updatePassword")
+	public R updatePassword(@RequestBody Map<String, Object> body, HttpServletRequest request) {
+		Long id = (Long) request.getSession().getAttribute("userId");
+		if (id == null) return R.error(401, "请先登录");
+		String oldPassword = body == null ? null : (String) body.get("oldPassword");
+		String newPassword = body == null ? null : (String) body.get("newPassword");
+		if (oldPassword == null || newPassword == null) return R.error("参数错误");
+		if (!EncryptUtil.isValidPassword(newPassword)) return R.error("密码格式不符合要求");
+		XueshengEntity u = xueshengService.selectById(id);
+		if (u == null) return R.error("账号不存在");
+		if (!EncryptUtil.verifyPassword(oldPassword, u.getMima())) return R.error("原密码不正确");
+		u.setMima(EncryptUtil.hashPassword(newPassword));
+		xueshengService.updateById(u);
+		return R.ok();
+	}
 
 
     /**
@@ -135,6 +168,7 @@ public class XueshengController {
         EntityWrapper<XueshengEntity> ew = new EntityWrapper<XueshengEntity>();
 
 		PageUtils page = xueshengService.queryPage(params, MPUtil.sort(MPUtil.between(MPUtil.likeOrEq(ew, xuesheng), params), params));
+		sanitizePage(page);
 
         return R.ok().put("data", page);
     }
@@ -149,6 +183,7 @@ public class XueshengController {
         EntityWrapper<XueshengEntity> ew = new EntityWrapper<XueshengEntity>();
 
 		PageUtils page = xueshengService.queryPage(params, MPUtil.sort(MPUtil.between(MPUtil.likeOrEq(ew, xuesheng), params), params));
+		sanitizePage(page);
         return R.ok().put("data", page);
     }
 
@@ -159,7 +194,9 @@ public class XueshengController {
     public R list( XueshengEntity xuesheng){
        	EntityWrapper<XueshengEntity> ew = new EntityWrapper<XueshengEntity>();
       	ew.allEq(MPUtil.allEQMapPre( xuesheng, "xuesheng")); 
-        return R.ok().put("data", xueshengService.selectListView(ew));
+		Object data = xueshengService.selectListView(ew);
+		sanitizeList(data);
+        return R.ok().put("data", data);
     }
 
 	 /**
@@ -170,6 +207,9 @@ public class XueshengController {
         EntityWrapper< XueshengEntity> ew = new EntityWrapper< XueshengEntity>();
  		ew.allEq(MPUtil.allEQMapPre( xuesheng, "xuesheng")); 
 		XueshengView xueshengView =  xueshengService.selectView(ew);
+		if (xueshengView != null) {
+			xueshengView.setMima(null);
+		}
 		return R.ok("查询学生成功").put("data", xueshengView);
     }
 	
@@ -180,6 +220,7 @@ public class XueshengController {
     public R info(@PathVariable("id") Long id){
         XueshengEntity xuesheng = xueshengService.selectById(id);
 		xuesheng = xueshengService.selectView(new EntityWrapper<XueshengEntity>().eq("id", id));
+		sanitize(xuesheng);
         return R.ok().put("data", xuesheng);
     }
 
@@ -191,6 +232,7 @@ public class XueshengController {
     public R detail(@PathVariable("id") Long id){
         XueshengEntity xuesheng = xueshengService.selectById(id);
 		xuesheng = xueshengService.selectView(new EntityWrapper<XueshengEntity>().eq("id", id));
+		sanitize(xuesheng);
         return R.ok().put("data", xuesheng);
     }
     
@@ -208,6 +250,10 @@ public class XueshengController {
 		if(u!=null) {
 			return R.error("用户已存在");
 		}
+		if (!EncryptUtil.isValidPassword(xuesheng.getMima())) {
+			return R.error("密码格式不符合要求");
+		}
+		xuesheng.setMima(EncryptUtil.hashPassword(xuesheng.getMima()));
 		xuesheng.setId(new Date().getTime());
         xueshengService.insert(xuesheng);
         return R.ok();
@@ -224,6 +270,10 @@ public class XueshengController {
 		if(u!=null) {
 			return R.error("用户已存在");
 		}
+		if (!EncryptUtil.isValidPassword(xuesheng.getMima())) {
+			return R.error("密码格式不符合要求");
+		}
+		xuesheng.setMima(EncryptUtil.hashPassword(xuesheng.getMima()));
 		xuesheng.setId(new Date().getTime());
         xueshengService.insert(xuesheng);
         return R.ok();
@@ -238,9 +288,34 @@ public class XueshengController {
     @Transactional
     public R update(@RequestBody XueshengEntity xuesheng, HttpServletRequest request){
         //ValidatorUtils.validateEntity(xuesheng);
+		if (xuesheng.getMima() != null && !xuesheng.getMima().trim().isEmpty() && !EncryptUtil.isPasswordHashed(xuesheng.getMima())) {
+			if (!EncryptUtil.isValidPassword(xuesheng.getMima())) return R.error("密码格式不符合要求");
+			xuesheng.setMima(EncryptUtil.hashPassword(xuesheng.getMima()));
+		}
         xueshengService.updateById(xuesheng);//全部更新
         return R.ok();
     }
+
+	private void sanitize(XueshengEntity u) {
+		if (u == null) return;
+		u.setMima(null);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void sanitizePage(PageUtils page) {
+		if (page == null || page.getList() == null) return;
+		for (Object row : page.getList()) {
+			if (row instanceof XueshengEntity) sanitize((XueshengEntity) row);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void sanitizeList(Object data) {
+		if (!(data instanceof java.util.List)) return;
+		for (Object row : (java.util.List<Object>) data) {
+			if (row instanceof XueshengEntity) sanitize((XueshengEntity) row);
+		}
+	}
 
 
 

@@ -9,7 +9,7 @@
 								type="text" :readonly="!isAdd||disabledForm.xuehao?true:false" />
 						</el-form-item>
 					</el-col>
-					<el-col :span="24">
+					<el-col :span="24" v-if="type=='add'">
 						<el-form-item label="密码" prop="mima">
 							<el-input class="list_inp" v-model="form.mima" placeholder="密码"
 								type="password" :readonly="!isAdd||disabledForm.mima?true:false" />
@@ -181,12 +181,19 @@
 			callback();
 		}
 	}
+	const validatePasswordRequired = (rule, value, callback) => {
+		if (type.value === 'add' && (!value || !String(value).trim())) {
+			callback(new Error('请输入'))
+			return
+		}
+		callback()
+	}
 	const rules = ref({
 		xuehao: [
 			{required: true,message: '请输入',trigger: 'blur'}, 
 		],
 		mima: [
-			{required: true,message: '请输入',trigger: 'blur'}, 
+			{ validator: validatePasswordRequired, trigger: 'blur' },
 		],
 		xingming: [
 			{required: true,message: '请输入',trigger: 'blur'}, 

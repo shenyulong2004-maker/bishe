@@ -108,252 +108,136 @@
 		.menu_view {
 			border: 0;
 			padding: 0px 0 60px;
-			color: #fff;
-			background: none;
+			color: #374151;
+			background: transparent;
 			height: 100%;
 
 			// 无二级菜单
 			.el-menu-item {
-				padding: 0 10px;
-				color: #fff;
+				padding: 0 20px;
+				color: #374151;
 				background: none;
 				line-height: 50px;
 				height: 50px;
 				.iconfont {
-					margin: 0 5px 0 0;
+					margin: 0 10px 0 0;
 					color: inherit;
-					width: 34px;
+					width: 20px;
 					vertical-align: middle;
-					font-size: 20px;
+					font-size: 18px;
 					text-align: center;
 				}
 			}
 
 			// 无二级悬浮
 			.el-menu-item:hover {
-				padding: 0 10px;
-				color: #fff;
-				background: rgba(0, 0, 0, 0.30);
-				line-height: 50px;
-				height: 50px;
+				color: #165DFF;
+				background: #F3F4F6;
 			}
 
 			// 无二级选中
 			.el-menu-item.is-active {
-				padding: 0 10px;
-				color: #fff;
-				background: rgba(0, 0, 0, 0.30);
-				line-height: 50px;
-				height: 50px;
+				color: #165DFF;
+				background: #E8F3FF;
+				font-weight: 600;
 			}
 
 			// 有二级盒子
 			.el-sub-menu {
 				cursor: pointer;
 				padding: 0;
-				color: #333;
+				color: #374151;
 				white-space: nowrap;
 				background: none;
 				position: relative;
-				border-bottom: 1px solid rgba(254, 182, 203, 0.15);
 
 				// 有二级item
 				.el-sub-menu__title {
-					padding: 0 10px;
-					color: #fff;
+					padding: 0 20px;
+					color: #374151;
 					background: none;
 					line-height: 50px;
 					height: 50px;
 					.iconfont {
-						margin: 0 5px 0 0;
+						margin: 0 10px 0 0;
 						color: inherit;
-						width: 34px;
+						width: 20px;
 						vertical-align: middle;
-						font-size: 20px;
+						font-size: 18px;
 						text-align: center;
 					}
 					.el-sub-menu__icon-arrow{
-						margin: -3px 0 0 8px;
-						color: inherit;
-						vertical-align: middle;
+						margin: 0;
+						color: #9CA3AF;
 						font-size: 12px;
-						position: static;
 					}
 				}
 
 				// 有二级item悬浮
 				.el-sub-menu__title:hover {
-					padding: 0 10px;
-					color: #fff;
-					background: rgba(0, 0, 0, 0.30);
-					line-height: 50px;
-					height: 50px;
+					color: #165DFF;
+					background: #F3F4F6;
 				}
 			}
 			//二级选中
 			.is-active {
 				.el-sub-menu__title {
-					padding: 0 10px;
-					color: #fff;
-					background: rgba(0, 0, 0, 0.30);
-					line-height: 50px;
-					height: 50px;
+					color: #165DFF;
 				}
 			}
 			// 二级盒子
 			.el-menu--inline {
 				border: none;
 				padding: 0px;
-				background: rgba(0, 0, 0, 0.30);
+				background: #F9FAFB;
 				// 二级菜单
 				.menu_item_view {
-					padding: 0 20px 0 52px;
-					color: #fff;
+					padding: 0 20px 0 50px;
+					color: #374151;
 					background: none;
-					line-height: 50px;
-					height: 50px;
+					line-height: 40px;
+					height: 40px;
+					font-size: 14px;
 				}
 				// 二级悬浮
 				.menu_item_view:hover {
-					padding: 0 20px 0 52px;
-					color: #fff;
-					background: rgba(0, 0, 0, 0.30);
-					line-height: 50px;
-					height: 50px;
+					color: #165DFF;
+					background: #F3F4F6;
 				}
 				// 二级选中
 				.is-active.menu_item_view {
-					padding: 0 20px 0 52px;
-					color: #fff;
-					background: rgba(0, 0, 0, 0.30);
-					line-height: 50px;
-					height: 50px;
+					color: #165DFF;
+					background: #E8F3FF;
+					font-weight: 600;
 				}
 			}
 		}
 		// 菜单盒子-关闭样式
 		.el-menu--collapse {
-			padding: 0 10px;
-			color: #fff;
-			background: red;
+			padding: 0;
+			background: transparent;
 			height: 100%;
 
-			// 无二级菜单
-			.el-menu-item {
-				padding: 0 10px;
-				color: #666;
-				background: #fff;
-				line-height: 50px;
-				height: 50px;
+			.el-menu-item, .el-sub-menu__title {
+				padding: 0 !important;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				color: #374151;
 				.iconfont {
-					margin: 0 5px 0 0;
-					color: inherit;
-					width: 34px;
-					vertical-align: middle;
+					margin: 0;
 					font-size: 20px;
-					text-align: center;
 				}
 			}
 
-			// 无二级悬浮
-			.el-menu-item:hover {
-				padding: 0 10px;
-				color: #ccc;
-				background: gray;
-				line-height: 50px;
-				height: 50px;
+			.el-menu-item:hover, .el-sub-menu__title:hover {
+				background: #F3F4F6;
+				color: #165DFF;
 			}
 
-			// 无二级选中
 			.el-menu-item.is-active {
-				padding: 0 10px;
-				color: #ccc;
-				background: #123;
-				line-height: 50px;
-				height: 50px;
-			}
-
-			// 有二级盒子
-			.el-sub-menu {
-				cursor: pointer;
-				padding: 0 0;
-				color: #333;
-				white-space: nowrap;
-				background: #fff;
-				position: relative;
-
-				// 有二级item
-				.el-sub-menu__title {
-					padding: 0 10px;
-					color: #666;
-					background: #fff;
-					line-height: 50px;
-					height: 50px;
-					.iconfont {
-						margin: 0 5px 0 0;
-						color: inherit;
-						width: 34px;
-						vertical-align: middle;
-						font-size: 20px;
-						text-align: center;
-					}
-					.el-sub-menu__icon-arrow{
-						margin: -3px 0 0 8px;
-						color: inherit;
-						vertical-align: middle;
-						font-size: 12px;
-						position: static;
-					}
-				}
-
-				// 有二级item悬浮
-				.el-sub-menu__title:hover {
-					padding: 0 10px;
-					color: #ccc;
-					background: gray;
-					line-height: 50px;
-					height: 50px;
-				}
-			}
-			//二级选中
-			.is-active {
-				.el-sub-menu__title {
-					padding: 0 10px;
-					color: #ccc;
-					background: #123;
-					line-height: 50px;
-					height: 50px;
-				}
-			}
-			// 二级盒子
-			.el-menu--inline {
-				border: none;
-				padding: 4px;
-				background: #123;
-				// 二级菜单
-				.menu_item_view {
-					padding: 0 40px;
-					color: #666;
-					background: goldenrod;
-					line-height: 50px;
-					height: 50px;
-				}
-				// 二级悬浮
-				.menu_item_view:hover {
-					padding: 0 40px;
-					color: #f00;
-					background: greenyellow;
-					line-height: 50px;
-					height: 50px;
-				}
-				// 二级选中
-				.is-active.menu_item_view {
-					padding: 0 40px;
-					color: #000;
-					background: burlywood;
-					line-height: 50px;
-					height: 50px;
-				}
+				background: #E8F3FF;
+				color: #165DFF;
 			}
 		}
 	}
@@ -362,32 +246,29 @@
 	.el-popper{
 		.el-menu--popup-container {
 			.el-menu--popup{
-				border: none;
+				border: 1px solid #E5E7EB;
 				padding: 4px;
-				background: #123;
+				background: #FFFFFF;
+				box-shadow: 0 2px 12px rgba(0,0,0,0.1);
 				// 二级菜单
 				.menu_item_view {
-					padding: 0 40px;
-					color: #666;
-					background: goldenrod;
-					line-height: 50px;
-					height: 50px;
+					padding: 0 20px;
+					color: #374151;
+					background: none;
+					line-height: 40px;
+					height: 40px;
+					font-size: 14px;
+					border-radius: 4px;
 				}
 				// 二级悬浮
 				.menu_item_view:hover {
-					padding: 0 40px;
-					color: #f00;
-					background: greenyellow;
-					line-height: 50px;
-					height: 50px;
+					color: #165DFF;
+					background: #F3F4F6;
 				}
 				// 二级选中
 				.is-active.menu_item_view {
-					padding: 0 40px;
-					color: #000;
-					background: burlywood;
-					line-height: 50px;
-					height: 50px;
+					color: #165DFF;
+					background: #E8F3FF;
 				}
 			}
 		}

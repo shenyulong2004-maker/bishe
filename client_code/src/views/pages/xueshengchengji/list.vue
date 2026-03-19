@@ -42,6 +42,11 @@
 								{{scope.row.kaoshichengji}}
 							</template>
 						</el-table-column>
+						<el-table-column label="成绩等级" :resizable='true' align="left" header-align="left">
+							<template #default="scope">
+								{{getGradeLabel(scope.row.kaoshichengji)}}
+							</template>
+						</el-table-column>
 						<el-table-column label="学号" :resizable='true' align="left" header-align="left">
 							<template #default="scope">
 								{{scope.row.xuehao}}
@@ -111,6 +116,15 @@
 	//基础信息
 	const tableName = 'xueshengchengji'
 	const formName = '学生成绩'
+	const getGradeLabel = (score) => {
+		const s = Number(score)
+		if (!Number.isFinite(s)) return ''
+		if (s >= 90) return '优'
+		if (s >= 80) return '良'
+		if (s >= 70) return '中'
+		if (s >= 60) return '及格'
+		return '不及格'
+	}
 	//基础信息
 	const breadList = ref([{
 		name: formName

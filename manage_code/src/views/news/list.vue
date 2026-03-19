@@ -294,36 +294,46 @@
 	init()
 </script>
 <style lang="scss" scoped>
-	
+	.app-contain {
+		background: transparent;
+		padding: 24px;
+		border-radius: 8px;
+		min-height: calc(100vh - 120px);
+	}
 	// 操作盒子
 	.list_search_view {
-		margin: 0 0 20px;
+		margin: 0 0 24px;
+		padding: 20px;
+		background: #EFF8FF;
+		border-radius: 8px;
+		border: 1px solid #E5E7EB;
 		display: flex;
 		justify-content: space-between;
+		align-items: center;
 		flex-wrap: wrap;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 		// 搜索盒子
 		.search_form {
 			display: flex;
 			align-items: center;
-			order: 2;
+			order: 1;
 			// 子盒子
 			.search_view {
-				margin: 0 10px 0 0;
+				margin: 0 16px 0 0;
 				display: flex;
 				align-items: center;
 				// 搜索label
 				.search_label {
-					margin: 0 10px 0 0;
-					color: #fff;
+					margin: 0 8px 0 0;
+					color: #111827;
 					background: none;
 					font-weight: 500;
 					display: inline-block;
 					width: auto;
 					font-size: 14px;
-					line-height: 40px;
+					line-height: 36px;
 					text-align: right;
-					min-width: 100px;
-					height: 40px;
+					height: 36px;
 				}
 				// 搜索item
 				.search_box {
@@ -331,50 +341,44 @@
 					width: auto;
 					// 输入框
 					:deep(.search_inp) {
-						border: 1px solid rgba(0, 0, 0, 0.1);
-						border-radius: 4px;
-						padding: 0 10px;
-						color: #fff;
-						background: rgba(0, 0, 0, 0.1);
-						width: auto;
-						line-height: 34px;
-						box-sizing: border-box;
-						//去掉默认样式
 						.el-input__wrapper{
-							border: none;
-							box-shadow: none;
-							background: none;
-							border-radius: 0;
-							height: 100%;
-							padding: 0;
+							border: 1px solid #D1D5DB;
+							box-shadow: none !important;
+							background: #FFFFFF;
+							border-radius: 4px;
+							height: 36px;
+							padding: 0 12px;
+							.el-input__inner {
+								color: #374151;
+								&::placeholder {
+									color: #9CA3AF;
+								}
+							}
 						}
 						.is-focus {
-							box-shadow: none !important;
+							border-color: #165DFF;
 						}
 					}
 				}
 			}
 			// 搜索按钮盒子
 			.search_btn_view {
-				width: 20%;
 				display: flex;
-				padding: 0 20px;
+				padding: 0;
 				// 搜索按钮
 				.search_btn {
-					border: 1px solid #357ebd;
+					border: 0;
 					cursor: pointer;
 					border-radius: 4px;
-					padding: 0 24px;
+					padding: 0 20px;
 					color: #fff;
-					background: rgba(66, 139, 202, 0.45);
+					background: #165DFF;
 					width: auto;
 					font-size: 14px;
 					height: 36px;
-				}
-				// 搜索按钮-悬浮
-				.search_btn:hover {
-					border: 1px solid #357ebd;
-					background: rgba(66, 139, 202, 0.45);
+					&:hover {
+						opacity: 0.9;
+					}
 				}
 			}
 		}
@@ -382,468 +386,98 @@
 		.btn_view {
 			margin: 0;
 			display: flex;
-			// 其他
-			:deep(.el-button--default){
-				border: 1px solid #ccc;
-				cursor: pointer;
-				border-radius: 3px;
-				padding: 0 24px;
-				margin: 0 10px 0 0;
-				outline: none;
-				color: #fff;
-				background: rgba(222, 222, 222, 0.55);
-				width: auto;
-				font-size: 14px;
-				height: 36px;
-			}
-			// 其他-悬浮
-			:deep(.el-button--default:hover){
-				background: rgba(222, 222, 222, 0.45);
+			order: 2;
+			// 通用按钮
+			:deep(.el-button){
+				border: 0;
+				border-radius: 4px;
+				padding: 0 16px;
+				margin: 0 8px 0 0;
+				height: 32px;
+				font-size: 13px;
 			}
 			// 新增
 			:deep(.el-button--success){
-				border: 1px solid #357ebd;
-				cursor: pointer;
-				border-radius: 3px;
-				padding: 0 24px;
-				margin: 0 10px 0 0;
-				outline: none;
+				background: #165DFF;
 				color: #fff;
-				background: rgba(66, 139, 202, 0.45);
-				width: auto;
-				font-size: 14px;
-				height: 36px;
-			}
-			// 新增-悬浮
-			:deep(.el-button--success:hover){
-				background: rgba(66, 139, 202, 0.35);
 			}
 			// 修改
 			:deep(.el-button--primary){
-				border: 1px solid #4cae4c;
-				cursor: pointer;
-				border-radius: 3px;
-				padding: 0 24px;
-				margin: 0 10px 0 0;
-				outline: none;
+				background: #165DFF;
 				color: #fff;
-				background: rgba(92, 184, 92, 0.55);
-				width: auto;
-				font-size: 14px;
-				height: 36px;
-			}
-			// 修改-悬浮
-			:deep(.el-button--primary:hover){
-				background: rgba(92, 184, 92, 0.45);
+				opacity: 0.85;
 			}
 			// 详情
 			:deep(.el-button--info){
-				border: 1px solid #46b8da;
-				cursor: pointer;
-				border-radius: 3px;
-				padding: 0 24px;
-				margin: 0 10px 0 0;
-				outline: none;
-				color: #fff;
-				background: rgba(91, 192, 222, 0.45);
-				width: auto;
-				font-size: 14px;
-				height: 36px;
-			}
-			// 详情-悬浮
-			:deep(.el-button--info:hover){
-				background: rgba(91, 192, 222, 0.35);
+				background: #FFFFFF;
+				border: 1px solid #E5E7EB;
+				color: #374151;
+				&:hover {
+					border-color: #165DFF;
+					color: #165DFF;
+				}
 			}
 			// 删除
 			:deep(.el-button--danger){
-				border: 1px solid #d43f3a;
-				cursor: pointer;
-				border-radius: 3px;
-				padding: 0 24px;
-				margin: 0 10px 0 0;
-				outline: none;
+				background: #F53F3F;
 				color: #fff;
-				background: rgba(217, 83, 79, 0.55);
-				width: auto;
-				font-size: 14px;
-				height: 36px;
-			}
-			// 删除-悬浮
-			:deep(.el-button--danger:hover){
-				background: rgba(217, 83, 79, 0.45);
-			}
-			// 统计
-			:deep(.el-button--warning){
-				border: 1px solid #eea236;
-				cursor: pointer;
-				border-radius: 3px;
-				padding: 0 24px;
-				margin: 0 10px 0 0;
-				outline: none;
-				color: #fff;
-				background: rgba(240, 173, 78, 0.55);
-				width: auto;
-				font-size: 14px;
-				height: 36px;
-			}
-			// 统计-悬浮
-			:deep(.el-button--warning:hover){
-				background: rgba(240, 173, 78, 0.45);
 			}
 		}
 	}
 	// 表格样式
-	.el-table {
-		border-radius: 0px;
-		padding: 0;
-		background: rgba(0, 0, 0, 0.25);
-		width: 100%;
-		border-color: rgba(254, 182, 203, 0.5);
-		border-width: 1px 0 0 1px;
-		border-style: solid;
-		:deep(.el-table__header-wrapper) {
-			thead {
-				color: #fff;
-				font-weight: 500;
-				width: 100%;
-				tr {
-					background: rgba(0, 0, 0, 0.1);
-					th {
-						padding: 4px 0;
-						background: none;
-						border-color: rgba(254, 182, 203, 0.5);
-						border-width: 0 0px 1px 0;
-						border-style: solid;
-						text-align: left;
-						.cell {
-							padding: 0 10px;
-							word-wrap: normal;
-							word-break: break-all;
-							white-space: normal;
-							font-weight: bold;
-							display: inline-block;
-							vertical-align: middle;
-							width: 100%;
-							line-height: 24px;
-							position: relative;
-							text-overflow: ellipsis;
-						}
-					}
-				}
-			}
+	:deep(.el-table) {
+		border-radius: 8px;
+		background: #FFFFFF;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+		border: 1px solid #E5E7EB;
+		
+		th.el-table__cell {
+			background: #FAFAFA !important;
+			color: #111827;
+			font-weight: 600;
+			height: 48px;
 		}
-		:deep(.el-table__body-wrapper) {
-			tbody {
-				width: 100%;
-				tr {
-					background: none;
-					td {
-						padding: 6px 0;
-						color: #eee;
-						background: none;
-						border-color: #d2d2d2;
-						border-width: 0 0px 0px 0;
-						border-style: solid;
-						text-align: left;
-						.cell {
-							padding: 0 10px;
-							overflow: hidden;
-							word-break: break-all;
-							white-space: normal;
-							line-height: 24px;
-							text-overflow: ellipsis;
-							// 编辑
-							.el-button--primary {
-								border: 1px solid #d58512;
-								cursor: pointer;
-								border-radius: 4px;
-								padding: 5px 10px;
-								margin: 0 6px 6px 0;
-								color: #fff;
-								background: rgba(240, 173, 78, 0.45);
-								width: auto;
-								font-size: 12px;
-								height: auto;
-							}
-							// 编辑-悬浮
-							.el-button--primary:hover {
-							}
-							// 详情
-							.el-button--info {
-								border: 1px solid #357ebd;
-								cursor: pointer;
-								border-radius: 3px;
-								padding: 5px 10px;
-								margin: 0 6px 6px 0;
-								color: #fff;
-								background: rgba(66, 139, 202, 0.55);
-								width: auto;
-								font-size: 12px;
-								height: auto;
-							}
-							// 详情-悬浮
-							.el-button--info:hover {
-							}
-							// 删除
-							.el-button--danger {
-								border: 1px solid #ac2925;
-								cursor: pointer;
-								border-radius: 3px;
-								padding: 5px 10px;
-								margin: 0 6px 6px 0;
-								color: #fff;
-								background: rgba(217, 83, 79, 0.45);
-								width: auto;
-								font-size: 12px;
-								height: auto;
-							}
-							// 删除-悬浮
-							.el-button--danger:hover {
-							}
-							// 跨表
-							.el-button--success {
-								border: 1px solid #ccc;
-								cursor: pointer;
-								border-radius: 3px;
-								padding: 5px 10px;
-								margin: 0 6px 6px 0;
-								color: #fff;
-								background: rgba(222, 222, 222, 0.55);
-								width: auto;
-								font-size: 12px;
-								height: 24px;
-							}
-							// 跨表-悬浮
-							.el-button--success:hover {
-							}
-							// 操作
-							.el-button--warning {
-								border: 1px solid #4cae4c;
-								cursor: pointer;
-								border-radius: 3px;
-								padding: 5px 10px;
-								margin: 0 6px 6px 0;
-								color: #fff;
-								background: rgba(92, 184, 92, 0.55);
-								width: auto;
-								font-size: 12px;
-								height: auto;
-							}
-							// 操作-悬浮
-							.el-button--warning:hover {
-							}
-						}
-					}
-				}
-				tr.el-table__row--striped {
-					td {
-						background: rgba(0, 0, 0, 0.10);
-					}
-				}
-				tr:hover {
-					td {
-						padding: 6px 0;
-						color: #fff;
-						background: rgba(0, 0, 0, 0.10);
-						border-color: #d2d2d2;
-						border-width: 0 0px 0px 0;
-						border-style: solid;
-						text-align: left;
-					}
-				}
+		
+		td.el-table__cell {
+			color: #374151;
+			height: 54px;
+		}
+		
+		.el-table__row--striped td.el-table__cell {
+			background: #FAFAFA;
+		}
+		
+		.el-table__row:hover td.el-table__cell {
+			background: #EFF8FF !important;
+		}
+
+		.el-button {
+			padding: 4px 12px;
+			font-size: 12px;
+			border-radius: 4px;
+		}
+		.el-button--info {
+			background: #FFFFFF;
+			border: 1px solid #E5E7EB;
+			color: #374151;
+			&:hover {
+				border-color: #165DFF;
+				color: #165DFF;
 			}
 		}
 	}
-	// 分页器
-	.el-pagination {
-		// 总页码
-		:deep(.el-pagination__total) {
-			margin: 0 10px 0 0;
-			color: #666;
-			font-weight: 400;
-			display: inline-block;
-			vertical-align: top;
-			font-size: 13px;
-			line-height: 28px;
-			height: 28px;
+
+	:deep(.el-pagination) {
+		margin-top: 24px !important;
+		justify-content: center;
+		.el-pager li.is-active {
+			background-color: #165DFF !important;
 		}
-		// 上一页
-		:deep(.btn-prev) {
-			border: none;
-			border-radius: 0px;
-			padding: 0 5px;
-			margin: 0 5px;
-			color: #fff;
-			background: none;
-			display: inline-block;
-			vertical-align: top;
-			font-size: 13px;
-			line-height: 26px;
-			min-width: 35px;
-			height: 26px;
-		}
-		// 下一页
-		:deep(.btn-next) {
-			border: none;
-			border-radius: 0px;
-			padding: 0 5px;
-			margin: 0 5px;
-			color: #fff;
-			background: none;
-			display: inline-block;
-			vertical-align: top;
-			font-size: 13px;
-			line-height: 26px;
-			min-width: 35px;
-			height: 26px;
-		}
-		// 上一页禁用
-		:deep(.btn-prev:disabled) {
-			border: none;
-			cursor: not-allowed;
-			border-radius: 0px;
-			padding: 0 5px;
-			margin: 0 5px;
-			color: #fff;
-			background: none;
-			display: inline-block;
-			vertical-align: top;
-			font-size: 13px;
-			line-height: 26px;
-			height: 26px;
-		}
-		// 下一页禁用
-		:deep(.btn-next:disabled) {
-			border: none;
-			cursor: not-allowed;
-			border-radius: 0px;
-			padding: 0 5px;
-			margin: 0 5px;
-			color: #fff;
-			background: none;
-			display: inline-block;
-			vertical-align: top;
-			font-size: 13px;
-			line-height: 26px;
-			height: 26px;
-		}
-		// 页码
-		:deep(.el-pager) {
-			padding: 0;
-			margin: 0;
-			display: inline-block;
-			vertical-align: top;
-			// 数字
-			.number {
-				cursor: pointer;
-				border: 1px solid rgba(255, 255, 255, 0.3);
-				padding: 0 4px;
-				margin: 0 5px;
-				color: #fff;
-				display: inline-block;
-				vertical-align: top;
-				font-size: 13px;
-				line-height: 26px;
-				border-radius: 0px;
-				background: none;
-				text-align: center;
-				min-width: 30px;
-				height: 26px;
-			}
-			// 数字悬浮
-			.number:hover {
-				cursor: pointer;
-				border: 1px solid rgba(0, 0, 0, 0.05);
-				padding: 0 4px;
-				margin: 0 5px;
-				color: #fff;
-				display: inline-block;
-				vertical-align: top;
-				font-size: 13px;
-				line-height: 26px;
-				border-radius: 0px;
-				background: rgba(0, 0, 0, 0.25);
-				text-align: center;
-				min-width: 30px;
-				height: 26px;
-			}
-			// 选中
-			.number.is-active {
-				cursor: default;
-				border: 1px solid rgba(0, 0, 0, 0.05);
-				padding: 0 4px;
-				margin: 0 5px;
-				color: #fff;
-				display: inline-block;
-				vertical-align: top;
-				font-size: 13px;
-				line-height: 26px;
-				border-radius: 0px;
-				background: rgba(0, 0, 0, 0.25);
-				text-align: center;
-				min-width: 30px;
-				height: 26px;
-			}
-		}
-		// sizes
-		:deep(.el-pagination__sizes) {
-			display: inline-block;
-			vertical-align: top;
-			font-size: 13px;
-			line-height: 28px;
-			height: 28px;
-			.el-select {
-				border: 1px solid #DCDFE6;
-				cursor: pointer;
-				padding: 0;
-				color: #606266;
-				display: inline-block;
-				font-size: 13px;
-				line-height: 28px;
-				border-radius: 3px;
-				outline: 0;
-				background: #FFF;
-				width: 100%;
-				text-align: center;
-				height: 28px;
-			}
-		}
-		// 跳页
-		:deep(.el-pagination__jump) {
-			margin: 0 0 0 24px;
-			color: #606266;
-			display: inline-block;
-			vertical-align: top;
-			font-size: 13px;
-			line-height: 28px;
-			height: 28px;
-			// 输入框
-			.el-input {
-				border: 1px solid #DCDFE6;
-				cursor: pointer;
-				padding: 0 3px;
-				color: #606266;
-				display: inline-block;
-				font-size: 14px;
-				line-height: 28px;
-				border-radius: 3px;
-				outline: 0;
-				background: #FFF;
-				width: 100%;
-				text-align: center;
-				height: 28px;
-				//去掉默认样式
-				.el-input__wrapper{
-					border: none;
-					box-shadow: none;
-					background: none;
-					border-radius: 0;
-					height: 100%;
-					padding: 0;
-				}
-				.is-focus {
-					box-shadow: none !important;
-				}
+		.btn-prev, .btn-next {
+			background-color: #FFFFFF !important;
+			border: 1px solid #E5E7EB;
+			&:hover {
+				color: #165DFF;
 			}
 		}
 	}

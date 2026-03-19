@@ -23,6 +23,7 @@ import "@vuemap/vue-amap/dist/style.css"
 initAMapApiLoader({
   key: "5c1c06db19e483c5b00dc052ca37848b",
   securityJsCode:'4d8f1bda690b722d8a547dabb51a9933',
+  protocol: 'http',
   plugins: [
     "AMap.Autocomplete",
     "AMap.PlaceSearch",

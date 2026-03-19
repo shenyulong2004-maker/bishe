@@ -8,6 +8,9 @@
         <result property="name" column="name"/>
         <result property="time" column="time"/>
         <result property="status" column="status"/>
+        <result property="tijiaofangshi" column="tijiaofangshi"/>
+        <result property="pdfurl" column="pdfurl"/>
+        <result property="xianxiashuoming" column="xianxiashuoming"/>
     </resultMap>
 
     <select id="selectListView"

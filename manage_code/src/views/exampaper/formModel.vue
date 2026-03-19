@@ -11,9 +11,48 @@
 					</el-col>
 
 					<el-col :span="24">
+						<el-form-item label="提交方式" prop="tijiaofangshi">
+							<el-select
+								class="list_sel"
+								:disabled="!isAdd||disabledForm.tijiaofangshi?true:false"
+								v-model="form.tijiaofangshi" 
+								placeholder="请选择提交方式"
+								@change="tijiaofangshiChange"
+								>
+								<el-option v-for="(item,index) in tijiaofangshiLists" :label="item"
+									:value="item"
+									>
+								</el-option>
+							</el-select>
+						</el-form-item>
+					</el-col>
+
+					<el-col :span="24">
 						<el-form-item label="考试时长(分钟)" prop="time">
 							<el-input class="list_inp" v-model.number="form.time" placeholder="考试时长(分钟)"
 								 type="text" 								:readonly="!isAdd||disabledForm.time?true:false" />
+						</el-form-item>
+					</el-col>
+
+					<el-col :span="24" v-if="form.tijiaofangshi==='pdf附件'">
+						<el-form-item label="PDF附件" prop="pdfurl">
+							<uploads
+								:disabled="!isAdd||disabledForm.pdfurl?true:false"
+								action="file/upload" 
+								tip="请上传PDF附件" 
+								:limit="1" 
+								style="width: 100%;text-align: left;"
+								:fileUrls="form.pdfurl?form.pdfurl:''" 
+								@change="pdfUploadSuccess">
+							</uploads>
+						</el-form-item>
+					</el-col>
+
+					<el-col :span="24" v-if="form.tijiaofangshi==='线下提交'">
+						<el-form-item label="线下说明" prop="xianxiashuoming">
+							<el-input v-model="form.xianxiashuoming" placeholder="请输入线下提交说明（地点/方式/截止时间等）" type="textarea"
+							:readonly="!isAdd||disabledForm.xianxiashuoming?true:false"
+							/>
 						</el-form-item>
 					</el-col>
 
@@ -65,8 +104,11 @@
 	const form = ref({})
 	const disabledForm = ref({
 		name : false,
+		tijiaofangshi : false,
 		time : false,
 		status : false,
+		pdfurl : false,
+		xianxiashuoming : false,
 	})
 	const formVisible = ref(false)
 	const isAdd = ref(false)
@@ -146,11 +188,17 @@
 		name: [
 			{required: true,message: '请输入',trigger: 'blur'}, 
 		],
+		tijiaofangshi: [
+			{required: true,message: '请选择',trigger: 'change'}, 
+		],
 		time: [
-			{required: true,message: '请输入',trigger: 'blur'}, 
 			{ validator: validateIntNumber, trigger: 'blur' },
 		],
 		status: [
+		],
+		pdfurl: [
+		],
+		xianxiashuoming: [
 		],
 	})
 	//表单验证
@@ -160,6 +208,8 @@
 	const type = ref('')
 	//试卷状态列表
 	const statusLists = ref([])
+	//提交方式列表
+	const tijiaofangshiLists = ref([])
 	//methods
 
 	//获取唯一标识
@@ -170,8 +220,11 @@
 	const resetForm = () => {
 		form.value = {
 			name: '',
+			tijiaofangshi: '在线答题',
 			time: '',
 			status: '',
+			pdfurl: '',
+			xianxiashuoming: '',
 		}
 	}
 	//获取info
@@ -250,6 +303,7 @@
 		}
 
 		statusLists.value = "禁用,启用".split(',')
+		tijiaofangshiLists.value = "在线答题,pdf附件,线下提交".split(',')
 	}
 	//初始化
 	//声明父级调用
@@ -263,6 +317,17 @@
 	//富文本
 	const editorChange = (e,name) =>{
 		form.value[name] = e
+	}
+	const pdfUploadSuccess=(e)=>{
+		form.value.pdfurl = e
+	}
+	const tijiaofangshiChange = (val) => {
+		if (val !== 'pdf附件') {
+			form.value.pdfurl = ''
+		}
+		if (val !== '线下提交') {
+			form.value.xianxiashuoming = ''
+		}
 	}
 	//提交
 	const save=()=>{
@@ -290,6 +355,18 @@
 		}
 		formRef.value.validate((valid)=>{
 			if(valid){
+				if (form.value.tijiaofangshi === '在线答题' && (form.value.time === '' || form.value.time === null || form.value.time === undefined)) {
+					context?.$toolUtil.message('请输入考试时长(分钟)','error')
+					return false
+				}
+				if (form.value.tijiaofangshi === 'pdf附件' && (!form.value.pdfurl || !String(form.value.pdfurl).trim())) {
+					context?.$toolUtil.message('请上传PDF附件','error')
+					return false
+				}
+				if (form.value.tijiaofangshi === '线下提交' && (!form.value.xianxiashuoming || !String(form.value.xianxiashuoming).trim())) {
+					context?.$toolUtil.message('请输入线下提交说明','error')
+					return false
+				}
 				if(crossUserId&&crossRefId){
 					form.value.crossuserid = crossUserId
 					form.value.crossrefid = crossRefId

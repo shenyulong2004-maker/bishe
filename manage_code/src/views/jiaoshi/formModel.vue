@@ -9,7 +9,7 @@
 								type="text" :readonly="!isAdd||disabledForm.jiaoshigonghao?true:false" />
 						</el-form-item>
 					</el-col>
-					<el-col :span="24">
+					<el-col :span="24" v-if="type=='add'">
 						<el-form-item label="教师密码" prop="jiaoshimima">
 							<el-input class="list_inp" v-model="form.jiaoshimima" placeholder="教师密码"
 								type="password" :readonly="!isAdd||disabledForm.jiaoshimima?true:false" />
@@ -170,12 +170,19 @@
 			callback();
 		}
 	}
+	const validatePasswordRequired = (rule, value, callback) => {
+		if (type.value === 'add' && (!value || !String(value).trim())) {
+			callback(new Error('请输入'))
+			return
+		}
+		callback()
+	}
 	const rules = ref({
 		jiaoshigonghao: [
 			{required: true,message: '请输入',trigger: 'blur'}, 
 		],
 		jiaoshimima: [
-			{required: true,message: '请输入',trigger: 'blur'}, 
+			{ validator: validatePasswordRequired, trigger: 'blur' },
 		],
 		jiaoshixingming: [
 			{required: true,message: '请输入',trigger: 'blur'}, 

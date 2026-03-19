@@ -158,7 +158,8 @@
 	.register_view {
 		background-repeat: no-repeat;
 		flex-direction: column;
-		background: url(http://clfile.zggen.cn/20240301/cb59505e774a42899501d8d7f1360b75.jpg);
+		background-color: #dce5db;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='12' viewBox='0 0 20 12'%3E%3Cg fill-rule='evenodd'%3E%3Cg id='charlie-brown' fill='%2392aca6' fill-opacity='0.4'%3E%3Cpath d='M9.8 12L0 2.2V.8l10 10 10-10v1.4L10.2 12h-.4zm-4 0L0 6.2V4.8L7.2 12H5.8zm8.4 0L20 6.2V4.8L12.8 12h1.4zM9.8 0l.2.2.2-.2h-.4zm-4 0L10 4.2 14.2 0h-1.4L10 2.8 7.2 0H5.8z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
 		display: flex;
 		font-size: 100% 100%;
 		min-height: 100vh;
@@ -168,50 +169,54 @@
 		background-position: center center;
 		// 表单盒子
 		.register_form {
-			border-radius: 8px;
-			padding: 50px 80px 30px 40px;
+			border-radius: 12px;
+			padding: 40px 60px;
 			margin: 0;
-			background: url(http://clfile.zggen.cn/20240301/7ac2edfec9b84ae5be0a62f62e8af7bb.png) no-repeat center top / 100% auto,#f7f2ec;
+			background: #F9FAFB;
+			border: 1px solid #D1D5DB;
+			box-shadow: 0 10px 40px rgba(0,0,0,0.12);
 			display: block;
-			width: 680px;
+			width: 600px;
 			justify-content: center;
 			flex-wrap: wrap;
 		}
 		// 标题样式
 		.title_view {
 			padding: 0 0 30px;
-			margin: 0 0 0 20px;
-			color: #3f3f3f;
+			margin: 0;
+			color: #111827;
 			background: none;
 			font-weight: 600;
-			width: calc(100% - 0px);
-			font-size: 22px;
+			width: 100%;
+			font-size: 24px;
 			text-align: center;
 		}
 		// item盒子
 		.list_item {
-			margin: 0 0 12px;
+			margin: 0 0 20px;
 			display: flex;
 			width: 100%;
 			justify-content: flex-start;
 			align-items: center;
 			// label
 			.list_label {
-				color: #333;
-				width: 120px;
+				color: #374151;
+				width: 100px;
 				font-size: 14px;
 				box-sizing: border-box;
 				text-align: right;
+				padding-right: 15px;
 			}
 			// 输入框
 			:deep(.list_inp) {
-				border: 1px solid #ddd;
-				border-radius: 4px;
-				padding: 0 10px;
+				border: 1px solid #D1D5DB;
+				border-radius: 8px;
+				padding: 0 12px;
 				width: calc(100% - 100px);
-				line-height: 36px;
+				line-height: 40px;
 				box-sizing: border-box;
-				height: 36px;
+				height: 40px;
+				background: #FFFFFF;
 				//去掉默认样式
 				.el-input__wrapper{
 					border: none;
@@ -224,17 +229,21 @@
 				.is-focus {
 					box-shadow: none !important;
 				}
+				&:hover {
+					border-color: #165DFF;
+				}
 			}
 		}
 		//下拉框样式
 		:deep(.list_sel) {
-			border: 1px solid #ddd;
-			border-radius: 4px;
-			padding: 0 10px;
+			border: 1px solid #D1D5DB;
+			border-radius: 8px;
+			padding: 0 12px;
 			background: #fff;
 			width: calc(100% - 100px);
-			line-height: 36px;
+			line-height: 40px;
 			box-sizing: border-box;
+			height: 40px;
 			//去掉默认样式
 			.select-trigger{
 				height: 100%;
@@ -253,13 +262,16 @@
 					}
 				}
 			}
+			&:hover {
+				border-color: #165DFF;
+			}
 		}
 		//图片上传样式
 		.list_file_list  {
 			//提示语
 			:deep(.el-upload__tip){
 				margin: 7px 0 0;
-				color: #999;
+				color: #9CA3AF;
 				display: flex;
 				font-size: 14px;
 				justify-content: flex-start;
@@ -267,34 +279,37 @@
 			}
 			//外部盒子
 			:deep(.el-upload--picture-card){
-				border: 1px solid #ddd;
+				border: 1px solid #D1D5DB;
 				cursor: pointer;
 				background-color: #fff;
-				border-radius: 4px;
-				width: 160px;
+				border-radius: 8px;
+				width: 120px;
 				line-height: 70px;
 				text-align: center;
-				height: 60px;
+				height: 80px;
 				//图标
 				.el-icon{
-					color: #bbb;
-					font-size: 32px;
+					color: #9CA3AF;
+					font-size: 24px;
+				}
+				&:hover {
+					border-color: #165DFF;
 				}
 			}
 			:deep(.el-upload-list__item) {
-				border: 1px solid #ddd;
+				border: 1px solid #D1D5DB;
 				cursor: pointer;
 				background-color: #fff;
-				border-radius: 4px;
-				width: 160px;
+				border-radius: 8px;
+				width: 120px;
 				line-height: 70px;
 				text-align: center;
-				height: 60px;
+				height: 80px;
 			}
 		}
 		//按钮盒子
 		.list_btn {
-			margin: 20px 0 0;
+			margin: 30px 0 0;
 			display: flex;
 			width: 100%;
 			justify-content: center;
@@ -303,33 +318,29 @@
 			//注册按钮
 			.register {
 					border: none;
-					border-radius: 4px;
-					margin: 0 20px;
+					border-radius: 8px;
+					margin: 0 0 20px;
 					color: #fff;
-					background: rgba(255, 153, 0,1);
-					width: 120px;
+					background: #165DFF;
+					width: 100%;
 					font-size: 16px;
-					height: 40px;
-			}
-			//注册按钮悬浮样式
-			.register:hover {
-				border: none;
-				border-radius: 4px;
-				margin: 0 20px;
-				background: rgba(255, 153, 0,1);
-				width: 120px;
-				font-size: 16px;
-				opacity: 1;
-				height: 40px;
+					font-weight: 600;
+					height: 44px;
+					&:hover {
+						background: #4080FF;
+					}
 			}
 			//已有账号
 			.r-login {
 				cursor: pointer;
-				padding: 01;
-				color: #666;
+				padding: 0;
+				color: #165DFF;
 				width: auto;
 				font-size: 14px;
-				text-align: right;
+				text-align: center;
+				&:hover {
+					text-decoration: underline;
+				}
 			}
 		}
 	}

@@ -68,6 +68,21 @@ public class ExampaperEntity<T> implements Serializable {
 	 */
 					
 	private String status;
+
+	/**
+	 * 提交方式（在线答题/pdf附件/线下提交）
+	 */
+	private String tijiaofangshi;
+
+	/**
+	 * PDF附件
+	 */
+	private String pdfurl;
+
+	/**
+	 * 线下提交说明
+	 */
+	private String xianxiashuoming;
 	
 	
 	@JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss")
@@ -123,6 +138,30 @@ public class ExampaperEntity<T> implements Serializable {
 	 */
 	public String getStatus() {
 		return status;
+	}
+
+	public String getTijiaofangshi() {
+		return tijiaofangshi;
+	}
+
+	public void setTijiaofangshi(String tijiaofangshi) {
+		this.tijiaofangshi = tijiaofangshi;
+	}
+
+	public String getPdfurl() {
+		return pdfurl;
+	}
+
+	public void setPdfurl(String pdfurl) {
+		this.pdfurl = pdfurl;
+	}
+
+	public String getXianxiashuoming() {
+		return xianxiashuoming;
+	}
+
+	public void setXianxiashuoming(String xianxiashuoming) {
+		this.xianxiashuoming = xianxiashuoming;
 	}
 
 }

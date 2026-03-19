@@ -16,6 +16,8 @@ import exampaperList from '@/views/pages/exam/exampaperList'
 import examination from '@/views/pages/exam/examination'
 import examrecordList from '@/views/pages/exam/examrecordList'
 import examfailrecord from '@/views/pages/exam/examfailrecord'
+import xueshengRegister from '@/views/pages/xuesheng/register'
+import jiaoshiRegister from '@/views/pages/jiaoshi/register'
 
 const routes = [{
 		path: '/',
@@ -77,6 +79,14 @@ const routes = [{
 	{
 		path: '/login',
 		component: login
+	}
+	, {
+		path: '/xueshengRegister',
+		component: xueshengRegister
+	}
+	, {
+		path: '/jiaoshiRegister',
+		component: jiaoshiRegister
 	}
 	, {
 		path: '/examination',

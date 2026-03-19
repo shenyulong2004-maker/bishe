@@ -1,86 +1,47 @@
 <template>
-	<div class="auth">
-		<canvas id="canvas" class="auth__canvas" style="background:url(http://clfile.zggen.cn/20231120/5c406dea56f94e7a8862ce254a053b09.jpg) no-repeat center center / cover"></canvas>
-		<main class="auth__card">
-			<header class="auth__header">
-				<div class="auth__brand">家校合作平台</div>
-				<h1 class="auth__title">管理端登录</h1>
-				<p class="auth__subtitle">管理员 / 学生 / 教师登录入口</p>
-			</header>
-
-			<el-form :model="loginForm" class="auth__form" @submit.prevent="handleLogin">
-				<div v-if="errorSummary.length" class="auth__alert" role="alert" aria-live="polite">
-					<div v-for="(msg, idx) in errorSummary" :key="idx" class="auth__alertLine">{{ msg }}</div>
-				</div>
-
-				<div class="field" v-if="loginType==1">
-					<label class="field__label" :for="usernameInputId">账号</label>
-					<el-input
-						v-model="loginForm.username"
-						:input-id="usernameInputId"
-						class="field__control"
-						placeholder="请输入账号"
-						autocomplete="username"
-						clearable
-						@input="clearFieldError('username')"
-					/>
-					<div v-if="errors.username" class="field__error">{{ errors.username }}</div>
-				</div>
-
-				<div class="field" v-if="loginType==1">
-					<label class="field__label" :for="passwordInputId">密码</label>
-					<el-input
-						v-model="loginForm.password"
-						:input-id="passwordInputId"
-						class="field__control"
-						type="password"
-						show-password
-						placeholder="请输入密码"
-						autocomplete="current-password"
-						@keyup.enter="handleLogin"
-						@input="clearFieldError('password')"
-					/>
-					<div v-if="errors.password" class="field__error">{{ errors.password }}</div>
-				</div>
-
-				<div class="field" v-if="userList.length>1">
-					<label class="field__label" :for="roleSelectId">用户类型</label>
-					<el-select
-						v-model="loginForm.role"
-						:teleported="false"
-						:input-id="roleSelectId"
-						class="field__control"
-						placeholder="请选择用户类型"
-						@change="clearFieldError('role')"
-					>
-						<el-option v-for="(item,index) in userList" :key="index" :label="item.roleName" :value="item.roleName"></el-option>
-					</el-select>
-					<div v-if="errors.role" class="field__error">{{ errors.role }}</div>
-				</div>
-
-				<div class="auth__actions">
-					<el-button class="auth__submit" v-if="loginType==1" type="primary" :loading="submitting" @click="handleLogin">
-						登录
-					</el-button>
-					<div class="auth__links">
-						<el-button class="auth__linkBtn" text type="primary" @click="handleRegister('xuesheng')">注册学生</el-button>
-						<el-button class="auth__linkBtn" text type="primary" @click="handleRegister('jiaoshi')">注册教师</el-button>
+	<div>
+    <canvas id="canvas"></canvas>
+		<div class="login_view">
+			<el-form :model="loginForm" class="login_form">
+				<div class="title_view">家校合作平台登录</div>
+				<div class="list_item" v-if="loginType==1">
+					<div class="list_label">
+						账号：
 					</div>
+					<input class="list_inp" v-model="loginForm.username" placeholder="请输入账号" />
+				</div>
+				<div class="list_item" v-if="loginType==1">
+					<div class="list_label">
+						密码：
+					</div>
+					<input class="list_inp" v-model="loginForm.password" type="password" placeholder="请输入密码" @keydown.enter.native="handleLogin"  />
+				</div>
+				<div class="list_type" v-if="userList.length>1">
+					<div class="list_label">
+						用户类型：
+					</div>
+				  <el-select v-model="loginForm.role" placeholder="请选择用户类型">
+				    <el-option v-for="(item,index) in userList" :label="item.roleName" :value="item.roleName"></el-option>
+				  </el-select>
+				</div>
+				<div class="btn_view">
+					<el-button class="login" v-if="loginType==1" type="success" @click="handleLogin">登录</el-button>
+					<el-button class="register" type="primary" @click="handleRegister('xuesheng')">注册学生</el-button>
+					<el-button class="register" type="primary" @click="handleRegister('jiaoshi')">注册教师</el-button>
 				</div>
 			</el-form>
-		</main>
-
-		<Vcode :show="isShow" @success="onCaptchaSuccess" @close="onCaptchaClose" @fail="onCaptchaFail"></Vcode>
+		</div>
+		<Vcode :show="isShow" @success="success" @close="close" @fail='fail'></Vcode>
 	</div>
 </template>
 <script setup>
 	import {
 		ref,
 		getCurrentInstance,
+		nextTick,
 		onMounted,
-		computed,
+		onUnmounted,
 	} from "vue";
-	import Vcode from "vue3-puzzle-vcode";
 	const userList = ref([])
 	const menus = ref([])
 	const loginForm = ref({
@@ -91,40 +52,29 @@
 	const tableName = ref('')
 	const loginType = ref(1)
 	const context = getCurrentInstance()?.appContext.config.globalProperties;
-	const submitting = ref(false)
-	const isShow = ref(false)
-	const usernameInputId = 'manage-login-username'
-	const passwordInputId = 'manage-login-password'
-	const roleSelectId = 'manage-login-role'
-	const errors = ref({
-		username: '',
-		password: '',
-		role: '',
-	})
-	const errorSummary = computed(() => Object.values(errors.value).filter(Boolean))
-	const clearFieldError = (key) => {
-		if (errors.value[key]) errors.value[key] = ''
-	}
-	const validate = () => {
-		errors.value = { username: '', password: '', role: '' }
-		if (!loginForm.value.username) errors.value.username = '请输入账号'
-		if (!loginForm.value.password) errors.value.password = '请输入密码'
-		if (userList.value.length > 1 && !loginForm.value.role) errors.value.role = '请选择用户类型'
-		return errorSummary.value.length === 0
-	}
 	//动态背景
 	import canvasBg from "@/assets/js/canvas-bg-2.js";
 	import "@/assets/css/canvas-bg-2.css"
+	// onUnmounted(()=>{
+	// 	nextTick(()=>{
+	// 		canvasBg = null
+	// 	})
+	// })
 	//注册
     const handleRegister = (tableName) => {
     	context?.$router.push(`/${tableName}Register`)
     	
     }
 	const handleLogin = () => {
-		if (submitting.value) return
-		if (!validate()) {
-			context?.$toolUtil.message(errorSummary.value[0], 'error')
-			return
+		if (!loginForm.value.username) {
+			context?.$toolUtil.message('请输入用户名', 'error')
+			
+			return;
+		}
+		if (!loginForm.value.password) {
+			context?.$toolUtil.message('请输入密码', 'error')
+			
+			return;
 		}
 		if (!menus.value || menus.value.length === 0) {
 			context?.$toolUtil.message('系统初始化中，请稍后重试', 'error')
@@ -154,23 +104,13 @@
 				return;
 			}
 		}
-		isShow.value = true
-	}
-	const onCaptchaSuccess = () => {
-		isShow.value = false
 		login()
-	}
-	const onCaptchaClose = () => {
-		isShow.value = false
-	}
-	const onCaptchaFail = () => {
 	}
 	const login = () => {
 		if (!tableName.value) {
 			context?.$toolUtil.message('系统初始化中，请稍后重试', 'error')
 			return;
 		}
-		submitting.value = true
 		context?.$http({
 			url: `${tableName.value}/login?username=${loginForm.value.username}&password=${loginForm.value.password}`,
 			method: 'post'
@@ -189,8 +129,6 @@
 			} else {
 				context?.$toolUtil.message('登录失败，请检查网络连接或稍后重试', 'error')
 			}
-		}).finally(()=>{
-			submitting.value = false
 		})
 	}
 	//获取菜单
@@ -207,6 +145,7 @@
         params: params
       }).then(res => {
           menus.value = JSON.parse(res.data.data.list[0].menujson)
+		  menus.value = Array.isArray(menus.value) ? menus.value.filter(item => item && item.tableName != 'jiazhang' && item.roleName != '家长') : []
           for (let i = 0; i < menus.value.length; i++) {
             if (menus.value[i].hasBackLogin=='是' && menus.value[i].tableName != 'jiazhang') {
               userList.value.push(menus.value[i])
@@ -233,150 +172,180 @@
 </script>
 
 <style lang="scss" scoped>
-	.auth {
-		--auth-surface: rgba(2, 6, 23, 0.68);
-		--auth-border: rgba(148, 163, 184, 0.25);
-		--auth-text: #e2e8f0;
-		--auth-muted: rgba(226, 232, 240, 0.72);
-		--auth-brand: #60a5fa;
-		--auth-danger: #fca5a5;
-		--auth-focus: rgba(96, 165, 250, 0.35);
-		min-height: 100vh;
-		display: grid;
-		place-items: center;
-		padding: 24px;
-		color: var(--auth-text);
-		color-scheme: dark;
-		position: relative;
-		overflow: hidden;
+	#canvas {
+		background: url(@/assets/jiaxiaopingtai_beijing.jpg) no-repeat center center / cover;
 	}
-
-	.auth__canvas {
-		position: fixed;
-		inset: 0;
-		width: 100%;
-		height: 100%;
-		z-index: 0;
-	}
-
-	.auth__card {
-		position: relative;
-		z-index: 1;
-		width: min(460px, 100%);
-		border: 1px solid var(--auth-border);
-		border-radius: 16px;
-		background: var(--auth-surface);
-		backdrop-filter: blur(14px);
-		-webkit-backdrop-filter: blur(14px);
-		box-shadow: 0 18px 60px rgba(2, 6, 23, 0.35);
-		padding: 24px;
-	}
-
-	.auth__header {
-		display: grid;
-		gap: 6px;
-		margin-bottom: 18px;
-	}
-
-	.auth__brand {
-		font-size: 12px;
-		letter-spacing: 0.12em;
-		text-transform: uppercase;
-		color: var(--auth-muted);
-	}
-
-	.auth__title {
-		font-size: 24px;
-		line-height: 1.2;
-		margin: 0;
-	}
-
-	.auth__subtitle {
-		margin: 0;
-		font-size: 13px;
-		color: var(--auth-muted);
-	}
-
-	.auth__alert {
-		border: 1px solid rgba(248, 113, 113, 0.35);
-		background: rgba(248, 113, 113, 0.08);
-		border-radius: 12px;
-		padding: 10px 12px;
-		margin-bottom: 12px;
-	}
-
-	.auth__alertLine {
-		font-size: 13px;
-	}
-
-	.field {
-		display: grid;
-		gap: 8px;
-		margin-bottom: 14px;
-	}
-
-	.field__label {
-		font-size: 13px;
-		color: var(--auth-muted);
-	}
-
-	.field__error {
-		font-size: 12px;
-		color: var(--auth-danger);
-	}
-
-	.field__control {
-		width: 100%;
-	}
-
-	:deep(.el-input__wrapper),
-	:deep(.el-select__wrapper) {
-		border-radius: 12px;
-		box-shadow: none !important;
-		border: 1px solid var(--auth-border);
-		background: rgba(2, 6, 23, 0.35);
-	}
-
-	:deep(.el-input__wrapper.is-focus),
-	:deep(.el-select__wrapper.is-focused) {
-		border-color: var(--auth-brand);
-		box-shadow: 0 0 0 4px var(--auth-focus) !important;
-	}
-
-	.auth__actions {
-		display: grid;
-		margin-top: 12px;
-		gap: 10px;
-	}
-
-	.auth__submit {
-		width: 100%;
-		border-radius: 12px;
-		height: 44px;
-		font-weight: 600;
-	}
-
-	.auth__links {
+	.login_view {
+		background: radial-gradient(circle at center, rgba(0,0,0,0) 0%, rgba(0,0,0,0.15) 100%) !important;
 		display: flex;
-		gap: 8px;
+		align-items: center;
 		justify-content: center;
-		flex-wrap: wrap;
-	}
-
-	.auth__linkBtn {
-		font-weight: 600;
-	}
-
-	@media (max-width: 420px) {
-		.auth {
-			padding: 16px;
+		min-height: 100vh;
+		position: relative;
+		flex-direction: column;
+		// 表单盒子
+		.login_form {
+			border-radius: 12px;
+			padding: 2.5vw;
+			margin: 0 auto;
+			background: #F9FAFB;
+			border: 1px solid #D1D5DB;
+			box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+			display: flex;
+			width: 30vw;
+			aspect-ratio: 1 / 1.1;
+			justify-content: flex-start;
+			align-items: center;
+			flex-wrap: wrap;
+			box-sizing: border-box;
 		}
-		.auth__card {
-			padding: 18px;
-			border-radius: 14px;
+		.title_view {
+			padding: 0px;
+			margin: 0 auto 1.5vw;
+			color: #111827;
+			font-weight: 600;
+			width: 85%;
+			font-size: 1.2vw;
+			text-align: center;
 		}
-		.auth__title {
-			font-size: 22px;
+		// item盒子
+		.list_item {
+			margin: 0.6vw auto;
+			background: #fff;
+			border: 1px solid #D1D5DB;
+			border-radius: 6px;
+			display: flex;
+			width: 85%;
+			justify-content: flex-start;
+			align-items: center;
+			// label
+			.list_label {
+				color: #374151;
+				background: none;
+				width: 5.5vw;
+				font-size: 0.8vw;
+				line-height: 2.2vw;
+				text-align: right;
+				padding-right: 0.5vw;
+			}
+			// 输入框
+			.list_inp {
+				border: 0px;
+				border-radius: 0px;
+				padding: 0 0.8vw;
+				color: #374151;
+				background: none;
+				width: 100%;
+				line-height: 2.2vw;
+				height: 2.2vw;
+				font-size: 0.8vw;
+				&::placeholder {
+					color: #9CA3AF;
+				}
+			}
+		}
+		.list_type {
+			margin: 0.6vw auto;
+			background: #fff;
+			border: 1px solid #D1D5DB;
+			border-radius: 6px;
+			display: flex;
+			width: 85%;
+			justify-content: flex-start;
+			align-items: center;
+			order: 3;
+			.list_label {
+				color: #374151;
+				background: none;
+				width: 5.5vw;
+				font-size: 0.8vw;
+				line-height: 2.2vw;
+				text-align: right;
+				padding-right: 0.5vw;
+			}
+			// 下拉框样式
+			:deep(.el-select) {
+				border: 0px;
+				border-radius: 0px;
+				padding: 0 0.8vw;
+				color: #374151;
+				background: none;
+				width: 100%;
+				font-size: 0.8vw;
+				line-height: 2.2vw;
+				box-sizing: border-box;
+				height: 2.2vw;
+				//去掉默认样式
+				.select-trigger{
+					height: 100%;
+					.el-input{
+						height: 100%;
+						.el-input__wrapper{
+							border: none;
+							box-shadow: none !important;
+							background: none;
+							border-radius: 0;
+							height: 100%;
+							padding: 0;
+							.el-input__inner {
+								color: #374151;
+								font-size: 0.8vw;
+								&::placeholder {
+									color: #9CA3AF;
+								}
+							}
+						}
+						.is-focus {
+							box-shadow: none !important;
+						}
+					}
+				}
+			}
+		}
+		// 按钮盒子
+		.btn_view {
+			padding: 0;
+			margin: 1vw auto 0;
+			display: flex;
+			width: 85%;
+			justify-content: flex-start;
+			align-items: center;
+			flex-wrap: wrap;
+			order: 5;
+			// 登录
+			.login {
+				border: 0;
+				cursor: pointer;
+				border-radius: 6px;
+				padding: 0 1.2vw;
+				margin: 0 auto 0.8vw;
+				color: #fff;
+				background: #165DFF;
+				letter-spacing: 0.1vw;
+				width: 100%;
+				font-size: 0.9vw;
+				height: 2.5vw;
+				&:hover {
+					opacity: 0.9;
+				}
+			}
+			// 注册
+			.register {
+				border: 1px solid #D1D5DB;
+				cursor: pointer;
+				border-radius: 6px;
+				padding: 0 1vw;
+				margin: 0 0px 0.6vw 0;
+				color: #374151;
+				background: #fff;
+				width: 100%;
+				font-size: 0.8vw;
+				height: 2.2vw;
+				&:hover {
+					border-color: #165DFF;
+					color: #165DFF;
+				}
+			}
 		}
 	}
 

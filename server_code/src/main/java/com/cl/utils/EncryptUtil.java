@@ -7,6 +7,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
+import java.security.SecureRandom;
 import java.util.Base64;
 
 import javax.crypto.BadPaddingException;
@@ -22,6 +23,9 @@ import javax.crypto.spec.SecretKeySpec;
 import cn.hutool.crypto.digest.DigestUtil;
 
 public class EncryptUtil {
+
+	private static final String PASSWORD_PREFIX = "sha256$";
+	private static final SecureRandom SECURE_RANDOM = new SecureRandom();
     
 	/**
 	 * md5算法
@@ -233,5 +237,98 @@ public class EncryptUtil {
 		}
         return null;
     }
+
+	public static boolean isPasswordHashed(String stored) {
+		return stored != null && stored.startsWith(PASSWORD_PREFIX);
+	}
+
+	public static boolean isValidPassword(String raw) {
+		if (raw == null) return false;
+		if (raw.length() < 8 || raw.length() > 64) return false;
+		boolean hasLetter = false;
+		boolean hasDigit = false;
+		for (int i = 0; i < raw.length(); i++) {
+			char c = raw.charAt(i);
+			if (Character.isLetter(c)) hasLetter = true;
+			if (Character.isDigit(c)) hasDigit = true;
+			if (hasLetter && hasDigit) return true;
+		}
+		return false;
+	}
+
+	public static String hashPassword(String raw) {
+		if (raw == null) return null;
+		byte[] salt = new byte[16];
+		SECURE_RANDOM.nextBytes(salt);
+		byte[] digest = sha256Bytes(salt, raw.getBytes(StandardCharsets.UTF_8));
+		String saltB64 = Base64.getEncoder().encodeToString(salt);
+		return PASSWORD_PREFIX + saltB64 + "$" + toHex(digest);
+	}
+
+	public static boolean verifyPassword(String raw, String stored) {
+		if (raw == null || stored == null) return false;
+		if (!isPasswordHashed(stored)) {
+			return stored.equals(raw);
+		}
+		String[] parts = stored.split("\\$");
+		if (parts.length != 3) return false;
+		try {
+			byte[] salt = Base64.getDecoder().decode(parts[1]);
+			byte[] expected = fromHex(parts[2]);
+			byte[] actual = sha256Bytes(salt, raw.getBytes(StandardCharsets.UTF_8));
+			return constantTimeEquals(expected, actual);
+		} catch (IllegalArgumentException e) {
+			return false;
+		}
+	}
+
+	public static String generateRandomPassword() {
+		final String alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
+		StringBuilder sb = new StringBuilder(12);
+		for (int i = 0; i < 12; i++) {
+			int idx = SECURE_RANDOM.nextInt(alphabet.length());
+			sb.append(alphabet.charAt(idx));
+		}
+		return sb.toString();
+	}
+
+	private static byte[] sha256Bytes(byte[] salt, byte[] input) {
+		try {
+			MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+			messageDigest.update(salt);
+			messageDigest.update(input);
+			return messageDigest.digest();
+		} catch (NoSuchAlgorithmException e) {
+			return new byte[0];
+		}
+	}
+
+	private static String toHex(byte[] bytes) {
+		StringBuilder sb = new StringBuilder(bytes.length * 2);
+		for (byte b : bytes) {
+			sb.append(String.format("%02x", b));
+		}
+		return sb.toString();
+	}
+
+	private static byte[] fromHex(String hex) {
+		int len = hex.length();
+		if (len % 2 != 0) throw new IllegalArgumentException("hex length");
+		byte[] out = new byte[len / 2];
+		for (int i = 0; i < len; i += 2) {
+			out[i / 2] = (byte) Integer.parseInt(hex.substring(i, i + 2), 16);
+		}
+		return out;
+	}
+
+	private static boolean constantTimeEquals(byte[] a, byte[] b) {
+		if (a == null || b == null) return false;
+		if (a.length != b.length) return false;
+		int result = 0;
+		for (int i = 0; i < a.length; i++) {
+			result |= a[i] ^ b[i];
+		}
+		return result == 0;
+	}
 
 }

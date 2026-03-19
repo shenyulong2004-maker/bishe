@@ -1,10 +1,8 @@
 <template>
 	<div class="auth">
-		<div class="auth__backdrop" aria-hidden="true"></div>
 		<div class="auth__card" role="main">
 			<header class="auth__header">
-				<div class="auth__brand">家校合作平台</div>
-				<h1 class="auth__title">登录</h1>
+				<h1 class="auth__title">家校合作平台登录</h1>
 				<p class="auth__subtitle">学生 / 教师账号均可登录</p>
 			</header>
 
@@ -13,8 +11,8 @@
 					<div v-for="(msg, idx) in errorSummary" :key="idx" class="auth__alertLine">{{ msg }}</div>
 				</div>
 
-				<div class="field" v-if="loginType==1">
-					<label class="field__label" :for="usernameInputId">账号</label>
+				<div class="field">
+					<label class="field__label" :for="usernameInputId">账号：</label>
 					<el-input
 						v-model="loginForm.username"
 						:input-id="usernameInputId"
@@ -27,8 +25,8 @@
 					<div v-if="errors.username" class="field__error">{{ errors.username }}</div>
 				</div>
 
-				<div class="field" v-if="loginType==1">
-					<label class="field__label" :for="passwordInputId">密码</label>
+				<div class="field">
+					<label class="field__label" :for="passwordInputId">密码：</label>
 					<el-input
 						v-model="loginForm.password"
 						:input-id="passwordInputId"
@@ -44,28 +42,34 @@
 				</div>
 
 				<div class="field" v-if="userList.length>1">
-					<label class="field__label" :for="roleSelectId">用户类型</label>
-					<el-select
-						v-model="loginForm.role"
-						:teleported="false"
-						:input-id="roleSelectId"
-						class="field__control"
-						placeholder="请选择用户类型"
-						@change="clearFieldError('role')"
-					>
-						<el-option v-for="(item,index) in userList" :key="index" :label="item.roleName" :value="item.roleName"></el-option>
-					</el-select>
+					<label class="field__label">用户类型：</label>
+					<div class="role_btn_group">
+						<button
+							v-for="(item,index) in userList"
+							:key="index"
+							type="button"
+							class="role_btn"
+							:class="{ active: loginForm.role === item.roleName }"
+							@click="loginForm.role = item.roleName; clearFieldError('role')"
+						>
+							{{ item.roleName }}
+						</button>
+					</div>
 					<div v-if="errors.role" class="field__error">{{ errors.role }}</div>
 				</div>
 
-				<div class="auth__row" v-if="loginType==1">
+				<div class="auth__row">
 					<el-checkbox v-model="rememberPassword" class="auth__checkbox" :true-label="true" :false-label="false">
 						记住密码
 					</el-checkbox>
+					<div class="register_view">
+						<span class="register_link" @click="handleRegister('xuesheng')">注册学生</span>
+						<span class="register_link" @click="handleRegister('jiaoshi')">注册教师</span>
+					</div>
 				</div>
 
 				<div class="auth__actions">
-					<el-button class="auth__submit" v-if="loginType==1" type="primary" :loading="submitting" @click="handleLogin">
+					<el-button class="auth__submit" type="primary" :loading="submitting" @click="handleLogin">
 						登录
 					</el-button>
 				</div>
@@ -125,21 +129,44 @@
 			context?.$toolUtil.message(errorSummary.value[0], 'error')
 			return
 		}
-		if (!userList.value.length) {
+		if (!userList.value || !userList.value.length) {
 			context?.$toolUtil.message('系统初始化中，请稍后重试', 'error')
 			return
 		}
 		if (userList.value.length > 1) {
-			for (let i = 0; i < menus.value.length; i++) {
-				if (menus.value[i].roleName == loginForm.value.role) {
-					tableName.value = menus.value[i].tableName;
+			let found = false
+			if (Array.isArray(menus.value)) {
+				for (let i = 0; i < menus.value.length; i++) {
+					if (menus.value[i] && menus.value[i].roleName == loginForm.value.role) {
+						tableName.value = menus.value[i].tableName;
+						found = true
+						break;
+					}
 				}
 			}
+			if (!found) {
+				context?.$toolUtil.message('所选角色配置异常', 'error')
+				return
+			}
 		} else {
-			tableName.value = userList.value[0].tableName;
-			loginForm.value.role = userList.value[0].roleName;
+			const firstUser = userList.value[0]
+			if (firstUser && firstUser.tableName) {
+				tableName.value = firstUser.tableName;
+				loginForm.value.role = firstUser.roleName;
+			} else {
+				context?.$toolUtil.message('角色信息加载异常', 'error')
+				return
+			}
+		}
+		if (!tableName.value) {
+			context?.$toolUtil.message('登录配置异常，请联系管理员', 'error')
+			return
 		}
 		login()
+	}
+	//注册
+	const handleRegister = (tableName) => {
+		context?.$router.push(`/${tableName}Register`)
 	}
 	const login = () => {
 		submitting.value = true
@@ -173,9 +200,11 @@
 	const getMenu=()=> {
 		let arr = menu.list()
 		menus.value = Array.isArray(arr) ? arr : []
+		userList.value = []
 		for (let i = 0; i < menus.value.length; i++) {
-			if (menus.value[i].hasFrontLogin=='是' && menus.value[i].tableName != 'jiazhang') {
-				userList.value.push(menus.value[i])
+			const m = menus.value[i]
+			if (m && (m.hasFrontLogin=='是' || m.roleName == '教师') && m.tableName != 'jiazhang') {
+				userList.value.push(m)
 			}
 		}
     }
@@ -219,93 +248,53 @@
 
 <style lang="scss" scoped>
 	.auth {
-		--auth-bg: radial-gradient(1200px 800px at 20% 10%, rgba(59, 130, 246, 0.22), rgba(0, 0, 0, 0)),
-			radial-gradient(900px 700px at 80% 30%, rgba(236, 72, 153, 0.18), rgba(0, 0, 0, 0)),
-			linear-gradient(180deg, #f8fafc, #eef2ff);
-		--auth-surface: rgba(255, 255, 255, 0.78);
-		--auth-border: rgba(15, 23, 42, 0.12);
-		--auth-text: #0f172a;
-		--auth-muted: rgba(15, 23, 42, 0.7);
-		--auth-brand: #2563eb;
-		--auth-danger: #b91c1c;
-		--auth-focus: rgba(37, 99, 235, 0.35);
 		min-height: 100vh;
 		display: grid;
 		place-items: center;
 		padding: 24px;
-		background: var(--auth-bg);
-		color: var(--auth-text);
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.auth {
-			--auth-bg: radial-gradient(1100px 750px at 20% 10%, rgba(59, 130, 246, 0.22), rgba(0, 0, 0, 0)),
-				radial-gradient(900px 700px at 80% 30%, rgba(236, 72, 153, 0.18), rgba(0, 0, 0, 0)),
-				linear-gradient(180deg, #0b1220, #0f172a);
-			--auth-surface: rgba(2, 6, 23, 0.7);
-			--auth-border: rgba(148, 163, 184, 0.25);
-			--auth-text: #e2e8f0;
-			--auth-muted: rgba(226, 232, 240, 0.72);
-			--auth-brand: #60a5fa;
-			color-scheme: dark;
-		}
-	}
-
-	.auth__backdrop {
-		position: fixed;
-		inset: 0;
-		background-image: url(http://clfile.zggen.cn/20240301/cb59505e774a42899501d8d7f1360b75.jpg);
-		background-size: cover;
-		background-position: center;
-		filter: saturate(0.9) contrast(1.02);
-		opacity: 0.18;
-		pointer-events: none;
+		background-color: #dce5db;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='12' viewBox='0 0 20 12'%3E%3Cg fill-rule='evenodd'%3E%3Cg id='charlie-brown' fill='%2392aca6' fill-opacity='0.4'%3E%3Cpath d='M9.8 12L0 2.2V.8l10 10 10-10v1.4L10.2 12h-.4zm-4 0L0 6.2V4.8L7.2 12H5.8zm8.4 0L20 6.2V4.8L12.8 12h1.4zM9.8 0l.2.2.2-.2h-.4zm-4 0L10 4.2 14.2 0h-1.4L10 2.8 7.2 0H5.8z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+		color: #111827;
 	}
 
 	.auth__card {
 		position: relative;
 		width: min(440px, 100%);
-		border: 1px solid var(--auth-border);
-		border-radius: 16px;
-		background: var(--auth-surface);
-		backdrop-filter: blur(14px);
-		-webkit-backdrop-filter: blur(14px);
-		box-shadow: 0 18px 60px rgba(2, 6, 23, 0.14);
-		padding: 24px;
+		border: 1px solid #D1D5DB;
+		border-radius: 12px;
+		background: #F9FAFB;
+		box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+		padding: 40px;
 	}
 
 	.auth__header {
 		display: grid;
-		gap: 6px;
-		margin-bottom: 18px;
-	}
-
-	.auth__brand {
-		font-size: 12px;
-		letter-spacing: 0.12em;
-		text-transform: uppercase;
-		color: var(--auth-muted);
+		gap: 8px;
+		margin-bottom: 30px;
+		text-align: center;
 	}
 
 	.auth__title {
 		font-size: 24px;
-		line-height: 1.2;
+		font-weight: 600;
+		color: #111827;
 		margin: 0;
 	}
 
 	.auth__subtitle {
 		margin: 0;
-		font-size: 13px;
-		color: var(--auth-muted);
+		font-size: 14px;
+		color: #9CA3AF;
 	}
 
 	.auth__alert {
-		border: 1px solid rgba(185, 28, 28, 0.35);
-		background: rgba(185, 28, 28, 0.08);
-		color: var(--auth-text);
-		border-radius: 12px;
-		padding: 10px 12px;
-		margin-bottom: 12px;
+		border: 1px solid #F53F3F;
+		background: rgba(245, 63, 63, 0.05);
+		color: #F53F3F;
+		border-radius: 8px;
+		padding: 12px;
+		margin-bottom: 20px;
+		text-align: center;
 	}
 
 	.auth__alertLine {
@@ -315,79 +304,133 @@
 	.field {
 		display: grid;
 		gap: 8px;
-		margin-bottom: 14px;
+		margin-bottom: 20px;
 	}
 
 	.field__label {
-		font-size: 13px;
-		color: var(--auth-muted);
+		font-size: 14px;
+		font-weight: 500;
+		color: #374151;
 	}
 
 	.field__error {
 		font-size: 12px;
-		color: var(--auth-danger);
+		color: #F53F3F;
 	}
 
 	.field__control {
 		width: 100%;
 	}
 
-	:deep(.el-input__wrapper),
-	:deep(.el-select__wrapper) {
-		border-radius: 12px;
-		box-shadow: none !important;
-		border: 1px solid var(--auth-border);
-		background: rgba(255, 255, 255, 0.55);
-	}
+	.role_btn_group {
+		display: flex;
+		gap: 12px;
+		width: 100%;
 
-	@media (prefers-color-scheme: dark) {
-		:deep(.el-input__wrapper),
-		:deep(.el-select__wrapper) {
-			background: rgba(2, 6, 23, 0.35);
+		.role_btn {
+			flex: 1;
+			height: 40px;
+			display: grid;
+			place-items: center;
+			background: #FFFFFF;
+			border: 1px solid #D1D5DB;
+			border-radius: 8px;
+			color: #374151;
+			font-size: 14px;
+			cursor: pointer;
+			transition: all 0.2s ease;
+
+			&:hover {
+				border-color: #165DFF;
+				color: #165DFF;
+			}
+
+			&.active {
+				background: #165DFF;
+				border-color: #165DFF;
+				color: #FFFFFF;
+				font-weight: 600;
+				box-shadow: 0 4px 12px rgba(22, 93, 255, 0.2);
+			}
 		}
 	}
 
-	:deep(.el-input__wrapper.is-focus),
-	:deep(.el-select__wrapper.is-focused) {
-		border-color: var(--auth-brand);
-		box-shadow: 0 0 0 4px var(--auth-focus) !important;
+	:deep(.el-input__wrapper),
+	:deep(.el-select__wrapper) {
+		border-radius: 8px;
+		box-shadow: none !important;
+		border: 1px solid #D1D5DB;
+		background: #FFFFFF;
+		height: 40px;
+		&:hover {
+			border-color: #165DFF;
+		}
+		&.is-focus, &.is-focused {
+			border-color: #165DFF !important;
+			box-shadow: 0 0 0 2px rgba(22, 93, 255, 0.1) !important;
+		}
 	}
 
 	.auth__row {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin: 10px 0 6px;
+		margin: 10px 0 20px;
+		
+		.register_view {
+			display: flex;
+			gap: 15px;
+			.register_link {
+				font-size: 13px;
+				color: #165DFF;
+				cursor: pointer;
+				&:hover {
+					text-decoration: underline;
+					color: #4080FF;
+				}
+			}
+		}
 	}
 
 	.auth__checkbox {
 		:deep(.el-checkbox__label) {
-			color: var(--auth-muted);
+			color: #374151;
+			font-size: 14px;
+		}
+		:deep(.el-checkbox__input.is-checked .el-checkbox__inner) {
+			background-color: #165DFF;
+			border-color: #165DFF;
 		}
 	}
 
 	.auth__actions {
 		display: grid;
-		margin-top: 12px;
+		margin-top: 10px;
 	}
 
 	.auth__submit {
 		width: 100%;
-		border-radius: 12px;
+		border-radius: 8px;
 		height: 44px;
 		font-weight: 600;
+		background: #165DFF;
+		border-color: #165DFF;
+		font-size: 16px;
+		&:hover {
+			background: #4080FF;
+			border-color: #4080FF;
+		}
 	}
 
-	@media (max-width: 420px) {
+	@media (max-width: 480px) {
 		.auth {
 			padding: 16px;
 		}
 		.auth__card {
-			padding: 18px;
-			border-radius: 14px;
+			padding: 24px;
 		}
 		.auth__title {
-			font-size: 22px;
+			font-size: 20px;
 		}
 	}
 </style>

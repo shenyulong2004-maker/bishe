@@ -9,6 +9,11 @@
 								 type="number" 								:readonly="!isAdd||disabledForm.kaoshichengji?true:false" />
 						</el-form-item>
 					</el-col>
+					<el-col :span="24">
+						<el-form-item label="成绩等级">
+							<div>{{ getGradeLabel(form.kaoshichengji) }}</div>
+						</el-form-item>
+					</el-col>
 
 					<el-col :span="24">
 						<el-form-item label="学号" prop="xuehao">
@@ -91,6 +96,15 @@
 	//基础信息
 	const tableName = 'xueshengchengji'
 	const formName = '学生成绩'
+	const getGradeLabel = (score) => {
+		const s = Number(score)
+		if (!Number.isFinite(s)) return ''
+		if (s >= 90) return '优'
+		if (s >= 80) return '良'
+		if (s >= 70) return '中'
+		if (s >= 60) return '及格'
+		return '不及格'
+	}
 	//基础信息
 	//form表单
 	const form = ref({})

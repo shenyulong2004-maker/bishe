@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Date;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import javax.servlet.http.HttpServletRequest;
 
 import com.cl.utils.ValidatorUtils;
@@ -134,6 +135,9 @@ public class ExampaperController {
     public R save(@RequestBody ExampaperEntity exampaper, HttpServletRequest request){
     	exampaper.setId(new Date().getTime()+new Double(Math.floor(Math.random()*1000)).longValue());
     	//ValidatorUtils.validateEntity(exampaper);
+		if (StringUtils.isBlank(exampaper.getTijiaofangshi())) {
+			exampaper.setTijiaofangshi("在线答题");
+		}
         exampaperService.insert(exampaper);
         return R.ok();
     }
@@ -145,6 +149,9 @@ public class ExampaperController {
     public R add(@RequestBody ExampaperEntity exampaper, HttpServletRequest request){
     	exampaper.setId(new Date().getTime()+new Double(Math.floor(Math.random()*1000)).longValue());
     	//ValidatorUtils.validateEntity(exampaper);
+		if (StringUtils.isBlank(exampaper.getTijiaofangshi())) {
+			exampaper.setTijiaofangshi("在线答题");
+		}
         exampaperService.insert(exampaper);
         return R.ok();
     }
@@ -158,6 +165,9 @@ public class ExampaperController {
     @Transactional
     public R update(@RequestBody ExampaperEntity exampaper, HttpServletRequest request){
         //ValidatorUtils.validateEntity(exampaper);
+		if (StringUtils.isBlank(exampaper.getTijiaofangshi())) {
+			exampaper.setTijiaofangshi("在线答题");
+		}
         exampaperService.updateById(exampaper);//全部更新
         return R.ok();
     }

@@ -36,6 +36,7 @@ import com.cl.utils.PageUtils;
 import com.cl.utils.R;
 import com.cl.utils.MPUtil;
 import com.cl.utils.CommonUtil;
+import com.cl.utils.EncryptUtil;
 import java.io.IOException;
 
 /**
@@ -64,9 +65,13 @@ public class JiaoshiController {
 	@RequestMapping(value = "/login")
 	public R login(String username, String password, String captcha, HttpServletRequest request) {
 		JiaoshiEntity u = jiaoshiService.selectOne(new EntityWrapper<JiaoshiEntity>().eq("jiaoshigonghao", username));
-        if(u==null || !u.getJiaoshimima().equals(password)) {
+        if(u==null || !EncryptUtil.verifyPassword(password, u.getJiaoshimima())) {
             return R.error("账号或密码不正确");
         }
+		if (!EncryptUtil.isPasswordHashed(u.getJiaoshimima())) {
+			u.setJiaoshimima(EncryptUtil.hashPassword(password));
+			jiaoshiService.updateById(u);
+		}
 		String token = tokenService.generateToken(u.getId(), username,"jiaoshi",  "管理员" );
 		return R.ok().put("token", token);
 	}
@@ -84,6 +89,10 @@ public class JiaoshiController {
 		if(u!=null) {
 			return R.error("注册用户已存在");
 		}
+		if (!EncryptUtil.isValidPassword(jiaoshi.getJiaoshimima())) {
+			return R.error("密码格式不符合要求");
+		}
+		jiaoshi.setJiaoshimima(EncryptUtil.hashPassword(jiaoshi.getJiaoshimima()));
 		Long uId = new Date().getTime();
 		jiaoshi.setId(uId);
         jiaoshiService.insert(jiaoshi);
@@ -107,23 +116,47 @@ public class JiaoshiController {
     public R getCurrUser(HttpServletRequest request){
     	Long id = (Long)request.getSession().getAttribute("userId");
         JiaoshiEntity u = jiaoshiService.selectById(id);
+		sanitize(u);
         return R.ok().put("data", u);
     }
     
     /**
      * 密码重置
      */
-    @IgnoreAuth
 	@RequestMapping(value = "/resetPass")
-    public R resetPass(String username, HttpServletRequest request){
+    public R resetPass(String username, @RequestParam(required = false) String password, HttpServletRequest request){
+		Object roleObj = request.getSession().getAttribute("role");
+		if (roleObj == null || !"管理员".equals(String.valueOf(roleObj))) {
+			return R.error(403, "无权限");
+		}
     	JiaoshiEntity u = jiaoshiService.selectOne(new EntityWrapper<JiaoshiEntity>().eq("jiaoshigonghao", username));
     	if(u==null) {
     		return R.error("账号不存在");
     	}
-        u.setJiaoshimima("123456");
+		String nextPassword = (password == null || password.trim().isEmpty()) ? EncryptUtil.generateRandomPassword() : password.trim();
+		if (!EncryptUtil.isValidPassword(nextPassword)) {
+			return R.error("密码格式不符合要求");
+		}
+        u.setJiaoshimima(EncryptUtil.hashPassword(nextPassword));
         jiaoshiService.updateById(u);
-        return R.ok("密码已重置为：123456");
+        return R.ok().put("data", nextPassword);
     }
+
+	@RequestMapping(value = "/updatePassword")
+	public R updatePassword(@RequestBody Map<String, Object> body, HttpServletRequest request) {
+		Long id = (Long) request.getSession().getAttribute("userId");
+		if (id == null) return R.error(401, "请先登录");
+		String oldPassword = body == null ? null : (String) body.get("oldPassword");
+		String newPassword = body == null ? null : (String) body.get("newPassword");
+		if (oldPassword == null || newPassword == null) return R.error("参数错误");
+		if (!EncryptUtil.isValidPassword(newPassword)) return R.error("密码格式不符合要求");
+		JiaoshiEntity u = jiaoshiService.selectById(id);
+		if (u == null) return R.error("账号不存在");
+		if (!EncryptUtil.verifyPassword(oldPassword, u.getJiaoshimima())) return R.error("原密码不正确");
+		u.setJiaoshimima(EncryptUtil.hashPassword(newPassword));
+		jiaoshiService.updateById(u);
+		return R.ok();
+	}
 
 
     /**
@@ -135,6 +168,7 @@ public class JiaoshiController {
         EntityWrapper<JiaoshiEntity> ew = new EntityWrapper<JiaoshiEntity>();
 
 		PageUtils page = jiaoshiService.queryPage(params, MPUtil.sort(MPUtil.between(MPUtil.likeOrEq(ew, jiaoshi), params), params));
+		sanitizePage(page);
 
         return R.ok().put("data", page);
     }
@@ -149,6 +183,7 @@ public class JiaoshiController {
         EntityWrapper<JiaoshiEntity> ew = new EntityWrapper<JiaoshiEntity>();
 
 		PageUtils page = jiaoshiService.queryPage(params, MPUtil.sort(MPUtil.between(MPUtil.likeOrEq(ew, jiaoshi), params), params));
+		sanitizePage(page);
         return R.ok().put("data", page);
     }
 
@@ -159,7 +194,9 @@ public class JiaoshiController {
     public R list( JiaoshiEntity jiaoshi){
        	EntityWrapper<JiaoshiEntity> ew = new EntityWrapper<JiaoshiEntity>();
       	ew.allEq(MPUtil.allEQMapPre( jiaoshi, "jiaoshi")); 
-        return R.ok().put("data", jiaoshiService.selectListView(ew));
+		Object data = jiaoshiService.selectListView(ew);
+		sanitizeList(data);
+        return R.ok().put("data", data);
     }
 
 	 /**
@@ -170,6 +207,9 @@ public class JiaoshiController {
         EntityWrapper< JiaoshiEntity> ew = new EntityWrapper< JiaoshiEntity>();
  		ew.allEq(MPUtil.allEQMapPre( jiaoshi, "jiaoshi")); 
 		JiaoshiView jiaoshiView =  jiaoshiService.selectView(ew);
+		if (jiaoshiView != null) {
+			jiaoshiView.setJiaoshimima(null);
+		}
 		return R.ok("查询教师成功").put("data", jiaoshiView);
     }
 	
@@ -180,6 +220,7 @@ public class JiaoshiController {
     public R info(@PathVariable("id") Long id){
         JiaoshiEntity jiaoshi = jiaoshiService.selectById(id);
 		jiaoshi = jiaoshiService.selectView(new EntityWrapper<JiaoshiEntity>().eq("id", id));
+		sanitize(jiaoshi);
         return R.ok().put("data", jiaoshi);
     }
 
@@ -191,6 +232,7 @@ public class JiaoshiController {
     public R detail(@PathVariable("id") Long id){
         JiaoshiEntity jiaoshi = jiaoshiService.selectById(id);
 		jiaoshi = jiaoshiService.selectView(new EntityWrapper<JiaoshiEntity>().eq("id", id));
+		sanitize(jiaoshi);
         return R.ok().put("data", jiaoshi);
     }
     
@@ -208,6 +250,10 @@ public class JiaoshiController {
 		if(u!=null) {
 			return R.error("用户已存在");
 		}
+		if (!EncryptUtil.isValidPassword(jiaoshi.getJiaoshimima())) {
+			return R.error("密码格式不符合要求");
+		}
+		jiaoshi.setJiaoshimima(EncryptUtil.hashPassword(jiaoshi.getJiaoshimima()));
 		jiaoshi.setId(new Date().getTime());
         jiaoshiService.insert(jiaoshi);
         return R.ok();
@@ -224,6 +270,10 @@ public class JiaoshiController {
 		if(u!=null) {
 			return R.error("用户已存在");
 		}
+		if (!EncryptUtil.isValidPassword(jiaoshi.getJiaoshimima())) {
+			return R.error("密码格式不符合要求");
+		}
+		jiaoshi.setJiaoshimima(EncryptUtil.hashPassword(jiaoshi.getJiaoshimima()));
 		jiaoshi.setId(new Date().getTime());
         jiaoshiService.insert(jiaoshi);
         return R.ok();
@@ -238,9 +288,34 @@ public class JiaoshiController {
     @Transactional
     public R update(@RequestBody JiaoshiEntity jiaoshi, HttpServletRequest request){
         //ValidatorUtils.validateEntity(jiaoshi);
+		if (jiaoshi.getJiaoshimima() != null && !jiaoshi.getJiaoshimima().trim().isEmpty() && !EncryptUtil.isPasswordHashed(jiaoshi.getJiaoshimima())) {
+			if (!EncryptUtil.isValidPassword(jiaoshi.getJiaoshimima())) return R.error("密码格式不符合要求");
+			jiaoshi.setJiaoshimima(EncryptUtil.hashPassword(jiaoshi.getJiaoshimima()));
+		}
         jiaoshiService.updateById(jiaoshi);//全部更新
         return R.ok();
     }
+
+	private void sanitize(JiaoshiEntity u) {
+		if (u == null) return;
+		u.setJiaoshimima(null);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void sanitizePage(PageUtils page) {
+		if (page == null || page.getList() == null) return;
+		for (Object row : page.getList()) {
+			if (row instanceof JiaoshiEntity) sanitize((JiaoshiEntity) row);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void sanitizeList(Object data) {
+		if (!(data instanceof java.util.List)) return;
+		for (Object row : (java.util.List<Object>) data) {
+			if (row instanceof JiaoshiEntity) sanitize((JiaoshiEntity) row);
+		}
+	}
 
 
 

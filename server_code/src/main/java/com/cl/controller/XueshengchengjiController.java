@@ -351,11 +351,12 @@ public class XueshengchengjiController {
      * 分段统计
      */
     @RequestMapping("/sectionStat/kaoshichengji")
-    @IgnoreAuth
     public R kaoshichengjiSectionStat(HttpServletRequest request) {
         Map<String, Object> params = new HashMap<String, Object>();
         EntityWrapper<XueshengchengjiEntity> ew = new EntityWrapper<XueshengchengjiEntity>();
-        String tableName = request.getSession().getAttribute("tableName").toString();
+        Object tableNameObj = request.getSession().getAttribute("tableName");
+        if (tableNameObj == null) return R.error(401, "请先登录");
+        String tableName = tableNameObj.toString();
         if(tableName.equals("xuesheng")) {
             ew.eq("xuehao", (String)request.getSession().getAttribute("username"));
         }

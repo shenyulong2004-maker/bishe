@@ -215,6 +215,11 @@
 	init()
 </script>
 <style lang="scss" scoped>
+	.home {
+		background-color: #dce5db;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='12' viewBox='0 0 20 12'%3E%3Cg fill-rule='evenodd'%3E%3Cg id='charlie-brown' fill='%2392aca6' fill-opacity='0.4'%3E%3Cpath d='M9.8 12L0 2.2V.8l10 10 10-10v1.4L10.2 12h-.4zm-4 0L0 6.2V4.8L7.2 12H5.8zm8.4 0L20 6.2V4.8L12.8 12h1.4zM9.8 0l.2.2.2-.2h-.4zm-4 0L10 4.2 14.2 0h-1.4L10 2.8 7.2 0H5.8z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+		min-height: 100vh;
+	}
 	/* 头部 */
 	.index_top {
 		padding: 0px calc((100% - 1200px)/2);
@@ -328,7 +333,7 @@
 		border-radius: 4px;
 		padding: 50px calc((100% - 1200px)/2);
 		margin: 100px auto 0;
-		background: url(http://clfile.zggen.cn/20240229/20f56bb671bf4d69adccda4ae75cd79f.jpg) no-repeat center top / 100% 100%;
+		background: transparent;
 		display: block;
 		width: 100%;
 		height: 600px;
@@ -382,7 +387,7 @@
 
 	.contain_view {
 		margin: 0;
-		background: url(http://clfile.zggen.cn/20240229/35242e5664184ac7a4048c545ad1a089.jpg);
+		background: transparent;
 		position: inherit;
 		height: 100vh;
 	}

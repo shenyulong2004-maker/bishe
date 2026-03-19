@@ -52,6 +52,19 @@
 
 		router.addRoute(arr)
 	}
+	const viewModules = {
+		'config': () => import('../../views/config/list.vue'),
+		'exampaper': () => import('../../views/exampaper/list.vue'),
+		'jiaoshi': () => import('../../views/jiaoshi/list.vue'),
+		'news': () => import('../../views/news/list.vue'),
+		'users': () => import('../../views/users/list.vue'),
+		'xuesheng': () => import('../../views/xuesheng/list.vue'),
+		'xueshengchengji': () => import('../../views/xueshengchengji/list.vue'),
+		'exam/examfailrecord': () => import('../../views/exam/examfailrecord/list.vue'),
+		'exam/exampaperlist': () => import('../../views/exam/exampaperlist/list.vue'),
+		'exam/examquestion': () => import('../../views/exam/examquestion/list.vue'),
+		'exam/examrecord': () => import('../../views/exam/examrecord/list.vue'),
+	}
 	const makeMenu = (menu) => {
 		let brr = {
 			path: '/1',
@@ -60,10 +73,11 @@
 		}
 		for (let x in menu) {
 			for (let i in menu[x].child) {
+				const tableName = menu[x].child[i].tableName
 				brr.children.push({
-					path: '/' + menu[x].child[i].tableName,
+					path: '/' + tableName,
 					name: menu[x].child[i].menu,
-					component: () => import(`../../views/${menu[x].child[i].tableName}/list.vue`)
+					component: viewModules[tableName]
 				})
 			}
 		}
@@ -80,7 +94,7 @@
 	.el-main {
 		padding: 0;
 		margin: 0 0 0 210px;
-		background: url(http://clfile.zggen.cn/20231120/3003369554f34c828841c05292b6461a.jpg) no-repeat center top / 100% 100%;
+		background: transparent;
 		min-height: 100vh;
 	}
 	.main_view-collapse {
@@ -95,11 +109,11 @@
 	.index-aside {
 		z-index: 9;
 		overflow: hidden;
-		top: 70px;
+		top: 0;
 		left: 0;
-		background: url(http://clfile.zggen.cn/20231120/3003369554f34c828841c05292b6461a.jpg) no-repeat left top / auto 100%;
+		background: transparent;
 		width: 210px;
-		border-color: rgba(254, 182, 203, 0.5);
+		border-color: #E5E7EB;
 		border-width: 0 1px 0 0;
 		position: fixed;
 		border-style: solid;

@@ -3,34 +3,28 @@ package com.cl.controller;
 
 
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cl.annotation.IgnoreAuth;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.cl.entity.TokenEntity;
 import com.cl.entity.UsersEntity;
 import com.cl.service.TokenService;
 import com.cl.service.UsersService;
-import com.cl.utils.CommonUtil;
+import com.cl.utils.EncryptUtil;
 import com.cl.utils.MPUtil;
 import com.cl.utils.PageUtils;
 import com.cl.utils.R;
-import com.cl.utils.ValidatorUtils;
 
 /**
  * 登录相关
@@ -52,8 +46,12 @@ public class UsersController{
 	@RequestMapping(value = "/login")
 	public R login(String username, String password, String captcha, HttpServletRequest request) {
 		UsersEntity user = userService.selectOne(new EntityWrapper<UsersEntity>().eq("username", username));
-		if(user==null || !user.getPassword().equals(password)) {
+		if(user==null || !EncryptUtil.verifyPassword(password, user.getPassword())) {
 			return R.error("账号或密码不正确");
+		}
+		if (!EncryptUtil.isPasswordHashed(user.getPassword())) {
+			user.setPassword(EncryptUtil.hashPassword(password));
+			userService.updateById(user);
 		}
 		String token = tokenService.generateToken(user.getId(),username, "users", user.getRole());
 		return R.ok().put("token", token);
@@ -69,6 +67,10 @@ public class UsersController{
     	if(userService.selectOne(new EntityWrapper<UsersEntity>().eq("username", user.getUsername())) !=null) {
     		return R.error("用户已存在");
     	}
+		if (!EncryptUtil.isValidPassword(user.getPassword())) {
+			return R.error("密码格式不符合要求");
+		}
+		user.setPassword(EncryptUtil.hashPassword(user.getPassword()));
         userService.insert(user);
         return R.ok();
     }
@@ -85,17 +87,40 @@ public class UsersController{
 	/**
      * 密码重置
      */
-    @IgnoreAuth
 	@RequestMapping(value = "/resetPass")
-    public R resetPass(String username, HttpServletRequest request){
+    public R resetPass(String username, @RequestParam(required = false) String password, HttpServletRequest request){
+		Object roleObj = request.getSession().getAttribute("role");
+		if (roleObj == null || !"管理员".equals(String.valueOf(roleObj))) {
+			return R.error(403, "无权限");
+		}
     	UsersEntity user = userService.selectOne(new EntityWrapper<UsersEntity>().eq("username", username));
     	if(user==null) {
     		return R.error("账号不存在");
     	}
-    	user.setPassword("123456");
-        userService.update(user,null);
-        return R.ok("密码已重置为：123456");
+		String nextPassword = (password == null || password.trim().isEmpty()) ? EncryptUtil.generateRandomPassword() : password.trim();
+		if (!EncryptUtil.isValidPassword(nextPassword)) {
+			return R.error("密码格式不符合要求");
+		}
+    	user.setPassword(EncryptUtil.hashPassword(nextPassword));
+        userService.updateById(user);
+        return R.ok().put("data", nextPassword);
     }
+
+	@RequestMapping(value = "/updatePassword")
+	public R updatePassword(@RequestBody Map<String, Object> body, HttpServletRequest request) {
+		Long id = (Long) request.getSession().getAttribute("userId");
+		if (id == null) return R.error(401, "请先登录");
+		String oldPassword = body == null ? null : (String) body.get("oldPassword");
+		String newPassword = body == null ? null : (String) body.get("newPassword");
+		if (oldPassword == null || newPassword == null) return R.error("参数错误");
+		if (!EncryptUtil.isValidPassword(newPassword)) return R.error("密码格式不符合要求");
+		UsersEntity user = userService.selectById(id);
+		if (user == null) return R.error("账号不存在");
+		if (!EncryptUtil.verifyPassword(oldPassword, user.getPassword())) return R.error("原密码不正确");
+		user.setPassword(EncryptUtil.hashPassword(newPassword));
+		userService.updateById(user);
+		return R.ok();
+	}
 	
 	/**
      * 列表
@@ -104,6 +129,7 @@ public class UsersController{
     public R page(@RequestParam Map<String, Object> params,UsersEntity user){
         EntityWrapper<UsersEntity> ew = new EntityWrapper<UsersEntity>();
     	PageUtils page = userService.queryPage(params, MPUtil.sort(MPUtil.between(MPUtil.allLike(ew, user), params), params));
+		sanitizePage(page);
         return R.ok().put("data", page);
     }
 
@@ -114,7 +140,9 @@ public class UsersController{
     public R list( UsersEntity user){
        	EntityWrapper<UsersEntity> ew = new EntityWrapper<UsersEntity>();
       	ew.allEq(MPUtil.allEQMapPre( user, "user")); 
-        return R.ok().put("data", userService.selectListView(ew));
+		Object data = userService.selectListView(ew);
+		sanitizeList(data);
+        return R.ok().put("data", data);
     }
 
     /**
@@ -123,6 +151,7 @@ public class UsersController{
     @RequestMapping("/info/{id}")
     public R info(@PathVariable("id") String id){
         UsersEntity user = userService.selectById(id);
+		sanitizeUser(user);
         return R.ok().put("data", user);
     }
     
@@ -133,6 +162,7 @@ public class UsersController{
     public R getCurrUser(HttpServletRequest request){
     	Long id = (Long)request.getSession().getAttribute("userId");
         UsersEntity user = userService.selectById(id);
+		sanitizeUser(user);
         return R.ok().put("data", user);
     }
 
@@ -145,6 +175,10 @@ public class UsersController{
     	if(userService.selectOne(new EntityWrapper<UsersEntity>().eq("username", user.getUsername())) !=null) {
     		return R.error("用户已存在");
     	}
+		if (!EncryptUtil.isValidPassword(user.getPassword())) {
+			return R.error("密码格式不符合要求");
+		}
+		user.setPassword(EncryptUtil.hashPassword(user.getPassword()));
         userService.insert(user);
         return R.ok();
     }
@@ -159,9 +193,34 @@ public class UsersController{
     	if(u!=null && u.getId()!=user.getId() && u.getUsername().equals(user.getUsername())) {
     		return R.error("用户名已存在。");
     	}
+		if (user.getPassword() != null && !user.getPassword().trim().isEmpty() && !EncryptUtil.isPasswordHashed(user.getPassword())) {
+			if (!EncryptUtil.isValidPassword(user.getPassword())) return R.error("密码格式不符合要求");
+			user.setPassword(EncryptUtil.hashPassword(user.getPassword()));
+		}
         userService.updateById(user);//全部更新
         return R.ok();
     }
+
+	private void sanitizeUser(UsersEntity user) {
+		if (user == null) return;
+		user.setPassword(null);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void sanitizePage(PageUtils page) {
+		if (page == null || page.getList() == null) return;
+		for (Object row : page.getList()) {
+			if (row instanceof UsersEntity) sanitizeUser((UsersEntity) row);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void sanitizeList(Object data) {
+		if (!(data instanceof java.util.List)) return;
+		for (Object row : (java.util.List<Object>) data) {
+			if (row instanceof UsersEntity) sanitizeUser((UsersEntity) row);
+		}
+	}
 
     /**
      * 删除

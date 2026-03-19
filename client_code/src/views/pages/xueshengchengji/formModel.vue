@@ -39,7 +39,7 @@
 				</div>
 				<div class="info_item">
 					<div class="info_label">考试成绩</div>
-					<div  class="info_text" >{{detail.kaoshichengji}}</div>
+					<div  class="info_text" >{{detail.kaoshichengji}}（{{getGradeLabel(detail.kaoshichengji)}}）</div>
 				</div>
 				<div class="info_item">
 					<div class="info_label">学号</div>
@@ -100,6 +100,15 @@
 	//基础信息
 	const tableName = 'xueshengchengji'
 	const formName = '学生成绩'
+	const getGradeLabel = (score) => {
+		const s = Number(score)
+		if (!Number.isFinite(s)) return ''
+		if (s >= 90) return '优'
+		if (s >= 80) return '良'
+		if (s >= 70) return '中'
+		if (s >= 60) return '及格'
+		return '不及格'
+	}
 	//基础信息
 	const breadList = ref([{
 		name: formName

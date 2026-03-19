@@ -27,11 +27,6 @@
 							</el-form-item>
 						</el-col>
 						<el-col :span="12">
-							<el-form-item prop="jiaoshimima" label="教师密码">
-								<el-input class="list_inp" v-model="userForm.jiaoshimima" placeholder="教师密码" type="password"></el-input>
-							</el-form-item>
-						</el-col>
-						<el-col :span="12">
 							<el-form-item prop="jiaoshixingming" label="教师姓名">
 								<el-input class="list_inp" v-model="userForm.jiaoshixingming" placeholder="教师姓名" ></el-input>
 							</el-form-item>
@@ -227,7 +222,6 @@
 			{required: true,message: '请输入',trigger: 'blur'}, 
 		],
 		jiaoshimima: [
-			{required: true,message: '请输入',trigger: 'blur'}, 
 		],
 		jiaoshixingming: [
 			{required: true,message: '请输入',trigger: 'blur'}, 
@@ -284,19 +278,17 @@
 	const updatePassword = async ()=>{
 		passwordFormRef.value.validate(async (valid) => {
 			if (valid) {
-				if(passwordForm.value.mima != userForm.value.jiaoshimima){
-					context?.$toolUtil.message('原密码不正确', 'error')
-					return false
-				}
 				if(passwordForm.value.newmima != passwordForm.value.newmima2){
 					context?.$toolUtil.message('两次密码输入不正确', 'error')
 					return false
 				}
-				userForm.value.jiaoshimima = passwordForm.value.newmima
 				context?.$http({
-					url: `${tableName}/update`,
+					url: `${tableName}/updatePassword`,
 					method: 'post',
-					data: userForm.value
+					data: {
+						oldPassword: passwordForm.value.mima,
+						newPassword: passwordForm.value.newmima
+					}
 				}).then(res => {
 					context?.$toolUtil.message('更新成功', 'success', () => {
 						passwordForm.value = {

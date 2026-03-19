@@ -77,7 +77,7 @@ public class ConfigController{
      */
     @RequestMapping("/info")
     public R infoByName(@RequestParam String name){
-        ConfigEntity config = configService.selectOne(new EntityWrapper<ConfigEntity>().eq("name", "faceFile"));
+        ConfigEntity config = configService.selectOne(new EntityWrapper<ConfigEntity>().eq("name", name));
         return R.ok().put("data", config);
     }
     

@@ -63,6 +63,9 @@ CREATE TABLE `exampaper` (
   `name` varchar(200) NOT NULL COMMENT '试卷名称',
   `time` int(11) NOT NULL COMMENT '考试时长(分钟)',
   `status` varchar(200) DEFAULT NULL COMMENT '试卷状态',
+  `tijiaofangshi` varchar(50) DEFAULT '在线答题' COMMENT '提交方式（在线答题/pdf附件/线下提交）',
+  `pdfurl` varchar(255) DEFAULT NULL COMMENT 'PDF附件',
+  `xianxiashuoming` text DEFAULT NULL COMMENT '线下提交说明',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='试卷管理';
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -73,7 +76,7 @@ CREATE TABLE `exampaper` (
 
 LOCK TABLES `exampaper` WRITE;
 /*!40000 ALTER TABLE `exampaper` DISABLE KEYS */;
-INSERT INTO `exampaper` VALUES (1,'2024-03-05 13:53:21','试卷1',120,'1');
+INSERT INTO `exampaper` VALUES (1,'2024-03-05 13:53:21','试卷1',120,'1','在线答题',NULL,NULL);
 /*!40000 ALTER TABLE `exampaper` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -360,4 +363,4 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2024-03-09  8:17:34
-information_schema
+iusersusersxueshengxueshengxueshengchengjixueshengchengjinformation_schema

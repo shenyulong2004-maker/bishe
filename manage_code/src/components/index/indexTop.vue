@@ -111,17 +111,18 @@
 	.top_view {
 		z-index: 9;
 		display: flex;
-		border-color: rgba(254, 182, 203, 0.5);
+		border-color: #E5E7EB;
 		top: 0;
 		left: 0;
-		background: url(http://clfile.zggen.cn/20231120/3003369554f34c828841c05292b6461a.jpg) fixed no-repeat left top / cover,#ac699c;
+		background: transparent;
 		width: 100%;
 		justify-content: flex-start;
 		border-width: 0 0 1px;
 		align-items: center;
 		position: fixed;
 		border-style: solid;
-		height: 70px;
+		height: 60px;
+		box-shadow: 0 1px 4px rgba(0,0,0,0.02);
 		// 左边盒子
 		.top_left_view {
 			display: flex;
@@ -131,9 +132,15 @@
 			// 折叠按钮盒子
 			.fold_view {
 				padding: 0 15px;
-				display: none;
+				display: flex;
+				cursor: pointer;
 				// 图标
 				.icons {
+					color: #374151;
+					font-size: 20px;
+				}
+				&:hover {
+					background: #F3F4F6;
 				}
 			}
 		}
@@ -141,15 +148,14 @@
 		.projectTitle{
 			padding: 0 20px;
 			margin: 0 0 0 10px;
-			color: #fff;
-			font-weight: 300;
+			color: #111827;
+			font-weight: 600;
 			width: auto;
-			font-size: 24px;
+			font-size: 20px;
 			line-height: 100%;
 		}
 		// 右部盒子
 		.top_right_view{
-			top: 5px;
 			display: flex;
 			width: auto;
 			justify-content: flex-end;
@@ -160,13 +166,12 @@
 			// 头像盒子
 			.avatar-container {
 				cursor: pointer;
-				margin: 0 30px 0 0;
-				color: #fff;
+				margin: 0 20px 0 0;
+				color: #374151;
 				display: flex;
 				align-items: center;
-				height: 50px;
+				height: 100%;
 				.avatar-wrapper {
-					margin: 5px 0 0;
 					display: flex;
 					position: relative;
 					align-items: center;
@@ -174,20 +179,22 @@
 					.nickname {
 						cursor: pointer;
 						margin: 0 10px 0 0;
-						color: #fff;
-						line-height: 44px;
+						color: #374151;
+						font-size: 14px;
 					}
 					// 头像
 					.user-avatar {
 						cursor: pointer;
-						border-radius: 100%;
+						border-radius: 50%;
 						margin: 0 4px 0 0;
-						width: 40px;
-						height: 40px;
+						width: 32px;
+						height: 32px;
+						border: 1px solid #E5E7EB;
 					}
 					// 图标
 					.el-icon--right {
-						color: #fff;
+						color: #9CA3AF;
+						font-size: 12px;
 					}
 				}
 			}
@@ -196,16 +203,18 @@
 	// 下拉盒子
 	.el-dropdown-menu{
 		background: #fff;
-		min-width: 100px;
+		border: 1px solid #E5E7EB;
+		padding: 4px 0;
 		// 下拉盒子itme
 		:deep(.el-dropdown-menu__item){
-			color: #555;
-			background: none;
+			color: #374151;
+			font-size: 14px;
+			padding: 8px 16px;
 		}
 		// item悬浮
 		:deep(.el-dropdown-menu__item:hover){
-			color: #fff;
-			background: #19a97b;
+			color: #165DFF;
+			background: #F3F4F6;
 		}
 	}
 	

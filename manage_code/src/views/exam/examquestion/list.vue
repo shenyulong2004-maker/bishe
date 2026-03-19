@@ -325,488 +325,208 @@
 </script>
 
 <style lang="scss" scoped>
-	// 操作盒子
+	/* 总盒子 */
+	.app-contain {
+		padding: 20px;
+		background: transparent;
+		min-height: calc(100vh - 64px);
+	}
+
+	/* 搜索和按钮盒子 */
 	.list_search_view {
-		margin: 0 0 20px;
+		background: #EFF8FF;
+		padding: 20px;
+		border-radius: 8px;
+		border: 1px solid #E5E7EB;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+		margin-bottom: 20px;
 		display: flex;
-		justify-content: space-between;
-		flex-wrap: wrap;
-		// 搜索盒子
+		flex-direction: column;
+		gap: 20px;
+
+		/* 搜索表单 */
 		.search_form {
 			display: flex;
+			flex-wrap: wrap;
 			align-items: center;
-			order: 2;
-			// 子盒子
+			gap: 15px;
+
 			.search_view {
-				margin: 0 10px 0 0;
 				display: flex;
 				align-items: center;
-				// 搜索label
-				.search_label {
-					margin: 0 10px 0 0;
-					color: #fff;
-					background: none;
-					font-weight: 500;
-					display: inline-block;
-					width: auto;
-					font-size: 14px;
-					line-height: 40px;
-					text-align: right;
-					min-width: 100px;
-					height: 40px;
-				}
-				// 搜索item
-				.search_box {
-					display: inline-block;
-					width: auto;
-					// 输入框
-					:deep(.search_inp) {
-						border: 1px solid rgba(0, 0, 0, 0.1);
-						border-radius: 4px;
-						padding: 0 10px;
-						color: #fff;
-						background: rgba(0, 0, 0, 0.1);
-						width: auto;
-						line-height: 34px;
-						box-sizing: border-box;
-						//去掉默认样式
-						.el-input__wrapper{
-							border: none;
-							box-shadow: none;
-							background: none;
-							border-radius: 0;
-							height: 100%;
-							padding: 0;
-						}
-						.is-focus {
-							box-shadow: none !important;
-						}
-					}
-				}
-			}
-			// 搜索按钮盒子
-			.search_btn_view {
-				width: 20%;
-				display: flex;
-				padding: 0 20px;
 
-				// 搜索按钮
-				.search_btn {
-					border: 1px solid #357ebd;
-					cursor: pointer;
-					border-radius: 4px;
-					padding: 0 24px;
-					color: #fff;
-					background: rgba(66, 139, 202, 0.45);
-					width: auto;
+				.search_label {
 					font-size: 14px;
+					color: #374151;
+					margin-right: 10px;
+					white-space: nowrap;
+				}
+
+				.search_box {
+					width: 200px;
+
+					:deep(.el-input__wrapper) {
+						background-color: #ffffff;
+						box-shadow: 0 0 0 1px #D1D5DB inset;
+						&:hover {
+							box-shadow: 0 0 0 1px #165DFF inset;
+						}
+						&.is-focus {
+							box-shadow: 0 0 0 1px #165DFF inset !important;
+						}
+					}
+				}
+			}
+
+			.search_btn_view {
+				.search_btn {
+					background: #165DFF;
+					border-color: #165DFF;
+					padding: 0 24px;
 					height: 36px;
-				}
-				// 搜索按钮-悬浮
-				.search_btn:hover {
-					border: 1px solid #357ebd;
-					background: rgba(66, 139, 202, 0.45);
+					&:hover {
+						background: #4080FF;
+						border-color: #4080FF;
+					}
 				}
 			}
 		}
-		//头部按钮盒子
+
+		/* 顶部操作按钮 */
 		.btn_view {
-			margin: 0;
 			display: flex;
-			// 新增
+			gap: 10px;
+
+			:deep(.el-button) {
+				padding: 0 20px;
+				height: 36px;
+				border-radius: 4px;
+			}
+			
 			:deep(.el-button--success) {
-				border: 1px solid #357ebd;
-				cursor: pointer;
-				border-radius: 3px;
-				padding: 0 24px;
-				margin: 0 10px 0 0;
-				outline: none;
-				color: #fff;
-				background: rgba(66, 139, 202, 0.45);
-				width: auto;
-				font-size: 14px;
-				height: 36px;
+				background: #00B42A;
+				border-color: #00B42A;
+				&:hover {
+					background: #23C343;
+					border-color: #23C343;
+				}
 			}
-			// 新增-悬浮
-			:deep(.el-button--success:hover) {
-				background: rgba(66, 139, 202, 0.35);
-			}
-			// 打印
-			:deep(.el-button--primary) {
-				border: 1px solid #4cae4c;
-				cursor: pointer;
-				border-radius: 3px;
-				padding: 0 24px;
-				margin: 0 10px 0 0;
-				outline: none;
-				color: #fff;
-				background: rgba(92, 184, 92, 0.55);
-				width: auto;
-				font-size: 14px;
-				height: 36px;
-			}
-			// 打印-悬浮
-			:deep(.el-button--primary:hover) {
-				background: rgba(92, 184, 92, 0.45);
-			}
-			// 删除
+			
 			:deep(.el-button--danger) {
-				border: 1px solid #d43f3a;
-				cursor: pointer;
-				border-radius: 3px;
-				padding: 0 24px;
-				margin: 0 10px 0 0;
-				outline: none;
-				color: #fff;
-				background: rgba(217, 83, 79, 0.55);
-				width: auto;
-				font-size: 14px;
-				height: 36px;
+				background: #F53F3F;
+				border-color: #F53F3F;
+				&:hover {
+					background: #F76560;
+					border-color: #F76560;
+				}
 			}
-			// 删除-悬浮
-			:deep(.el-button--danger:hover) {
-				background: rgba(217, 83, 79, 0.45);
-			}
-			// 导出
+			
 			:deep(.el-button--warning) {
-				border: 1px solid #eea236;
-				cursor: pointer;
-				border-radius: 3px;
-				padding: 0 24px;
-				margin: 0 10px 0 0;
-				outline: none;
-				color: #fff;
-				background: rgba(240, 173, 78, 0.55);
-				width: auto;
-				font-size: 14px;
-				height: 36px;
-			}
-			// 导出-悬浮
-			:deep(.el-button--warning:hover) {
-				background: rgba(240, 173, 78, 0.45);
-			}
-		}
-	}
-	// 表格样式
-	.el-table {
-		border-radius: 0px;
-		padding: 0;
-		background: rgba(0, 0, 0, 0.25);
-		width: 100%;
-		border-color: rgba(254, 182, 203, 0.5);
-		border-width: 1px 0 0 1px;
-		border-style: solid;
-		:deep(.el-table__header-wrapper) {
-			thead {
-				color: #fff;
-				font-weight: 500;
-				width: 100%;
-				tr {
-					background: rgba(0, 0, 0, 0.1);
-					th {
-						padding: 4px 0;
-						background: none;
-						border-color: rgba(254, 182, 203, 0.5);
-						border-width: 0 0px 1px 0;
-						border-style: solid;
-						text-align: left;
-						.cell {
-							padding: 0 10px;
-							word-wrap: normal;
-							word-break: break-all;
-							white-space: normal;
-							font-weight: bold;
-							display: inline-block;
-							vertical-align: middle;
-							width: 100%;
-							line-height: 24px;
-							position: relative;
-							text-overflow: ellipsis;
-						}
-					}
+				background: #FF7D00;
+				border-color: #FF7D00;
+				&:hover {
+					background: #FF9A2E;
+					border-color: #FF9A2E;
 				}
 			}
-		}
-		:deep(.el-table__body-wrapper) {
-			tbody {
-				width: 100%;
-				tr {
-					background: none;
-					td {
-						padding: 6px 0;
-						color: #eee;
-						background: none;
-						border-color: #d2d2d2;
-						border-width: 0 0px 0px 0;
-						border-style: solid;
-						text-align: left;
-						.cell {
-							padding: 0 10px;
-							overflow: hidden;
-							word-break: break-all;
-							white-space: normal;
-							line-height: 24px;
-							text-overflow: ellipsis;
-							// 编辑
-							.el-button--primary {
-								border: 1px solid #d58512;
-								cursor: pointer;
-								border-radius: 4px;
-								padding: 5px 10px;
-								margin: 0 6px 6px 0;
-								color: #fff;
-								background: rgba(240, 173, 78, 0.45);
-								width: auto;
-								font-size: 12px;
-								height: auto;
-							}
-							// 编辑-悬浮
-							.el-button--primary:hover {
-							}
-							// 详情
-							.el-button--info {
-								border: 1px solid #357ebd;
-								cursor: pointer;
-								border-radius: 3px;
-								padding: 5px 10px;
-								margin: 0 6px 6px 0;
-								color: #fff;
-								background: rgba(66, 139, 202, 0.55);
-								width: auto;
-								font-size: 12px;
-								height: auto;
-							}
-							// 详情-悬浮
-							.el-button--info:hover {
-							}
-							// 删除
-							.el-button--danger {
-								border: 1px solid #ac2925;
-								cursor: pointer;
-								border-radius: 3px;
-								padding: 5px 10px;
-								margin: 0 6px 6px 0;
-								color: #fff;
-								background: rgba(217, 83, 79, 0.45);
-								width: auto;
-								font-size: 12px;
-								height: auto;
-							}
-							// 删除-悬浮
-							.el-button--danger:hover {
-							}
-						}
-					}
-				}
-				tr.el-table__row--striped {
-					td {
-						background: rgba(0, 0, 0, 0.10) !important;
-					}
-				}
-				tr:hover {
-					td {
-						padding: 6px 0;
-						color: #fff;
-						background: rgba(0, 0, 0, 0.10);
-						border-color: #d2d2d2;
-						border-width: 0 0px 0px 0;
-						border-style: solid;
-						text-align: left;
-					}
+			
+			:deep(.el-button--primary) {
+				background: #165DFF;
+				border-color: #165DFF;
+				&:hover {
+					background: #4080FF;
+					border-color: #4080FF;
 				}
 			}
 		}
 	}
-	// 分页器
+
+	/* 表格样式 */
+	:deep(.el-table) {
+		border-radius: 8px;
+		border: 1px solid #E5E7EB;
+		background: #ffffff;
+
+		th.el-table__cell {
+			background: #FAFAFA !important;
+			color: #111827;
+			font-weight: 600;
+			height: 50px;
+		}
+
+		td.el-table__cell {
+			color: #374151;
+			height: 50px;
+		}
+
+		.el-table__row--striped td {
+			background: #FAFAFA !important;
+		}
+
+		&:hover {
+			.el-table__body-wrapper tr:hover td {
+				background-color: #F2F3F5 !important;
+			}
+		}
+
+		/* 操作按钮 */
+		.el-button--primary {
+			color: #165DFF;
+			background: none;
+			border: none;
+			padding: 0 8px;
+			&:hover {
+				color: #4080FF;
+			}
+		}
+
+		.el-button--danger {
+			color: #F53F3F;
+			background: none;
+			border: none;
+			padding: 0 8px;
+			&:hover {
+				color: #F76560;
+			}
+		}
+	}
+
+	/* 分页器 */
 	.el-pagination {
-		// 总页码
-		:deep(.el-pagination__total) {
-			margin: 0 10px 0 0;
-			color: #666;
+		margin-top: 24px;
+		justify-content: center;
+		
+		:deep(.el-pager li) {
+			background: #ffffff;
+			border: 1px solid #D1D5DB;
+			color: #374151;
+			margin: 0 4px;
+			border-radius: 4px;
 			font-weight: 400;
-			display: inline-block;
-			vertical-align: top;
-			font-size: 13px;
-			line-height: 28px;
-			height: 28px;
-		}
-		// 上一页
-		:deep(.btn-prev) {
-			border: none;
-			border-radius: 0px;
-			padding: 0 5px;
-			margin: 0 5px;
-			color: #fff;
-			background: none;
-			display: inline-block;
-			vertical-align: top;
-			font-size: 13px;
-			line-height: 26px;
-			min-width: 35px;
-			height: 26px;
-		}
-		// 下一页
-		:deep(.btn-next) {
-			border: none;
-			border-radius: 0px;
-			padding: 0 5px;
-			margin: 0 5px;
-			color: #fff;
-			background: none;
-			display: inline-block;
-			vertical-align: top;
-			font-size: 13px;
-			line-height: 26px;
-			min-width: 35px;
-			height: 26px;
-		}
-		// 上一页禁用
-		:deep(.btn-prev:disabled) {
-			border: none;
-			cursor: not-allowed;
-			border-radius: 0px;
-			padding: 0 5px;
-			margin: 0 5px;
-			color: #fff;
-			background: none;
-			display: inline-block;
-			vertical-align: top;
-			font-size: 13px;
-			line-height: 26px;
-			height: 26px;
-		}
-		// 下一页禁用
-		:deep(.btn-next:disabled) {
-			border: none;
-			cursor: not-allowed;
-			border-radius: 0px;
-			padding: 0 5px;
-			margin: 0 5px;
-			color: #fff;
-			background: none;
-			display: inline-block;
-			vertical-align: top;
-			font-size: 13px;
-			line-height: 26px;
-			height: 26px;
-		}
-		// 页码
-		:deep(.el-pager) {
-			padding: 0;
-			margin: 0;
-			display: inline-block;
-			vertical-align: top;
-			// 数字
-			.number {
-				cursor: pointer;
-				border: 1px solid rgba(255, 255, 255, 0.3);
-				padding: 0 4px;
-				margin: 0 5px;
-				color: #fff;
-				display: inline-block;
-				vertical-align: top;
-				font-size: 13px;
-				line-height: 26px;
-				border-radius: 0px;
-				background: none;
-				text-align: center;
-				min-width: 30px;
-				height: 26px;
+
+			&:hover {
+				color: #165DFF;
+				border-color: #165DFF;
 			}
-			// 数字悬浮
-			.number:hover {
-				cursor: pointer;
-				border: 1px solid rgba(0, 0, 0, 0.05);
-				padding: 0 4px;
-				margin: 0 5px;
-				color: #fff;
-				display: inline-block;
-				vertical-align: top;
-				font-size: 13px;
-				line-height: 26px;
-				border-radius: 0px;
-				background: rgba(0, 0, 0, 0.25);
-				text-align: center;
-				min-width: 30px;
-				height: 26px;
-			}
-			// 选中
-			.number.active {
-				cursor: default;
-				border: 1px solid rgba(0, 0, 0, 0.05);
-				padding: 0 4px;
-				margin: 0 5px;
-				color: #fff;
-				display: inline-block;
-				vertical-align: top;
-				font-size: 13px;
-				line-height: 26px;
-				border-radius: 0px;
-				background: rgba(0, 0, 0, 0.25);
-				text-align: center;
-				min-width: 30px;
-				height: 26px;
+
+			&.is-active {
+				background: #165DFF !important;
+				border-color: #165DFF;
+				color: #ffffff;
 			}
 		}
-		// sizes
-		:deep(.el-pagination__sizes) {
-			display: inline-block;
-			vertical-align: top;
-			font-size: 13px;
-			line-height: 28px;
-			height: 28px;
-			.el-select {
-				border: 1px solid #DCDFE6;
-				cursor: pointer;
-				padding: 0;
-				color: #606266;
-				display: inline-block;
-				font-size: 13px;
-				line-height: 28px;
-				border-radius: 3px;
-				outline: 0;
-				background: #FFF;
-				width: 100%;
-				text-align: center;
-				height: 28px;
+
+		:deep(.btn-prev), :deep(.btn-next) {
+			background: #ffffff;
+			border: 1px solid #D1D5DB;
+			border-radius: 4px;
+			&:hover {
+				color: #165DFF;
+				border-color: #165DFF;
 			}
-		}
-		// 跳页
-		:deep(.el-pagination__jump) {
-			margin: 0 0 0 24px;
-			color: #606266;
-			display: inline-block;
-			vertical-align: top;
-			font-size: 13px;
-			line-height: 28px;
-			height: 28px;
-			// 输入框
-			.el-input {
-				border: 1px solid #DCDFE6;
-				cursor: pointer;
-				padding: 0 3px;
-				color: #606266;
-				display: inline-block;
-				font-size: 14px;
-				line-height: 28px;
-				border-radius: 3px;
-				outline: 0;
-				background: #FFF;
-				width: 100%;
-				text-align: center;
-				height: 28px;
-				//去掉默认样式
-				.el-input__wrapper{
-					border: none;
-					box-shadow: none;
-					background: none;
-					border-radius: 0;
-					height: 100%;
-					padding: 0;
-				}
-				.is-focus {
-					box-shadow: none !important;
-				}
+			&:disabled {
+				background: #F3F4F6;
+				color: #9CA3AF;
 			}
 		}
 	}

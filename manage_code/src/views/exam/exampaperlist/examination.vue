@@ -14,7 +14,7 @@
 		<div class="exam_top_kong"></div>
 		<el-card v-if="endType" class="score_view">
 			<div class="score_item">
-				考试成绩：<span class="score_num">{{scoreChange()}}</span>
+				考试成绩：<span class="score_num">{{scoreChange()}}</span>（{{ getGradeLabel(scoreChange()) }}）
 			</div>
 			<div class="btn_view">
 				<el-button type="danger" @click="endExam">结束考试</el-button>
@@ -257,6 +257,15 @@
 			score += questionList.value[x].myscore
 		}
 		return score
+	}
+	const getGradeLabel = (score) => {
+		const s = Number(score)
+		if (!Number.isFinite(s)) return ''
+		if (s >= 90) return '优'
+		if (s >= 80) return '良'
+		if (s >= 70) return '中'
+		if (s >= 60) return '及格'
+		return '不及格'
 	}
 	//提交考试记录
 	const saverecord = (row) => {
