@@ -54,58 +54,63 @@ public class ExamquestionEntity<T> implements Serializable {
 	/**
 	 * 试卷id（外键）
 	 */
-					
+				
 	private Long paperid;
 	
 	/**
 	 * 试卷名称
 	 */
-					
+				
 	private String papername;
 	
 	/**
 	 * 试题名称
 	 */
-					
+				
 	private String questionname;
 	
 	/**
 	 * 选项，json字符串
 	 */
-					
+				
 	private String options;
 	
 	/**
 	 * 分值
 	 */
-					
+				
 	private Long score;
 	
 	/**
 	 * 正确答案
 	 */
-					
+				
 	private String answer;
 	
 	/**
 	 * 答案解析
 	 */
-					
+				
 	private String analysis;
 	
 	/**
 	 * 试题类型
 	 */
-					
+				
 	private Long type;
 	
 	/**
 	 * 试题排序，值越大排越前面
 	 */
-					
+				
 	private Long sequence;
-	
-	
+
+	/**
+	 * 题目图片/PDF附件（逗号分隔多个文件路径）
+	 */
+	private String images;
+
+
 	@JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss")
 	@DateTimeFormat
 	private Date addtime;
@@ -231,6 +236,18 @@ public class ExamquestionEntity<T> implements Serializable {
 	 */
 	public Long getSequence() {
 		return sequence;
+	}
+	/**
+	 * 设置：题目图片/PDF附件
+	 */
+	public void setImages(String images) {
+		this.images = images;
+	}
+	/**
+	 * 获取：题目图片/PDF附件
+	 */
+	public String getImages() {
+		return images;
 	}
 
 }

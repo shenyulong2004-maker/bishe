@@ -353,10 +353,6 @@
 					context?.$toolUtil.message('请输入考试时长(分钟)','error')
 					return false
 				}
-				if (form.value.tijiaofangshi === 'pdf附件' && (!form.value.pdfurl || !String(form.value.pdfurl).trim())) {
-					context?.$toolUtil.message('请上传PDF附件','error')
-					return false
-				}
 				if (form.value.tijiaofangshi === '线下提交' && (!form.value.xianxiashuoming || !String(form.value.xianxiashuoming).trim())) {
 					context?.$toolUtil.message('请输入线下提交说明','error')
 					return false
