@@ -85,7 +85,10 @@
 		computed,
 	} from "vue";
 	import menu from '@/utils/menu'
-	const userList = ref([])
+	const userList = ref([
+		{ roleName: '学生', tableName: 'xuesheng' },
+		{ roleName: '教师', tableName: 'jiaoshi' },
+	])
 	const menus = ref([])
 	const loginForm = ref({
 		role: '',
@@ -123,43 +126,38 @@
 		}
 		return errorSummary.value.length === 0
 	}
+	// 角色名到tableName的兜底映射
+	const roleTableMap = {
+		'学生': 'xuesheng',
+		'教师': 'jiaoshi',
+	}
 	const handleLogin = () => {
 		if (submitting.value) return
 		if (!validate()) {
 			context?.$toolUtil.message(errorSummary.value[0], 'error')
 			return
 		}
-		if (!userList.value || !userList.value.length) {
-			context?.$toolUtil.message('系统初始化中，请稍后重试', 'error')
-			return
-		}
-		if (userList.value.length > 1) {
-			let found = false
-			if (Array.isArray(menus.value)) {
-				for (let i = 0; i < menus.value.length; i++) {
-					if (menus.value[i] && menus.value[i].roleName == loginForm.value.role) {
-						tableName.value = menus.value[i].tableName;
-						found = true
-						break;
-					}
+		// 从菜单列表中查找tableName
+		let found = false
+		if (Array.isArray(menus.value) && menus.value.length) {
+			for (let i = 0; i < menus.value.length; i++) {
+				if (menus.value[i] && menus.value[i].roleName == loginForm.value.role) {
+					tableName.value = menus.value[i].tableName;
+					found = true
+					break;
 				}
 			}
-			if (!found) {
-				context?.$toolUtil.message('所选角色配置异常', 'error')
-				return
-			}
-		} else {
-			const firstUser = userList.value[0]
-			if (firstUser && firstUser.tableName) {
-				tableName.value = firstUser.tableName;
-				loginForm.value.role = firstUser.roleName;
-			} else {
-				context?.$toolUtil.message('角色信息加载异常', 'error')
-				return
+		}
+		// 菜单未加载时，用兜底映射
+		if (!found) {
+			const mapped = roleTableMap[loginForm.value.role]
+			if (mapped) {
+				tableName.value = mapped
+				found = true
 			}
 		}
-		if (!tableName.value) {
-			context?.$toolUtil.message('登录配置异常，请联系管理员', 'error')
+		if (!found || !tableName.value) {
+			context?.$toolUtil.message('请选择正确的用户类型', 'error')
 			return
 		}
 		login()
@@ -197,17 +195,22 @@
 		})
 	}
 	//获取菜单
-	const getMenu=()=> {
+	const getMenu = () => {
 		let arr = menu.list()
 		menus.value = Array.isArray(arr) ? arr : []
-		userList.value = []
+		const filtered = []
 		for (let i = 0; i < menus.value.length; i++) {
 			const m = menus.value[i]
-			if (m && (m.hasFrontLogin=='是' || m.roleName == '教师') && m.tableName != 'jiazhang') {
-				userList.value.push(m)
+			// 只保留学生和教师角色，排除家长
+			if (m && m.tableName && m.tableName !== 'jiazhang' && (m.tableName === 'xuesheng' || m.tableName === 'jiaoshi' || m.hasFrontLogin === '是')) {
+				filtered.push(m)
 			}
 		}
-    }
+		// 只有从后端取到菜单数据时才覆盖默认值
+		if (filtered.length) {
+			userList.value = filtered
+		}
+	}
 	//初始化
 	const init = () => {
 		getMenu();
@@ -225,20 +228,31 @@
 				if (raw) {
 					context?.$toolUtil.storageSet("menus", raw);
 					getMenu()
-					if (!loginForm.value.role && userList.value.length) {
+				}
+				// 无论是否有菜单数据，都设置默认角色
+				if (!loginForm.value.role) {
+					if (userList.value.length) {
 						loginForm.value.role = userList.value[0].roleName
+					} else {
+						// 兜底：直接设置默认角色
+						loginForm.value.role = '学生'
 					}
 				}
+			}).catch(() => {
+				// 接口失败时仍可尝试登录
+				if (!loginForm.value.role) {
+					loginForm.value.role = '学生'
+				}
 			})
+		} else {
+			if (!loginForm.value.role) {
+				loginForm.value.role = userList.value[0].roleName
+			}
 		}
 		//获取缓存是否有保存的账号密码
 		let form = context?.$toolUtil.storageGet('frontLoginForm')
 		if (form) {
 			loginForm.value = JSON.parse(form)
-		}else {
-			if (userList.value.length) {
-				loginForm.value.role = userList.value[0].roleName
-			}
 		}
 	}
 	onMounted(()=>{
