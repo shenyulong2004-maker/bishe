@@ -3,7 +3,6 @@
 		createWebHashHistory
 	} from 'vue-router'
 	import news from '@/views/news/list'
-	import jiazhang from '@/views/jiazhang/list'
 	import xuesheng from '@/views/xuesheng/list'
 	import examquestion from '@/views/exam/examquestion/list'
 	import jiaoshi from '@/views/jiaoshi/list'
@@ -16,8 +15,6 @@
 	import examfailrecord from '@/views/exam/examfailrecord/list'
 	import xueshengRegister from '@/views/xuesheng/register'
 	import xueshengCenter from '@/views/xuesheng/center'
-	import jiazhangRegister from '@/views/jiazhang/register'
-	import jiazhangCenter from '@/views/jiazhang/center'
 	import jiaoshiRegister from '@/views/jiaoshi/register'
 	import jiaoshiCenter from '@/views/jiaoshi/center'
 
@@ -48,11 +45,6 @@ export const routes = [{
 			component: xueshengCenter
 		}
 		,{
-			path: '/jiazhangCenter',
-			name: '家长个人中心',
-			component: jiazhangCenter
-		}
-		,{
 			path: '/jiaoshiCenter',
 			name: '教师个人中心',
 			component: jiaoshiCenter
@@ -61,11 +53,6 @@ export const routes = [{
 			path: '/news',
 			name: '公告版',
 			component: news
-		}
-		,{
-			path: '/jiazhang',
-			name: '家长',
-			component: jiazhang
 		}
 		,{
 			path: '/xuesheng',
@@ -116,11 +103,6 @@ export const routes = [{
 		path: '/xueshengRegister',
 		name: '学生注册',
 		component: xueshengRegister
-	},
-	{
-		path: '/jiazhangRegister',
-		name: '家长注册',
-		component: jiazhangRegister
 	},
 	{
 		path: '/jiaoshiRegister',

@@ -72,22 +72,6 @@
 							</el-form-item>
 						</el-col>
 						<el-col :span="12">
-							<el-form-item label="家长账号" prop="jiazhangzhanghao">
-								<el-select
-									class="list_sel"
-									v-model="userForm.jiazhangzhanghao" 
-									placeholder="请选择家长账号"
-									style="width:100%;"
-									@change="jiazhangzhanghaoChange">
-									<el-option v-for="(item,index) in jiazhangzhanghaoLists" :label="item" :value="item">
-									</el-option>
-								</el-select>
-							</el-form-item>
-						</el-col>
-						<el-col :span="12">
-							<el-form-item prop="jiazhangxingming" label="家长姓名">
-								<el-input class="list_inp" v-model="userForm.jiazhangxingming" placeholder="家长姓名" readonly></el-input>
-							</el-form-item>
 						</el-col>
 					</el-row>
 					<div class="formModel_btn_box">
@@ -264,10 +248,6 @@
 		],
 		banji: [
 		],
-		jiazhangzhanghao: [
-		],
-		jiazhangxingming: [
-		],
 	})
 	const getSession = () =>{
 		context?.$http({
@@ -348,8 +328,6 @@
 	}
 	//性别列表
 	const xingbieLists = ref([])
-	//家长账号列表
-	const jiazhangzhanghaoLists = ref([])
 	//初始化
 	const init = () => {
 		const menus = menu.list()
@@ -375,25 +353,7 @@
 		}
 		menuList.value = arr
 		xingbieLists.value = "男,女".split(',')
-		context?.$http({
-			url: `option/jiazhang/jiazhangzhanghao`,
-			method: 'get'
-		}).then(res=>{
-			jiazhangzhanghaoLists.value = res.data.data
-		})
 		getSession()
-	}
-	//家长账号回调
-	const jiazhangzhanghaoChange=()=>{
-		context?.$http({
-			url: `follow/jiazhang/jiazhangzhanghao?columnValue=` + userForm.value.jiazhangzhanghao,
-			method: 'get'
-		}).then(res=>{
-			//带出家长姓名字段
-			if(res.data.data.jiazhangxingming){
-				userForm.value.jiazhangxingming = res.data.data.jiazhangxingming
-			}
-		})
 	}
 	//菜单悬浮的显示与隐藏
 	const usersTabIndex = ref(-1)

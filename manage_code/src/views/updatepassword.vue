@@ -64,12 +64,6 @@
 							return false
 						}
 					}
-					if(sessionTable.value == 'jiazhang'){
-						if(form.value.mima1 != user.value.mima){
-							context?.$toolUtil.message('原密码不正确', 'error')
-							return false
-						}
-					}
 					if(sessionTable.value == 'jiaoshi'){
 						if(form.value.mima1 != user.value.jiaoshimima){
 							context?.$toolUtil.message('原密码不正确', 'error')
@@ -82,9 +76,6 @@
 					return false
 				}
 				if(sessionTable.value == 'xuesheng'){
-					user.value.mima = form.value.mima
-				}
-				if(sessionTable.value == 'jiazhang'){
 					user.value.mima = form.value.mima
 				}
 				if(sessionTable.value == 'jiaoshi'){

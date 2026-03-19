@@ -93,18 +93,6 @@ public class XueshengEntity<T> implements Serializable {
 					
 	private String banji;
 	
-	/**
-	 * 家长账号
-	 */
-					
-	private String jiazhangzhanghao;
-	
-	/**
-	 * 家长姓名
-	 */
-					
-	private String jiazhangxingming;
-	
 	
 	@JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss")
 	@DateTimeFormat
@@ -207,30 +195,6 @@ public class XueshengEntity<T> implements Serializable {
 	 */
 	public String getBanji() {
 		return banji;
-	}
-	/**
-	 * 设置：家长账号
-	 */
-	public void setJiazhangzhanghao(String jiazhangzhanghao) {
-		this.jiazhangzhanghao = jiazhangzhanghao;
-	}
-	/**
-	 * 获取：家长账号
-	 */
-	public String getJiazhangzhanghao() {
-		return jiazhangzhanghao;
-	}
-	/**
-	 * 设置：家长姓名
-	 */
-	public void setJiazhangxingming(String jiazhangxingming) {
-		this.jiazhangxingming = jiazhangxingming;
-	}
-	/**
-	 * 获取：家长姓名
-	 */
-	public String getJiazhangxingming() {
-		return jiazhangxingming;
 	}
 
 }

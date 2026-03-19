@@ -37,6 +37,8 @@ import com.cl.utils.R;
 import com.cl.utils.MPUtil;
 import com.cl.utils.CommonUtil;
 import java.io.IOException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * 菜单
@@ -65,7 +67,7 @@ public class MenuController {
         EntityWrapper<MenuEntity> ew = new EntityWrapper<MenuEntity>();
 
 		PageUtils page = menuService.queryPage(params, MPUtil.sort(MPUtil.between(MPUtil.likeOrEq(ew, menu), params), params));
-
+		removeJiazhangFromMenu(page);
         return R.ok().put("data", page);
     }
     
@@ -79,6 +81,7 @@ public class MenuController {
         EntityWrapper<MenuEntity> ew = new EntityWrapper<MenuEntity>();
 
 		PageUtils page = menuService.queryPage(params, MPUtil.sort(MPUtil.between(MPUtil.likeOrEq(ew, menu), params), params));
+		removeJiazhangFromMenu(page);
         return R.ok().put("data", page);
     }
 
@@ -211,5 +214,51 @@ public class MenuController {
 
 
 
+
+	private void removeJiazhangFromMenu(PageUtils page) {
+		if (page == null || page.getList() == null) return;
+		ObjectMapper mapper = new ObjectMapper();
+		TypeReference<List<Map<String, Object>>> rolesType = new TypeReference<List<Map<String, Object>>>() {};
+		for (Object row : page.getList()) {
+			if (!(row instanceof MenuEntity)) continue;
+			MenuEntity menuEntity = (MenuEntity) row;
+			String menujson = menuEntity.getMenujson();
+			if (menujson == null || menujson.trim().isEmpty()) continue;
+			try {
+				List<Map<String, Object>> roles = mapper.readValue(menujson, rolesType);
+				roles.removeIf(role -> "jiazhang".equals(role.get("tableName")) || "家长".equals(role.get("roleName")));
+				for (Map<String, Object> role : roles) {
+					Object backMenuObj = role.get("backMenu");
+					if (backMenuObj instanceof List) {
+						List<Map<String, Object>> backMenu = (List<Map<String, Object>>) backMenuObj;
+						backMenu.removeIf(section -> {
+							Object childObj = section.get("child");
+							if (childObj instanceof List) {
+								List<Map<String, Object>> child = (List<Map<String, Object>>) childObj;
+								child.removeIf(item -> "jiazhang".equals(item.get("tableName")));
+								return child.isEmpty();
+							}
+							return false;
+						});
+					}
+					Object frontMenuObj = role.get("frontMenu");
+					if (frontMenuObj instanceof List) {
+						List<Map<String, Object>> frontMenu = (List<Map<String, Object>>) frontMenuObj;
+						frontMenu.removeIf(section -> {
+							Object childObj = section.get("child");
+							if (childObj instanceof List) {
+								List<Map<String, Object>> child = (List<Map<String, Object>>) childObj;
+								child.removeIf(item -> "jiazhang".equals(item.get("tableName")));
+								return child.isEmpty();
+							}
+							return false;
+						});
+					}
+				}
+				menuEntity.setMenujson(mapper.writeValueAsString(roles));
+			} catch (Exception e) {
+			}
+		}
+	}
 
 }

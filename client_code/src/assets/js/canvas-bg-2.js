@@ -1,7 +1,11 @@
 export default function canvasBg(){
 	var w = window.innerWidth;
 	var h = window.innerHeight;
-	var ctx = document.getElementById('canvas');
+	var canvas = document.getElementById('canvas');
+	if (!canvas || !canvas.getContext) {
+		return;
+	}
+	var ctx = canvas;
 	
 	window.addEventListener('load', resize);
 	window.addEventListener('resize', resize, false);

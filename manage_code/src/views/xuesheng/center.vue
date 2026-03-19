@@ -48,21 +48,6 @@
 						</el-form-item>
 					</el-col>
 					<el-col :span="24">
-						<el-form-item label="家长账号" prop="jiazhangzhanghao">
-							<el-select 
-								@change="xueshengjiazhangzhanghaoChange"
-								class="list_sel" 
-								v-model="user.jiazhangzhanghao" 
-								placeholder="请选择家长账号"
-								>
-								<el-option v-for="item in xueshengjiazhangzhanghaoLists" :label="item" :value="item"></el-option>
-							</el-select>
-						</el-form-item>
-					</el-col>
-					<el-col :span="24">
-						<el-form-item label="家长姓名" prop="jiazhangxingming">
-							<el-input class="list_inp" v-model="user.jiazhangxingming"  placeholder="家长姓名" clearable />
-						</el-form-item>
 					</el-col>
 					<span class="userinfo_form_btn_box">
 						<el-button class='userinfo_confirm' type="primary" @click="onSubmit">保存</el-button>
@@ -84,29 +69,11 @@
 	const tableName = ref('xuesheng')
 	const user = ref({})
 	const xueshengxingbieLists = ref([])
-	const xueshengjiazhangzhanghaoLists = ref([])
 	const init = () => {
 		xueshengxingbieLists.value = "男,女".split(',')
-		context?.$http({
-			url:`option/jiazhang/jiazhangzhanghao`,
-			method:'get'
-		}).then(res=>{
-			xueshengjiazhangzhanghaoLists.value = res.data.data
-		})
 	}
 	const xueshengtouxiangUploadSuccess=(fileUrls)=> {
 	    user.value.touxiang = fileUrls;
-	}
-	// 下二随
-	const xueshengjiazhangzhanghaoChange= ()=> {
-	    context?.$http({
-	        url: `follow/jiazhang/jiazhangzhanghao?columnValue=`+ user.value.jiazhangzhanghao,
-	        method: "get"
-	    }).then(res => {
-	        if(res.data.data.jiazhangxingming){
-	            user.value.jiazhangxingming = res.data.data.jiazhangxingming
-	        }
-	    });
 	}
 	const onSubmit = () => {
 		if((!user.value.xuehao)){
@@ -143,9 +110,6 @@
 			method: 'get'
 		}).then(res => {
 			user.value = res.data.data
-			if(user.value.jiazhangzhanghao){
-				xueshengjiazhangzhanghaoChange()
-			}
 			init()
 		})
 	}

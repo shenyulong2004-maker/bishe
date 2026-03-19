@@ -12,8 +12,6 @@
         <result property="xingbie" column="xingbie"/>
         <result property="lianxidianhua" column="lianxidianhua"/>
         <result property="banji" column="banji"/>
-        <result property="jiazhangzhanghao" column="jiazhangzhanghao"/>
-        <result property="jiazhangxingming" column="jiazhangxingming"/>
     </resultMap>
 
     <select id="selectListView"

@@ -94,32 +94,13 @@
 	
 	const registerForm = ref({
         xingbie: '',
-        jiazhangxingming: '',
 	})
 	const xueshengxingbieLists = ref([])
-	const xueshengjiazhangzhanghaoLists = ref([])
 	const init=()=>{
 		xueshengxingbieLists.value = "男,女".split(',')
-		context?.$http({
-			url:`option/jiazhang/jiazhangzhanghao`,
-			method:'get'
-		}).then(res=>{
-			xueshengjiazhangzhanghaoLists.value = res.data.data
-		})
 	}
     const touxiangUploadSuccess=(fileUrls)=> {
         registerForm.value.touxiang = fileUrls;
-    }
-    // 下二随
-    const jiazhangzhanghaoChange= ()=> {
-        context?.$http({
-            url: `follow/jiazhang/jiazhangzhanghao?columnValue=`+ registerForm.value.jiazhangzhanghao,
-            method: "get"
-        }).then(res => {
-            if(res.data.data.jiazhangxingming){
-                registerForm.value.jiazhangxingming = res.data.data.jiazhangxingming
-            }
-        });
     }
 	// 多级联动参数
 	//注册按钮

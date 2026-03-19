@@ -57,14 +57,6 @@
 					<div class="info_label">班级</div>
 					<div  class="info_text" >{{detail.banji}}</div>
 				</div>
-				<div class="info_item">
-					<div class="info_label">家长账号</div>
-					<div  class="info_text" >{{detail.jiazhangzhanghao}}</div>
-				</div>
-				<div class="info_item">
-					<div class="info_label">家长姓名</div>
-					<div  class="info_text" >{{detail.jiazhangxingming}}</div>
-				</div>
 				<div class="btn_view">
 					<el-button v-if="centerType&&(detail.ispay=='未支付'||!detail.ispay)&&btnFrontAuth('xuesheng','支付')" class="approval_btn" @click="payClick">支付</el-button>
 					<el-button class="edit_btn" v-if="centerType&&btnAuth('xuesheng','修改')" type="primary" @click="editClick">修改</el-button>

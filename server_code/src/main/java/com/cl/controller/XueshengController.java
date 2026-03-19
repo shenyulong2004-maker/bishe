@@ -132,10 +132,6 @@ public class XueshengController {
     @RequestMapping("/page")
     public R page(@RequestParam Map<String, Object> params,XueshengEntity xuesheng,
 		HttpServletRequest request){
-		String tableName = request.getSession().getAttribute("tableName").toString();
-		if(tableName.equals("jiazhang")) {
-			xuesheng.setJiazhangzhanghao((String)request.getSession().getAttribute("username"));
-		}
         EntityWrapper<XueshengEntity> ew = new EntityWrapper<XueshengEntity>();
 
 		PageUtils page = xueshengService.queryPage(params, MPUtil.sort(MPUtil.between(MPUtil.likeOrEq(ew, xuesheng), params), params));

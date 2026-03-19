@@ -204,12 +204,6 @@
 			if(context?.$toolUtil.storageGet('frontSessionTable') == 'xuesheng'){
 				context?.$toolUtil.storageSet('headportrait',res.data.data.touxiang)
 			}
-			if(context?.$toolUtil.storageGet('frontSessionTable') == 'jiazhang'){
-				context?.$toolUtil.storageSet("frontName", res.data.data.jiazhangzhanghao)
-			}
-			if(context?.$toolUtil.storageGet('frontSessionTable') == 'jiazhang'){
-				context?.$toolUtil.storageSet('headportrait',res.data.data.touxiang)
-			}
 			if(context?.$toolUtil.storageGet('frontSessionTable') == 'jiaoshi'){
 				context?.$toolUtil.storageSet("frontName", res.data.data.jiaoshigonghao)
 			}

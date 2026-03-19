@@ -109,22 +109,7 @@
 					 :sortable='true' 
 					 align="left" 
 					 header-align="left"
-					label="家长账号">
-					<template #default="scope">
-						{{scope.row.jiazhangzhanghao}}
-					</template>
-				</el-table-column>
-				<el-table-column
-					 :resizable='true' 
-					 :sortable='true' 
-					 align="left" 
-					 header-align="left"
-					label="家长姓名">
-					<template #default="scope">
-						{{scope.row.jiazhangxingming}}
-					</template>
-				</el-table-column>
-				<el-table-column label="操作" width="300" :resizable='true' :sortable='true' align="left" header-align="left">
+					label="操作">
 					<template #default="scope">
 						<el-button type="info" v-if=" btnAuth('xuesheng','查看')" @click="infoClick(scope.row.id)">详情</el-button>
 					</template>

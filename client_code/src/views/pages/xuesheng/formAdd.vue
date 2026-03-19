@@ -71,27 +71,6 @@
 					</el-form-item>
 				</el-col>
 
-				<el-col :span="12">
-					<el-form-item label="家长账号" prop="jiazhangzhanghao">
-						<el-select
-							class="list_sel"
-							:disabled="!isAdd||disabledForm.jiazhangzhanghao?true:false"
-							v-model="form.jiazhangzhanghao" 
-							placeholder="请选择家长账号"
-							style="width:100%;"
-							@change="jiazhangzhanghaoChange">
-							<el-option v-for="(item,index) in jiazhangzhanghaoLists" :label="item" :value="item">
-							</el-option>
-						</el-select>
-					</el-form-item>
-				</el-col>
-				<el-col :span="12">
-					<el-form-item label="家长姓名" prop="jiazhangxingming">
-						<el-input class="list_inp" v-model="form.jiazhangxingming" placeholder="家长姓名"
-							 type="text" 							:readonly="!isAdd||disabledForm.jiazhangxingming?true:false" />
-					</el-form-item>
-				</el-col>
-
 			</el-row>
 			<div class="formModel_btn_box">
 				<el-button class="formModel_cancel" @click="backClick">取消</el-button>
@@ -141,8 +120,6 @@
 		xingbie: '',
 		lianxidianhua: '',
 		banji: '',
-		jiazhangzhanghao: '',
-		jiazhangxingming: '',
 	})
 	const formRef = ref(null)
 	const id = ref(0)
@@ -155,8 +132,6 @@
 		xingbie : false,
 		lianxidianhua : false,
 		banji : false,
-		jiazhangzhanghao : false,
-		jiazhangxingming : false,
 	})
 	const isAdd = ref(false)
 	//表单验证
@@ -249,10 +224,6 @@
 		],
 		banji: [
 		],
-		jiazhangzhanghao: [
-		],
-		jiazhangxingming: [
-		],
 	})
 	//头像上传回调
 	const touxiangUploadSuccess=(e)=>{
@@ -260,8 +231,6 @@
 	}
 	//性别列表
 	const xingbieLists = ref([])
-	//家长账号列表
-	const jiazhangzhanghaoLists = ref([])
 	//methods
 
 	//methods
@@ -334,16 +303,6 @@
 					disabledForm.value.banji = true;
 					continue;
 				}
-				if(x=='jiazhangzhanghao'){
-					form.value.jiazhangzhanghao = row[x];
-					disabledForm.value.jiazhangzhanghao = true;
-					continue;
-				}
-				if(x=='jiazhangxingming'){
-					form.value.jiazhangxingming = row[x];
-					disabledForm.value.jiazhangxingming = true;
-					continue;
-				}
 			}
 			if(row){
 				crossRow.value = row
@@ -368,31 +327,11 @@
 			var json = res.data.data
 		})
 		xingbieLists.value = "男,女".split(',')
-		context?.$http({
-			url: `option/jiazhang/jiazhangzhanghao`,
-			method: 'get'
-		}).then(res=>{
-			jiazhangzhanghaoLists.value = res.data.data
-		})
-		//由上级字段带出不可改
-		disabledForm.value.jiazhangxingming = true;
 	}
 	//初始化
 	//取消
 	const backClick = () => {
 		history.back()
-	}
-	//家长账号回调
-	const jiazhangzhanghaoChange=()=>{
-		context?.$http({
-			url: `follow/jiazhang/jiazhangzhanghao?columnValue=` + form.value.jiazhangzhanghao,
-			method: 'get'
-		}).then(res=>{
-			//带出家长姓名字段
-			if(res.data.data.jiazhangxingming){
-				form.value.jiazhangxingming = res.data.data.jiazhangxingming
-			}
-		})
 	}
 	//提交
 	const save=()=>{

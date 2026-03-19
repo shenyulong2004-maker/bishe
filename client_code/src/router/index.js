@@ -5,9 +5,6 @@ import login from '../views/pages/login.vue'
 import xueshengList from '@/views/pages/xuesheng/list'
 import xueshengDetail from '@/views/pages/xuesheng/formModel'
 import xueshengAdd from '@/views/pages/xuesheng/formAdd'
-import jiazhangList from '@/views/pages/jiazhang/list'
-import jiazhangDetail from '@/views/pages/jiazhang/formModel'
-import jiazhangAdd from '@/views/pages/jiazhang/formAdd'
 import newsList from '@/views/pages/news/list'
 import jiaoshiList from '@/views/pages/jiaoshi/list'
 import jiaoshiDetail from '@/views/pages/jiaoshi/formModel'
@@ -40,16 +37,6 @@ const routes = [{
 		}, {
 			path: 'xueshengAdd',
 			component: xueshengAdd
-		}
-		, {
-			path: 'jiazhangList',
-			component: jiazhangList
-		}, {
-			path: 'jiazhangDetail',
-			component: jiazhangDetail
-		}, {
-			path: 'jiazhangAdd',
-			component: jiazhangAdd
 		}
 		, {
 			path: 'newsList',

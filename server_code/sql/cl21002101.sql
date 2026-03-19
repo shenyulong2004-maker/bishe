@@ -178,39 +178,6 @@ INSERT INTO `jiaoshi` VALUES (91,'2024-03-05 13:53:21','教师工号1','123456',
 UNLOCK TABLES;
 
 --
--- Table structure for table `jiazhang`
---
-
-DROP TABLE IF EXISTS `jiazhang`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `jiazhang` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `addtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `jiazhangzhanghao` varchar(200) NOT NULL COMMENT '家长账号',
-  `mima` varchar(200) NOT NULL COMMENT '密码',
-  `jiazhangxingming` varchar(200) NOT NULL COMMENT '家长姓名',
-  `touxiang` longtext COMMENT '头像',
-  `xingbie` varchar(200) DEFAULT NULL COMMENT '性别',
-  `shoujihaoma` varchar(200) DEFAULT NULL COMMENT '手机号码',
-  `xuehao` varchar(200) DEFAULT NULL COMMENT '学号',
-  `xingming` varchar(200) DEFAULT NULL COMMENT '姓名',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `jiazhangzhanghao` (`jiazhangzhanghao`)
-) ENGINE=InnoDB AUTO_INCREMENT=1709647003640 DEFAULT CHARSET=utf8 COMMENT='家长';
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `jiazhang`
---
-
-LOCK TABLES `jiazhang` WRITE;
-/*!40000 ALTER TABLE `jiazhang` DISABLE KEYS */;
-INSERT INTO `jiazhang` VALUES (41,'2024-03-05 13:53:21','家长账号1','123456','家长姓名1','file/jiazhangTouxiang1.jpg','男','19819881111','学号1','姓名1'),(42,'2024-03-05 13:53:21','家长账号2','123456','家长姓名2','file/jiazhangTouxiang2.jpg','男','19819881112','学号2','姓名2'),(43,'2024-03-05 13:53:21','家长账号3','123456','家长姓名3','file/jiazhangTouxiang3.jpg','男','19819881113','学号3','姓名3'),(44,'2024-03-05 13:53:21','家长账号4','123456','家长姓名4','file/jiazhangTouxiang4.jpg','男','19819881114','学号4','姓名4'),(45,'2024-03-05 13:53:21','家长账号5','123456','家长姓名5','file/jiazhangTouxiang5.jpg','男','19819881115','学号5','姓名5'),(46,'2024-03-05 13:53:21','家长账号6','123456','家长姓名6','file/jiazhangTouxiang6.jpg','男','19819881116','学号6','姓名6'),(1709647003639,'2024-03-05 13:56:43','2','2','2','file/1709647000827.jpg','女','13622224445','1','1');
-/*!40000 ALTER TABLE `jiazhang` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `menu`
 --
 
@@ -337,8 +304,6 @@ CREATE TABLE `xuesheng` (
   `xingbie` varchar(200) DEFAULT NULL COMMENT '性别',
   `lianxidianhua` varchar(200) DEFAULT NULL COMMENT '联系电话',
   `banji` varchar(200) DEFAULT NULL COMMENT '班级',
-  `jiazhangzhanghao` varchar(200) DEFAULT NULL COMMENT '家长账号',
-  `jiazhangxingming` varchar(200) DEFAULT NULL COMMENT '家长姓名',
   PRIMARY KEY (`id`),
   UNIQUE KEY `xuehao` (`xuehao`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1709647024368 DEFAULT CHARSET=utf8 COMMENT='学生';
@@ -350,7 +315,7 @@ CREATE TABLE `xuesheng` (
 
 LOCK TABLES `xuesheng` WRITE;
 /*!40000 ALTER TABLE `xuesheng` DISABLE KEYS */;
-INSERT INTO `xuesheng` VALUES (31,'2024-03-05 13:53:21','学号1','123456','姓名1','file/xueshengTouxiang1.jpg','男','19819881111','班级1','家长账号1','家长姓名1'),(32,'2024-03-05 13:53:21','学号2','123456','姓名2','file/xueshengTouxiang2.jpg','男','19819881112','班级2','家长账号2','家长姓名2'),(33,'2024-03-05 13:53:21','学号3','123456','姓名3','file/xueshengTouxiang3.jpg','男','19819881113','班级3','家长账号3','家长姓名3'),(34,'2024-03-05 13:53:21','学号4','123456','姓名4','file/xueshengTouxiang4.jpg','男','19819881114','班级4','家长账号4','家长姓名4'),(35,'2024-03-05 13:53:21','学号5','123456','姓名5','file/xueshengTouxiang5.jpg','男','19819881115','班级5','家长账号5','家长姓名5'),(36,'2024-03-05 13:53:21','学号6','123456','姓名6','file/xueshengTouxiang6.jpg','男','19819881116','班级6','家长账号6','家长姓名6'),(1709647024367,'2024-03-05 13:57:04','1','1','1','file/1709647017554.jpg','女','13622224445','101','2','2');
+INSERT INTO `xuesheng` VALUES (31,'2024-03-05 13:53:21','学号1','123456','姓名1','file/xueshengTouxiang1.jpg','男','19819881111','班级1'),(32,'2024-03-05 13:53:21','学号2','123456','姓名2','file/xueshengTouxiang2.jpg','男','19819881112','班级2'),(33,'2024-03-05 13:53:21','学号3','123456','姓名3','file/xueshengTouxiang3.jpg','男','19819881113','班级3'),(34,'2024-03-05 13:53:21','学号4','123456','姓名4','file/xueshengTouxiang4.jpg','男','19819881114','班级4'),(35,'2024-03-05 13:53:21','学号5','123456','姓名5','file/xueshengTouxiang5.jpg','男','19819881115','班级5'),(36,'2024-03-05 13:53:21','学号6','123456','姓名6','file/xueshengTouxiang6.jpg','男','19819881116','班级6'),(1709647024367,'2024-03-05 13:57:04','1','1','1','file/1709647017554.jpg','女','13622224445','101');
 /*!40000 ALTER TABLE `xuesheng` ENABLE KEYS */;
 UNLOCK TABLES;
 
