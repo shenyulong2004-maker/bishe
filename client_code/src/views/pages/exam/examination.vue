@@ -20,7 +20,25 @@
 				<el-button type="danger" @click="endExam">结束考试</el-button>
 			</div>
 		</el-card>
-		<el-card class="question_list" v-if="questionList.length&&!endType">
+		<el-card class="question_list" v-if="examDetail.tijiaofangshi==='pdf附件'&&!endType">
+		<div class="pdf_upload_area">
+			<div class="pdf_title">📄 请上传您的答题PDF文件</div>
+			<div class="pdf_tip">本次考试采用PDF附件提交方式，请将答题内容整理为PDF文件后上传</div>
+			<upload
+				action="file/upload"
+				tip="请上传PDF答题文件"
+				:limit="1"
+				:multiple="false"
+				type="file"
+				:fileUrls="pdfAnswer"
+				@change="pdfAnswerChange"
+			/>
+			<div class="btn_view" style="margin-top:20px">
+				<el-button type="primary" :disabled="!pdfAnswer" @click="submitPdfAnswer">提交答题PDF</el-button>
+			</div>
+		</div>
+	</el-card>
+	<el-card class="question_list" v-if="questionList.length&&!endType&&examDetail.tijiaofangshi!=='pdf附件'">
 			<div class="question">
 				<div class="questionTitle">
 					{{currentIndex + 1}}、{{questionList[currentIndex].questionname}}
@@ -93,6 +111,7 @@
 	import {
 		ElMessageBox
 	} from 'element-plus'
+	import upload from '@/components/upload.vue'
 	const route = useRoute()
 	const context = getCurrentInstance()?.appContext.config.globalProperties;
 	//初始化
@@ -231,6 +250,41 @@
 		questionList.value[currentIndex.value].myanswers = questionList.value[currentIndex.value].myanswers.sort()
 		questionList.value[currentIndex.value].myanswer = e.sort().join(',')
 	}
+	//PDF答题
+	const pdfAnswer = ref('')
+	const pdfAnswerChange = (e) => {
+		pdfAnswer.value = e
+	}
+	const submitPdfAnswer = () => {
+		if (!pdfAnswer.value) {
+			context?.$toolUtil.message('请先上传PDF答题文件', 'error')
+			return
+		}
+		const arr = {
+			userid: user.value.id,
+			username: user.value.xingming || user.value.jiaoshixingming || '',
+			paperid: examDetail.value.id,
+			papername: examDetail.value.name,
+			questionid: 0,
+			questionname: 'PDF附件提交',
+			options: '[]',
+			score: 0,
+			answer: '',
+			analysis: '',
+			myanswer: pdfAnswer.value,
+			myscore: 0,
+		}
+		context?.$http({
+			url: 'examrecord/save',
+			method: 'POST',
+			data: arr
+		}).then(() => {
+			clearInterval(timeInter.value)
+			context?.$toolUtil.message('PDF提交成功！', 'success', () => {
+				history.back()
+			})
+		})
+	}
 	//退出考试
 	const leaveExam = () => {
 		ElMessageBox.confirm(`是否退出考试？`, '提示', {
@@ -366,6 +420,22 @@
 		}
 	}
 
+	// PDF上传区域
+	.pdf_upload_area {
+		padding: 40px 20px;
+		text-align: center;
+		.pdf_title {
+			font-size: 22px;
+			font-weight: bold;
+			color: #333;
+			margin-bottom: 12px;
+		}
+		.pdf_tip {
+			font-size: 14px;
+			color: #888;
+			margin-bottom: 24px;
+		}
+	}
 	// 答题区域
 	.question_list {
 		border: 0px solid #ddd;

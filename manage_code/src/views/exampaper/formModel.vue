@@ -35,16 +35,10 @@
 					</el-col>
 
 					<el-col :span="24" v-if="form.tijiaofangshi==='pdf附件'">
-						<el-form-item label="PDF附件" prop="pdfurl">
-							<uploads
-								:disabled="!isAdd||disabledForm.pdfurl?true:false"
-								action="file/upload" 
-								tip="请上传PDF附件" 
-								:limit="1" 
-								style="width: 100%;text-align: left;"
-								:fileUrls="form.pdfurl?form.pdfurl:''" 
-								@change="pdfUploadSuccess">
-							</uploads>
+						<el-form-item label="PDF附件">
+							<el-alert type="info" :closable="false" show-icon>
+								<template #title>PDF附件由学生答题时上传，教师发布试卷时无需上传</template>
+							</el-alert>
 						</el-form-item>
 					</el-col>
 

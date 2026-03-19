@@ -5,12 +5,10 @@ import login from '../views/pages/login.vue'
 import xueshengList from '@/views/pages/xuesheng/list'
 import xueshengDetail from '@/views/pages/xuesheng/formModel'
 import xueshengAdd from '@/views/pages/xuesheng/formAdd'
-import xueshengCenter from '@/views/pages/xuesheng/center'
 import newsList from '@/views/pages/news/list'
 import jiaoshiList from '@/views/pages/jiaoshi/list'
 import jiaoshiDetail from '@/views/pages/jiaoshi/formModel'
 import jiaoshiAdd from '@/views/pages/jiaoshi/formAdd'
-import jiaoshiCenter from '@/views/pages/jiaoshi/center'
 import xueshengchengjiList from '@/views/pages/xueshengchengji/list'
 import xueshengchengjiDetail from '@/views/pages/xueshengchengji/formModel'
 import xueshengchengjiAdd from '@/views/pages/xueshengchengji/formAdd'
@@ -41,9 +39,6 @@ const routes = [{
 		}, {
 			path: 'xueshengAdd',
 			component: xueshengAdd
-		}, {
-			path: 'xueshengCenter',
-			component: xueshengCenter
 		}
 		, {
 			path: 'newsList',
@@ -58,9 +53,6 @@ const routes = [{
 		}, {
 			path: 'jiaoshiAdd',
 			component: jiaoshiAdd
-		}, {
-			path: 'jiaoshiCenter',
-			component: jiaoshiCenter
 		}
 		, {
 			path: 'xueshengchengjiList',

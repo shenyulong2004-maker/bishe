@@ -92,6 +92,9 @@
 				</el-table-column>
 				<el-table-column label="操作" width="300" :resizable='true' :sortable='true' align="left" header-align="left">
 					<template #default="scope">
+						<el-button size="small" type="info" @click.stop="infoClick(scope.row.id)" v-if="btnAuth('exampaper','查看')">查看</el-button>
+						<el-button size="small" type="primary" @click.stop="formRef.init(scope.row.id,'edit')" v-if="btnAuth('exampaper','修改')">修改</el-button>
+						<el-button size="small" type="danger" @click.stop="delClick(scope.row.id)" v-if="btnAuth('exampaper','删除')">删除</el-button>
 					</template>
 				</el-table-column>
 			</el-table>
