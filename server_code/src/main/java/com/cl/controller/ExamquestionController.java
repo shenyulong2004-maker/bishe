@@ -128,14 +128,59 @@ public class ExamquestionController {
 
 
     /**
-     * 后端保存
+     * 后端保存 - 修复持久化问题
+     * 添加@Transactional确保事务一致性
      */
     @RequestMapping("/save")
+    @Transactional
     public R save(@RequestBody ExamquestionEntity examquestion, HttpServletRequest request){
-    	examquestion.setId(new Date().getTime()+new Double(Math.floor(Math.random()*1000)).longValue());
-    	//ValidatorUtils.validateEntity(examquestion);
-        examquestionService.insert(examquestion);
-        return R.ok();
+    	try {
+    		if (examquestion.getPaperid() == null || examquestion.getPaperid() == 0) {
+    			return R.error("试卷不能为空");
+    		}
+    		if (examquestion.getType() == null) {
+    			return R.error("试题类型不能为空");
+    		}
+    		if (StringUtils.isBlank(examquestion.getQuestionname())) {
+    			return R.error("试题名称不能为空");
+    		}
+    		if (StringUtils.isBlank(examquestion.getAnswer())) {
+    			return R.error("答案不能为空");
+    		}
+    		if (examquestion.getScore() == null || examquestion.getScore() <= 0) {
+    			return R.error("分值必须大于0");
+    		}
+    		if (examquestion.getSequence() == null) {
+    			return R.error("排序不能为空");
+    		}
+    		
+    		Long type = examquestion.getType();
+    		if (type == 0 || type == 1 || type == 2) {
+    			if (StringUtils.isBlank(examquestion.getOptions())) {
+    				return R.error("选择题必须有选项");
+    			}
+    		} else if (type == 3 || type == 4) {
+    			examquestion.setOptions("");
+    		}
+    		
+    		// 生成唯一ID（时间戳+随机数）
+    		Long uniqueId = new Date().getTime() + new Double(Math.floor(Math.random()*1000)).longValue();
+    		examquestion.setId(uniqueId);
+    		
+    		// 插入数据库
+    		boolean success = examquestionService.insert(examquestion);
+    		if (!success) {
+    			return R.error("保存失败：数据库插入失败");
+    		}
+    		
+    		System.out.println("试题保存成功: ID=" + examquestion.getId() + ", 名称=" + examquestion.getQuestionname());
+    		return R.ok("保存成功");
+    		
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    		System.err.println("试题保存失败: " + e.getMessage());
+    		return R.error("保存失败：" + e.getMessage());
+    	}
     }
     
     /**
@@ -174,14 +219,4 @@ public class ExamquestionController {
         examquestionService.deleteBatchIds(Arrays.asList(ids));
         return R.ok();
     }
-    
-	
-
-
-
-
-
-
-
-
 }

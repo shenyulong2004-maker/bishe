@@ -33,6 +33,7 @@ mybatis-plus:
   typeAliasesPackage: com.cl.entity
   global-config:
     #主键类型  0:"数据库ID自增", 1:"用户输入ID",2:"全局唯一ID (数字类型唯一ID)", 3:"全局唯一ID UUID";
+    #已改为1（用户输入ID），与后端代码保持一致
     id-type: 1
     #字段策略 0:"忽略判断",1:"非 NULL 判断"),2:"非空判断"
     field-strategy: 1

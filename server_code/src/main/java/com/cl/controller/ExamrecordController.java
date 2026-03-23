@@ -28,9 +28,13 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.cl.annotation.IgnoreAuth;
 
 import com.cl.entity.ExamrecordEntity;
+import com.cl.entity.XueshengEntity;
+import com.cl.entity.XueshengchengjiEntity;
 import com.cl.entity.view.ExamrecordView;
 
 import com.cl.service.ExamrecordService;
+import com.cl.service.XueshengService;
+import com.cl.service.XueshengchengjiService;
 import com.cl.service.TokenService;
 import com.cl.utils.PageUtils;
 import com.cl.utils.R;
@@ -50,6 +54,10 @@ import java.io.IOException;
 public class ExamrecordController {
     @Autowired
     private ExamrecordService examrecordService;
+    @Autowired
+    private XueshengService xueshengService;
+    @Autowired
+    private XueshengchengjiService xueshengchengjiService;
 
 
 
@@ -205,6 +213,66 @@ public class ExamrecordController {
     public R deleteRecords(@RequestParam Long userid,@RequestParam Long paperid){
     	examrecordService.delete(new EntityWrapper<ExamrecordEntity>().eq("paperid", paperid).eq("userid", userid));
         return R.ok();
+    }
+
+    /**
+     * 交卷后同步学生成绩（按试卷汇总）
+     */
+    @RequestMapping("/finishExam")
+    @Transactional
+    public R finishExam(@RequestParam Long paperid, HttpServletRequest request){
+        Long userId = (Long) request.getSession().getAttribute("userId");
+        if (userId == null) {
+            return R.error(401, "请先登录");
+        }
+        Object tableNameObj = request.getSession().getAttribute("tableName");
+        if (tableNameObj == null || !"xuesheng".equals(String.valueOf(tableNameObj))) {
+            return R.ok();
+        }
+
+        XueshengEntity xuesheng = xueshengService.selectById(userId);
+        if (xuesheng == null) {
+            return R.error("学生信息不存在");
+        }
+
+        List<ExamrecordEntity> records = examrecordService.selectList(
+                new EntityWrapper<ExamrecordEntity>()
+                        .eq("userid", userId)
+                        .eq("paperid", paperid)
+        );
+        if (records == null || records.isEmpty()) {
+            return R.error("未找到考试记录");
+        }
+
+        double totalScore = 0D;
+        for (ExamrecordEntity row : records) {
+            if (row != null && row.getMyscore() != null) {
+                totalScore += row.getMyscore();
+            }
+        }
+
+        EntityWrapper<XueshengchengjiEntity> ew = new EntityWrapper<XueshengchengjiEntity>()
+                .eq("xuehao", xuesheng.getXuehao());
+        XueshengchengjiEntity scoreRow = xueshengchengjiService.selectOne(ew);
+        if (scoreRow == null) {
+            scoreRow = new XueshengchengjiEntity();
+            scoreRow.setId(new Date().getTime() + new Double(Math.floor(Math.random() * 1000)).longValue());
+        }
+        scoreRow.setKaoshichengji(totalScore);
+        scoreRow.setXuehao(xuesheng.getXuehao());
+        scoreRow.setXingming(xuesheng.getXingming());
+        scoreRow.setBanji(xuesheng.getBanji());
+        scoreRow.setTianjiariqi(new Date());
+
+        if (scoreRow.getId() == null) {
+            scoreRow.setId(new Date().getTime() + new Double(Math.floor(Math.random() * 1000)).longValue());
+            xueshengchengjiService.insert(scoreRow);
+        } else if (xueshengchengjiService.selectById(scoreRow.getId()) == null) {
+            xueshengchengjiService.insert(scoreRow);
+        } else {
+            xueshengchengjiService.updateById(scoreRow);
+        }
+        return R.ok().put("data", scoreRow);
     }
 
 

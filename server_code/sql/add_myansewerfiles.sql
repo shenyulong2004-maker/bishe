@@ -1,0 +1,1 @@
+ALTER TABLE examrecord ADD COLUMN myanswerfiles VARCHAR(500);examrecordexamrecord

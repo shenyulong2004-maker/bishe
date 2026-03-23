@@ -118,6 +118,12 @@ public class ExamrecordEntity<T> implements Serializable {
 	private String myanswer;
 	
 	/**
+	 * 解答题作答附件，多个用逗号分隔
+	 */
+					
+	private String myanswerfiles;
+	
+	/**
 	 * 用户id
 	 */
 					
@@ -285,6 +291,18 @@ public class ExamrecordEntity<T> implements Serializable {
 	 */
 	public Long getUserid() {
 		return userid;
+	}
+	/**
+	 * 设置：解答题作答附件
+	 */
+	public void setMyanswerfiles(String myanswerfiles) {
+		this.myanswerfiles = myanswerfiles;
+	}
+	/**
+	 * 获取：解答题作答附件
+	 */
+	public String getMyanswerfiles() {
+		return myanswerfiles;
 	}
 
 }

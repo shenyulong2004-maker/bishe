@@ -66,7 +66,10 @@
 					 header-align="left"
 					label="提交方式">
 					<template #default="scope">
-						{{scope.row.tijiaofangshi||'在线答题'}}
+						<el-tag v-if="scope.row.tijiaofangshi==='在线答题'" type="success">{{scope.row.tijiaofangshi||'在线答题'}}</el-tag>
+						<el-tag v-else-if="scope.row.tijiaofangshi==='pdf附件'" type="warning">{{scope.row.tijiaofangshi}}</el-tag>
+						<el-tag v-else-if="scope.row.tijiaofangshi==='线下提交'" type="info">{{scope.row.tijiaofangshi}}</el-tag>
+						<el-tag v-else type="primary">{{scope.row.tijiaofangshi||'在线答题'}}</el-tag>
 					</template>
 				</el-table-column>
 				<el-table-column

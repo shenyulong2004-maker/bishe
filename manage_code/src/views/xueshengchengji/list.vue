@@ -28,6 +28,7 @@
 					<el-button type="primary" :disabled="selRows.length==1?false:true" @click="editClick" v-if=" btnAuth('xueshengchengji','修改')">修改</el-button>
 					<el-button type="danger" :disabled="selRows.length?false:true" @click="delClick(null)"  v-if="btnAuth('xueshengchengji','删除')">删除</el-button>
 					<el-button type="warning" @click="echartClick1" v-if="btnAuth('xueshengchengji','成绩统计')">成绩统计</el-button>
+					<el-button type="info" :disabled="list && list.length?false:true" @click="exportClick" v-if="btnAuth('xueshengchengji','导出')">导出</el-button>
 				</div>
 			</div>
 			<br>
@@ -175,6 +176,7 @@
 	import {
 		ElMessageBox
 	} from 'element-plus'
+	import { export_json_to_excel2 } from '@/utils/Export2Excel'
 	const context = getCurrentInstance()?.appContext.config.globalProperties;
 	import formModel from './formModel.vue'
 	
@@ -209,11 +211,17 @@
 		let params = JSON.parse(JSON.stringify(listQuery.value))
 		params['sort'] = 'id'
 		params['order'] = 'desc'
-		if(searchQuery.value.kaoshichengjistart){
-			params['kaoshichengjistart'] = searchQuery.value.kaoshichengjistart
+		if(searchQuery.value.kaoshichengjistart !== undefined && searchQuery.value.kaoshichengjistart !== ''){
+			const minScore = Number(searchQuery.value.kaoshichengjistart)
+			if (Number.isFinite(minScore)) {
+				params['kaoshichengjistart'] = minScore
+			}
 		}
-		if(searchQuery.value.kaoshichengjiend){
-			params['kaoshichengjiend'] = searchQuery.value.kaoshichengjiend
+		if(searchQuery.value.kaoshichengjiend !== undefined && searchQuery.value.kaoshichengjiend !== ''){
+			const maxScore = Number(searchQuery.value.kaoshichengjiend)
+			if (Number.isFinite(maxScore)) {
+				params['kaoshichengjiend'] = maxScore
+			}
 		}
 		context?.$http({
 			url: `${tableName}/page`,
@@ -426,6 +434,28 @@
 		})
 	}
 
+
+	// 导出功能
+	const exportClick = () => {
+		if (!list.value || list.value.length === 0) {
+			context?.$toolUtil.message('没有数据可导出', 'warning')
+			return
+		}
+		const header = ['序号', '成绩等级', '学号', '姓名', '班级', '教师工号', '教师姓名', '添加日期']
+		const filterVal = ['序号', '成绩等级', 'xuehao', 'xingming', 'banji', 'jiaoshigonghao', 'jiaoshixingming', 'tianjiariqi']
+		const exportData = list.value.map((item, index) => ({
+			'序号': index + 1,
+			'成绩等级': getGradeLabel(item.kaoshichengji),
+			'xuehao': item.xuehao,
+			'xingming': item.xingming,
+			'banji': item.banji,
+			'jiaoshigonghao': item.jiaoshigonghao,
+			'jiaoshixingming': item.jiaoshixingming,
+			'tianjiariqi': item.tianjiariqi
+		}))
+		export_json_to_excel2(header, exportData, filterVal, '学生成绩等级')
+		context?.$toolUtil.message('导出成功', 'success')
+	}
 
 	//初始化
 	const init = () => {

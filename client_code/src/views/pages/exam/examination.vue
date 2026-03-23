@@ -14,7 +14,7 @@
 		<div class="exam_top_kong"></div>
 		<el-card v-if="endType" class="score_view">
 			<div class="score_item">
-				考试成绩：<span class="score_num">{{scoreChange()}}</span>（{{ getGradeLabel(scoreChange()) }}）
+				考试成绩：<span class="score_num">{{scoreChange()}}</span>（{{ getGradeLabel(scoreChange(), totalScore) }}）
 			</div>
 			<div class="btn_view">
 				<el-button type="danger" @click="endExam">结束考试</el-button>
@@ -46,11 +46,31 @@
 					<el-tag type="warning" v-if="questionList[currentIndex].type==1">多选题</el-tag>
 					<el-tag type="danger" v-if="questionList[currentIndex].type==2">判断题</el-tag>
 					<el-tag type="info" v-if="questionList[currentIndex].type==3">填空题</el-tag>
+					<el-tag type="primary" v-if="questionList[currentIndex].type==4">解答题</el-tag>
+				</div>
+				<div class="question_images" v-if="questionList[currentIndex].images">
+					<div v-for="(img, imgIdx) in questionList[currentIndex].images.split(',')"
+						:key="imgIdx" class="question_image_item">
+						<img v-if="img.match(/\.(jpg|jpeg|png|gif|webp|bmp)$/i)"
+							:src="baseUrl + img"
+							alt="题目图片"
+							style="max-width:100%;border-radius:4px;margin:8px 0;display:block;cursor:pointer;"
+							@click="previewImg(baseUrl + img)"
+						/>
+						<div v-else-if="img.match(/\.pdf$/i)" class="pdf_attachment">
+							<el-button type="primary" size="default" @click="previewPdf(baseUrl + img)">
+								📄 查看PDF附件
+							</el-button>
+							<el-button type="success" size="default" @click="downloadFile(baseUrl + img)">
+								⬇️ 下载PDF
+							</el-button>
+						</div>
+					</div>
 				</div>
 				<div class="optionList"
 					v-if="questionList[currentIndex].type==0||questionList[currentIndex].type==1">
 					<div class="option" v-for="(items,indexs) in questionList[currentIndex].optionList"
-						:key="index">
+						:key="indexs">
 						{{codeChange(indexs)}}：{{items.text}}
 					</div>
 				</div>
@@ -71,7 +91,22 @@
 						<el-option v-for="(items,indexs) in questionList[currentIndex].optionList"
 							:label="codeChange(indexs)" :value="codeChange(indexs)"></el-option>
 					</el-select>
-					<el-input class="answer_inp" v-model="questionList[currentIndex].myanswer" placeholder="输入答案" v-else></el-input>
+					<el-input class="answer_inp" v-model="questionList[currentIndex].myanswer" placeholder="输入答案" v-else-if="questionList[currentIndex].type==3"></el-input>
+					<div v-else-if="questionList[currentIndex].type==4" class="essay_answer_area">
+						<el-input class="answer_inp" v-model="questionList[currentIndex].myanswer" placeholder="请输入解答内容" type="textarea" :rows="4"></el-input>
+						<div class="file_upload_section">
+							<div class="upload_label">上传附件（图片或PDF）：</div>
+							<upload
+								action="file/upload"
+								tip="支持上传图片或PDF文件"
+								:limit="5"
+								:multiple="true"
+								type="file"
+								:fileUrls="questionList[currentIndex].myanswerfiles || ''"
+								@change="(files) => essayFileChange(files, currentIndex)"
+							/>
+						</div>
+					</div>
 				</div>
 				<div class="answer" v-if="submitType">
 					<el-tag type="success"
@@ -80,7 +115,19 @@
 					<el-tag type="danger"
 						v-if="questionList[currentIndex].answer!=questionList[currentIndex].myanswer"
 						size="large">答案错误</el-tag>
-					我的答案：{{questionList[currentIndex].myanswer}}
+					<div v-if="questionList[currentIndex].type!=4">
+						我的答案：{{questionList[currentIndex].myanswer}}
+					</div>
+					<div v-else class="essay_submit_view">
+						<div class="essay_answer_text">我的答案：{{questionList[currentIndex].myanswer}}</div>
+						<div v-if="questionList[currentIndex].myanswerfiles" class="essay_files">
+							<div class="files_label">上传的附件：</div>
+							<div v-for="(file, idx) in questionList[currentIndex].myanswerfiles.split(',')" :key="idx" class="file_item">
+								<el-button type="primary" size="small" @click="previewFile(baseUrl + file)">📄 查看</el-button>
+								<el-button type="success" size="small" @click="downloadFile(baseUrl + file)">⬇️ 下载</el-button>
+							</div>
+						</div>
+					</div>
 				</div>
 				<el-collapse v-if="submitType" model-value="1" class="analysis_view">
 					<el-collapse-item title="查看解析" name="1">
@@ -116,6 +163,7 @@
 	const context = getCurrentInstance()?.appContext.config.globalProperties;
 	//初始化
 	const id = ref(0)
+	const baseUrl = context?.$config.url || ''
 	const init = () => {
 		if (route.query.id) {
 			id.value = route.query.id
@@ -250,6 +298,10 @@
 		questionList.value[currentIndex.value].myanswers = questionList.value[currentIndex.value].myanswers.sort()
 		questionList.value[currentIndex.value].myanswer = e.sort().join(',')
 	}
+	//解答题文件上传
+	const essayFileChange = (files, index) => {
+		questionList.value[index].myanswerfiles = files
+	}
 	//PDF答题
 	const pdfAnswer = ref('')
 	const pdfAnswerChange = (e) => {
@@ -280,12 +332,27 @@
 			data: arr
 		}).then(() => {
 			clearInterval(timeInter.value)
+			finishExamSync()
 			context?.$toolUtil.message('PDF提交成功！', 'success', () => {
 				history.back()
 			})
 		})
 	}
 	//退出考试
+	const previewImg = (url) => {
+		window.open(url)
+	}
+	const previewPdf = (url) => {
+		window.open(url, '_blank')
+	}
+	const downloadFile = (url) => {
+		const link = document.createElement('a')
+		link.href = url
+		link.download = ''
+		document.body.appendChild(link)
+		link.click()
+		document.body.removeChild(link)
+	}
 	const leaveExam = () => {
 		ElMessageBox.confirm(`是否退出考试？`, '提示', {
 			confirmButtonText: '是',
@@ -296,10 +363,25 @@
 		})
 	}
 	//结束考试
+	const finishSyncing = ref(false)
+	const finishExamSync = () => {
+		if (finishSyncing.value || !examDetail.value?.id) return
+		finishSyncing.value = true
+		context?.$http({
+			url: 'examrecord/finishExam',
+			method: 'post',
+			params: { paperid: examDetail.value.id }
+		}).finally(() => {
+			finishSyncing.value = false
+		})
+	}
 	const endExam = () => {
 		history.back()
 	}
 	//分数统计
+	const totalScore = computed(() => {
+		return questionList.value.reduce((sum, item) => sum + (Number(item.score) || 0), 0)
+	})
 	const scoreChange = () => {
 		let score = 0
 		for (let x in questionList.value) {
@@ -312,13 +394,15 @@
 		}
 		return score
 	}
-	const getGradeLabel = (score) => {
+	const getGradeLabel = (score, fullScore = 100) => {
 		const s = Number(score)
-		if (!Number.isFinite(s)) return ''
-		if (s >= 90) return '优'
-		if (s >= 80) return '良'
-		if (s >= 70) return '中'
-		if (s >= 60) return '及格'
+		const total = Number(fullScore)
+		if (!Number.isFinite(s) || !Number.isFinite(total) || total <= 0) return ''
+		const percent = (s / total) * 100
+		if (percent >= 90) return '优'
+		if (percent >= 80) return '良'
+		if (percent >= 70) return '中'
+		if (percent >= 60) return '及格'
 		return '不及格'
 	}
 	//提交考试记录
@@ -335,8 +419,8 @@
 			answer: row.answer,
 			analysis: row.analysis,
 			myanswer: row.myanswer,
-			myscore: row.myanswer == row
-				.answer ? row.score : 0,
+			myanswerfiles: row.myanswerfiles || '',
+			myscore: row.myanswer == row.answer ? row.score : 0,
 		}
 		context?.$http({
 			url: 'examrecord/save',
@@ -351,12 +435,17 @@
 			context?.$toolUtil.message('请输入答案', 'error')
 			return false
 		}
+		if (questionList.value[currentIndex.value].type == 4 && !questionList.value[currentIndex.value].myanswerfiles) {
+			context?.$toolUtil.message('解答题必须上传附件', 'error')
+			return false
+		}
 		saverecord(questionList.value[currentIndex.value])
 		submitType.value = true
 	}
 	const nextClick = () => {
 		if (currentIndex.value == questionList.value.length - 1) {
 			clearInterval(timeInter.value)
+			finishExamSync()
 			endType.value = true
 		} else {
 			submitType.value = false
@@ -456,7 +545,23 @@
 			border-color: #ddd;
 			border-width: 1px;
 			border-style: solid;
-			// 题目
+			// 题目图片区域
+		.question_images {
+			padding: 8px 0;
+			.question_image_item {
+				margin-bottom: 8px;
+				img {
+					cursor: pointer;
+					box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+					&:hover { opacity: 0.85; }
+				}
+				.pdf_attachment {
+					display: flex;
+					gap: 8px;
+				}
+			}
+		}
+		// 题目
 			.questionTitle {
 				width: 100%;
 				// 单选题
@@ -522,6 +627,47 @@
 					}
 					.is-focus {
 						box-shadow: none !important;
+					}
+				}
+				// 解答题答题区域
+				.essay_answer_area {
+					display: flex;
+					flex-direction: column;
+					gap: 12px;
+					.file_upload_section {
+						padding: 12px;
+						background: #f5f7fa;
+						border-radius: 4px;
+						.upload_label {
+							font-size: 13px;
+							color: #666;
+							margin-bottom: 8px;
+							font-weight: 500;
+						}
+					}
+				}
+				// 解答题提交后显示
+				.essay_submit_view {
+					.essay_answer_text {
+						padding: 10px;
+						background: #f5f7fa;
+						border-radius: 4px;
+						margin-bottom: 12px;
+						color: #333;
+						line-height: 1.6;
+					}
+					.essay_files {
+						.files_label {
+							font-size: 13px;
+							color: #666;
+							margin-bottom: 8px;
+							font-weight: 500;
+						}
+						.file_item {
+							display: flex;
+							gap: 8px;
+							margin-bottom: 8px;
+						}
 					}
 				}
 				// 下拉框

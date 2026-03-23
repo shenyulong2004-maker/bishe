@@ -52,6 +52,22 @@
 						{{scope.row.myanswer}}
 					</template>
 				</el-table-column>
+				<el-table-column label="答题附件" :resizable='true' align="left" header-align="left">
+					<template #default="scope">
+						<div v-if="scope.row.myanswerfiles">
+							<el-button
+								v-for="(file, idx) in scope.row.myanswerfiles.split(',').filter(item => item && item.trim())"
+								:key="`${scope.row.id}-${idx}`"
+								type="primary"
+								size="small"
+								@click="previewFile(file)"
+							>
+								查看附件{{ idx + 1 }}
+							</el-button>
+						</div>
+						<span v-else>-</span>
+					</template>
+				</el-table-column>
 				<el-table-column label="解析" :resizable='true' :sortable='true' align="left" header-align="left">
 					<template #default="scope">
 						{{scope.row.analysis}}
@@ -169,6 +185,11 @@
 			list.value = res.data.data.list
 			total.value = Number(res.data.data.total)
 		})
+	}
+	const previewFile = (file) => {
+		if (!file) return
+		const finalUrl = /^https?:\/\//i.test(file) ? file : `${context?.$config.url}${file}`
+		window.open(finalUrl, '_blank')
 	}
 	const init = () => {
 		getList()

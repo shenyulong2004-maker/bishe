@@ -43,6 +43,14 @@
 								{{scope.row.time}}
 							</template>
 						</el-table-column>
+						<el-table-column label="提交方式" :resizable='true' align="left" header-align="left">
+							<template #default="scope">
+								<el-tag v-if="scope.row.tijiaofangshi==='在线答题'" type="success">{{scope.row.tijiaofangshi||'在线答题'}}</el-tag>
+								<el-tag v-else-if="scope.row.tijiaofangshi==='pdf附件'" type="warning">{{scope.row.tijiaofangshi}}</el-tag>
+								<el-tag v-else-if="scope.row.tijiaofangshi==='线下提交'" type="info">{{scope.row.tijiaofangshi}}</el-tag>
+								<el-tag v-else type="primary">{{scope.row.tijiaofangshi||'在线答题'}}</el-tag>
+							</template>
+						</el-table-column>
 						<el-table-column label="操作" :resizable='true' align="left" header-align="left">
 							<template #default="scope">
 								<el-button class="exam_btn" @click="examClick(scope.row.id)" size="small">开始考试</el-button>

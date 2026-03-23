@@ -15,7 +15,7 @@
 					<div class="list_label">密码：</div>
 					<input class="list_inp"
 					 v-model="registerForm.mima" 
-					 placeholder="请输入密码"
+					 placeholder="请输入密码（1-64位）"
 					 type="password"
 					 />
 				</div>
@@ -114,6 +114,10 @@
 			context?.$toolUtil.message(`密码不能为空`,'error')
 			return false
 		}
+		if(!isValidPassword(registerForm.value.mima)){
+			context?.$toolUtil.message(`密码长度需为1-64位`,'error')
+			return false
+		}
 		if(registerForm.value.mima!=registerForm.value.mima2){
 			context?.$toolUtil.message('两次密码输入不一致','error')
 			return false
@@ -143,6 +147,10 @@
 		})
 	}
 	//公共方法
+	const isValidPassword = (pwd) => {
+		if (!pwd) return false
+		return pwd.length >= 1 && pwd.length <= 64
+	}
 	const getUUID=()=> {
 		return new Date().getTime();
 	}

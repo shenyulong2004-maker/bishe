@@ -72,6 +72,7 @@
 						<el-tag type="warning" v-if="scope.row.type==1">多选题</el-tag>
 						<el-tag type="danger" v-if="scope.row.type==2">判断题</el-tag>
 						<el-tag type="info" v-if="scope.row.type==3">填空题</el-tag>
+						<el-tag type="primary" v-if="scope.row.type==4">解答题</el-tag>
 					</template>
 				</el-table-column>
 				<el-table-column label="操作" :resizable='true' :sortable='true' align="left" header-align="left">

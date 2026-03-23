@@ -216,7 +216,7 @@
 			name: '',
 			tijiaofangshi: '在线答题',
 			time: '',
-			status: '',
+			status: 1,
 			pdfurl: '',
 			xianxiashuoming: '',
 		}

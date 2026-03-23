@@ -14,7 +14,7 @@
 		<div class="exam_top_kong"></div>
 		<el-card v-if="endType" class="score_view">
 			<div class="score_item">
-				考试成绩：<span class="score_num">{{scoreChange()}}</span>（{{ getGradeLabel(scoreChange()) }}）
+				考试成绩：<span class="score_num">{{scoreChange()}}</span>（{{ getGradeLabel(scoreChange(), totalScore) }}）
 			</div>
 			<div class="btn_view">
 				<el-button type="danger" @click="endExam">结束考试</el-button>
@@ -29,10 +29,29 @@
 					<el-tag type="danger" v-if="questionList[currentIndex].type==2">判断题</el-tag>
 					<el-tag type="info" v-if="questionList[currentIndex].type==3">填空题</el-tag>
 				</div>
+				<div class="question_images" v-if="questionList[currentIndex].images">
+					<div v-for="(img, imgIdx) in questionList[currentIndex].images.split(',')"
+						:key="imgIdx" class="question_image_item">
+						<img v-if="img.match(/\.(jpg|jpeg|png|gif|webp|bmp)$/i)"
+							:src="baseUrl + img"
+							alt="题目图片"
+							style="max-width:100%;border-radius:4px;margin:8px 0;display:block;cursor:pointer;"
+							@click="previewImg(baseUrl + img)"
+						/>
+						<div v-else-if="img.match(/\.pdf$/i)" class="pdf_attachment">
+							<el-button type="primary" size="default" @click="previewPdf(baseUrl + img)">
+								📄 查看PDF附件
+							</el-button>
+							<el-button type="success" size="default" @click="downloadFile(baseUrl + img)">
+								⬇️ 下载PDF
+							</el-button>
+						</div>
+					</div>
+				</div>
 				<div class="optionList"
 					v-if="questionList[currentIndex].type==0||questionList[currentIndex].type==1">
 					<div class="option" v-for="(items,indexs) in questionList[currentIndex].optionList"
-						:key="index">
+						:key="indexs">
 						{{codeChange(indexs)}}：{{items.text}}
 					</div>
 				</div>
@@ -45,7 +64,7 @@
 							:label="codeChange(indexs)" :value="codeChange(indexs)"></el-option>
 						<el-option v-if="questionList[currentIndex].type==2"
 							v-for="(items,indexs) in questionList[currentIndex].optionList"
-							:label="codeChange1(indexs)" :value="codeChange(indexs)"></el-option>
+							:label="codeChange1(indexs)" :value="codeChange1(indexs)"></el-option>
 					</el-select>
 					<el-select v-else-if="questionList[currentIndex].type==1"
 						v-model="questionList[currentIndex].myanswers" placeholder="输入答案" multiple
@@ -95,6 +114,7 @@
 	} from 'element-plus'
 	const route = useRoute()
 	const context = getCurrentInstance()?.appContext.config.globalProperties;
+	const baseUrl = context?.$config.url || ''
 	//初始化
 	const id = ref(0)
 	const init = () => {
@@ -228,10 +248,25 @@
 	}
 	//多选题
 	const type1Change = (e) => {
-		questionList.value[currentIndex.value].myanswers = questionList.value[currentIndex.value].myanswers.sort()
-		questionList.value[currentIndex.value].myanswer = e.sort().join(',')
+		const sorted = [...e].sort()
+		questionList.value[currentIndex.value].myanswers = sorted
+		questionList.value[currentIndex.value].myanswer = sorted.join(',')
 	}
 	//退出考试
+	const previewImg = (url) => {
+		window.open(url)
+	}
+	const previewPdf = (url) => {
+		window.open(url, '_blank')
+	}
+	const downloadFile = (url) => {
+		const link = document.createElement('a')
+		link.href = url
+		link.download = ''
+		document.body.appendChild(link)
+		link.click()
+		document.body.removeChild(link)
+	}
 	const leaveExam = () => {
 		ElMessageBox.confirm(`是否退出考试？`, '提示', {
 			confirmButtonText: '是',
@@ -242,10 +277,25 @@
 		})
 	}
 	//结束考试
+	const finishSyncing = ref(false)
+	const finishExamSync = () => {
+		if (finishSyncing.value || !examDetail.value?.id) return
+		finishSyncing.value = true
+		context?.$http({
+			url: 'examrecord/finishExam',
+			method: 'post',
+			params: { paperid: examDetail.value.id }
+		}).finally(() => {
+			finishSyncing.value = false
+		})
+	}
 	const endExam = () => {
 		history.back()
 	}
 	//分数统计
+	const totalScore = computed(() => {
+		return questionList.value.reduce((sum, item) => sum + (Number(item.score) || 0), 0)
+	})
 	const scoreChange = () => {
 		let score = 0
 		for (let x in questionList.value) {
@@ -258,13 +308,15 @@
 		}
 		return score
 	}
-	const getGradeLabel = (score) => {
+	const getGradeLabel = (score, fullScore = 100) => {
 		const s = Number(score)
-		if (!Number.isFinite(s)) return ''
-		if (s >= 90) return '优'
-		if (s >= 80) return '良'
-		if (s >= 70) return '中'
-		if (s >= 60) return '及格'
+		const total = Number(fullScore)
+		if (!Number.isFinite(s) || !Number.isFinite(total) || total <= 0) return ''
+		const percent = (s / total) * 100
+		if (percent >= 90) return '优'
+		if (percent >= 80) return '良'
+		if (percent >= 70) return '中'
+		if (percent >= 60) return '及格'
 		return '不及格'
 	}
 	//提交考试记录
@@ -303,6 +355,7 @@
 	const nextClick = () => {
 		if (currentIndex.value == questionList.value.length - 1) {
 			clearInterval(timeInter.value)
+			finishExamSync()
 			endType.value = true
 		} else {
 			submitType.value = false
@@ -411,6 +464,22 @@
 					background-color: #fdf6ec;
 					color: #e6a23c;
 					border-color: #faecd8;
+				}
+			}
+			// 题目图片区域
+			.question_images {
+				padding: 8px 0;
+				.question_image_item {
+					margin-bottom: 8px;
+					img {
+						cursor: pointer;
+						box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+						&:hover { opacity: 0.85; }
+					}
+					.pdf_attachment {
+						display: flex;
+						gap: 8px;
+					}
 				}
 			}
 			// 选项列表

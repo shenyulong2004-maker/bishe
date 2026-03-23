@@ -48,43 +48,61 @@ public class FileController{
 	@RequestMapping("/upload")
     @IgnoreAuth
 	public R upload(@RequestParam("file") MultipartFile file,String type) throws Exception {
-		if (file.isEmpty()) {
-			throw new EIException("上传文件不能为空");
-		}
-		String fileExt = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".")+1);
-		File path = new File(ResourceUtils.getURL("classpath:static").getPath());
-		if(!path.exists()) {
-		    path = new File("");
-		}
-		File upload = new File(path.getAbsolutePath(),"/file/");
-		if(!upload.exists()) {
-		    upload.mkdirs();
-		}
-		String fileName = new Date().getTime()+"."+fileExt;
-        if(StringUtils.isNotBlank(type) && type.contains("_template")) {
-            fileName = type + "."+fileExt;
-            new File(upload.getAbsolutePath()+"/"+fileName).deleteOnExit();
-        }
-		File dest = new File(upload.getAbsolutePath()+"/"+fileName);
-		file.transferTo(dest);
-		/**
-  		 * 如果使用idea或者eclipse重启项目，发现之前上传的图片或者文件丢失，将下面一行代码注释打开
-   		 * 请将以下的"D:\\cl123456\\src\\main\\resources\\static\\file"替换成你本地项目的upload路径，
- 		 * 并且项目路径不能存在中文、空格等特殊字符
- 		 */
-//		FileUtils.copyFile(dest, new File("D:\\cl123456\\src\\main\\resources\\static\\file"+"/"+fileName)); /**修改了路径以后请将该行最前面的//注释去掉**/
-		if(StringUtils.isNotBlank(type) && type.equals("1")) {
-			ConfigEntity configEntity = configService.selectOne(new EntityWrapper<ConfigEntity>().eq("name", "faceFile"));
-			if(configEntity==null) {
-				configEntity = new ConfigEntity();
-				configEntity.setName("faceFile");
-				configEntity.setValue(fileName);
-			} else {
-				configEntity.setValue(fileName);
+		try {
+			if (file.isEmpty()) {
+				return R.error("上传文件不能为空");
 			}
-			configService.insertOrUpdate(configEntity);
+			
+			String originalFilename = file.getOriginalFilename();
+			if (originalFilename == null) {
+				return R.error("文件名为空");
+			}
+			
+			String fileExt = originalFilename.substring(originalFilename.lastIndexOf(".")+1).toLowerCase();
+			List<String> allowedExt = Arrays.asList("jpg", "jpeg", "png", "pdf", "gif", "bmp");
+			if (!allowedExt.contains(fileExt)) {
+				return R.error("不支持的文件格式：" + fileExt);
+			}
+			
+			if (file.getSize() > 50 * 1024 * 1024) {
+				return R.error("文件大小不能超过 50MB");
+			}
+			
+			File path = new File(ResourceUtils.getURL("classpath:static").getPath());
+			if(!path.exists()) {
+			    path = new File("");
+			}
+			File upload = new File(path.getAbsolutePath(),"/file/");
+			if(!upload.exists()) {
+			    upload.mkdirs();
+			}
+			String fileName = new Date().getTime()+"."+fileExt;
+	        if(StringUtils.isNotBlank(type) && type.contains("_template")) {
+	            fileName = type + "."+fileExt;
+	            new File(upload.getAbsolutePath()+"/"+fileName).deleteOnExit();
+	        }
+			File dest = new File(upload.getAbsolutePath()+"/"+fileName);
+			file.transferTo(dest);
+			
+			if(StringUtils.isNotBlank(type) && type.equals("1")) {
+				ConfigEntity configEntity = configService.selectOne(new EntityWrapper<ConfigEntity>().eq("name", "faceFile"));
+				if(configEntity==null) {
+					configEntity = new ConfigEntity();
+					configEntity.setName("faceFile");
+					configEntity.setValue(fileName);
+				} else {
+					configEntity.setValue(fileName);
+				}
+				configService.insertOrUpdate(configEntity);
+			}
+			System.out.println("文件上传成功: " + fileName);
+			return R.ok("上传成功").put("file", fileName);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println("文件上传失败: " + e.getMessage());
+			return R.error("上传失败：" + e.getMessage());
 		}
-		return R.ok().put("file", fileName);
 	}
 	
 	/**

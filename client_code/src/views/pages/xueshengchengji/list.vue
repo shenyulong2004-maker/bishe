@@ -189,11 +189,17 @@
 	const getList = () => {
 		listLoading.value = true
 		let params = JSON.parse(JSON.stringify(listQuery.value))
-		if (searchQuery.value.kaoshichengjistart&&searchQuery.value.kaoshichengjistart!='') {
-			params.kaoshichengjistart = searchQuery.value.kaoshichengjistart
+		if (searchQuery.value.kaoshichengjistart && searchQuery.value.kaoshichengjistart != '') {
+			const minScore = Number(searchQuery.value.kaoshichengjistart)
+			if (Number.isFinite(minScore)) {
+				params.kaoshichengjistart = minScore
+			}
 		}
-		if (searchQuery.value.kaoshichengjiend&&searchQuery.value.kaoshichengjiend!='') {
-			params.kaoshichengjiend = searchQuery.value.kaoshichengjiend
+		if (searchQuery.value.kaoshichengjiend && searchQuery.value.kaoshichengjiend != '') {
+			const maxScore = Number(searchQuery.value.kaoshichengjiend)
+			if (Number.isFinite(maxScore)) {
+				params.kaoshichengjiend = maxScore
+			}
 		}
 		context?.$http({
 			url: `${tableName}/${centerType.value?'page':'list'}`,

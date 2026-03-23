@@ -83,7 +83,7 @@
 	//基础信息
 	onMounted(() => {})
 	//列表数据
-	const list = ref(null)
+	const list = ref([])
 	const table = ref(null)
 	const listQuery = ref({
 		page: 1,

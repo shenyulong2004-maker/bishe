@@ -244,16 +244,7 @@ public class EncryptUtil {
 
 	public static boolean isValidPassword(String raw) {
 		if (raw == null) return false;
-		if (raw.length() < 8 || raw.length() > 64) return false;
-		boolean hasLetter = false;
-		boolean hasDigit = false;
-		for (int i = 0; i < raw.length(); i++) {
-			char c = raw.charAt(i);
-			if (Character.isLetter(c)) hasLetter = true;
-			if (Character.isDigit(c)) hasDigit = true;
-			if (hasLetter && hasDigit) return true;
-		}
-		return false;
+		return raw.length() >= 1 && raw.length() <= 64;
 	}
 
 	public static String hashPassword(String raw) {
