@@ -251,8 +251,8 @@ public class ExamrecordController {
             }
         }
 
-        EntityWrapper<XueshengchengjiEntity> ew = new EntityWrapper<XueshengchengjiEntity>()
-                .eq("xuehao", xuesheng.getXuehao());
+        EntityWrapper<XueshengchengjiEntity> ew = new EntityWrapper<XueshengchengjiEntity>();
+        ew.eq("xuehao", xuesheng.getXuehao());
         XueshengchengjiEntity scoreRow = xueshengchengjiService.selectOne(ew);
         if (scoreRow == null) {
             scoreRow = new XueshengchengjiEntity();
