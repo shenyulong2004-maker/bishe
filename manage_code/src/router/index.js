@@ -13,6 +13,10 @@
 	import examination from '@/views/exam/exampaperlist/examination'
 	import examrecord from '@/views/exam/examrecord/list'
 	import examfailrecord from '@/views/exam/examfailrecord/list'
+	import jiazhanggoutong from '@/views/jiazhanggoutong/list'
+	import parentMeetingList from '@/views/parentmeeting/MeetingList'
+	import parentMeetingBook from '@/views/parentmeeting/MeetingBook'
+	import parentMeetingDetail from '@/views/parentmeeting/MeetingDetail'
 	import xueshengRegister from '@/views/xuesheng/register'
 	import xueshengCenter from '@/views/xuesheng/center'
 	import jiaoshiRegister from '@/views/jiaoshi/register'
@@ -96,6 +100,22 @@ export const routes = [{
 			path: '/examfailrecord',
 			name: '错题本',
 			component: examfailrecord
+		}, {
+			path: '/jiazhanggoutong',
+			name: '家长-教师沟通',
+			component: jiazhanggoutong
+		}, {
+			path: '/parent/meeting',
+			name: '在线家长会',
+			component: parentMeetingList
+		}, {
+			path: '/parent/meeting/book',
+			name: '会议预约',
+			component: parentMeetingBook
+		}, {
+			path: '/parent/meeting/:id',
+			name: '会议详情',
+			component: parentMeetingDetail
 		}
 		]
 	},

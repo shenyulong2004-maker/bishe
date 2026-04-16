@@ -18,6 +18,7 @@ import examrecordList from '@/views/pages/exam/examrecordList'
 import examfailrecord from '@/views/pages/exam/examfailrecord'
 import xueshengRegister from '@/views/pages/xuesheng/register'
 import jiaoshiRegister from '@/views/pages/jiaoshi/register'
+import jiazhanggoutong from '@/views/pages/jiazhanggoutong.vue'
 
 const routes = [{
 		path: '/',
@@ -73,6 +74,9 @@ const routes = [{
 		}, {
 			path: 'examfailrecord',
 			component: examfailrecord
+		}, {
+			path: 'jiazhanggoutong',
+			component: jiazhanggoutong
 		}
 		]
 	},

@@ -12,10 +12,10 @@
 		<el-form :inline="true" :model="searchQuery" class="list_search">
 			<div class="search_view">
 				<div class="search_label">
-					学号：
+					家长账号：
 				</div>
 				<div class="search_box">
-					<el-input class="search_inp" v-model="searchQuery.xuehao" placeholder="学号"
+					<el-input class="search_inp" v-model="searchQuery.xuehao" placeholder="家长账号"
 						clearable>
 					</el-input>
 				</div>
@@ -77,7 +77,7 @@
 	const route = useRoute()
 	//基础信息
 	const tableName = 'xuesheng'
-	const formName = '学生'
+	const formName = '家长'
 	//基础信息
 	const breadList = ref([{
 		name: formName

@@ -4,10 +4,10 @@
 			<el-form :model="registerForm" class="register_form">
 				<div class="title_view">{{projectName}}注册</div>
 				<div class="list_item">
-					<div class="list_label">学号：</div>
+					<div class="list_label">家长账号：</div>
 					<input class="list_inp"
 					 v-model="registerForm.xuehao" 
-					 placeholder="请输入学号"
+					 placeholder="请输入家长账号"
 					 type="text"
 					 />
 				</div>
@@ -107,7 +107,7 @@
 	const handleRegister = () => {
 		let url = tableName.value +"/register";
 		if((!registerForm.value.xuehao)){
-			context?.$toolUtil.message(`学号不能为空`,'error')
+			context?.$toolUtil.message(`家长账号不能为空`,'error')
 			return false
 		}
 		if((!registerForm.value.mima)){

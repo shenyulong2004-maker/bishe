@@ -7,6 +7,7 @@
 			<div class="usersTabView">
 				<div class="usersTab" :class="tabIndex=='center'?'usersTabActive':''" @click="tabClick({tableName:'center'})">个人中心</div>
 				<div class="usersTab " :class="tabIndex=='updatepassword'?'usersTabActive':''" @click="tabClick({tableName:'updatepassword'})">修改密码</div>
+				<div class="usersTab" @click="tabClick({tableName:'jiazhanggoutong'})">家长-教师沟通</div>
 				<div v-for="(item,index) in menuList" :key="index" class="usersTab" @mouseenter="usersTabHover(index)"
 					@mouseleave="usersTabLeave">
 					{{item.menu}}
@@ -22,8 +23,8 @@
 				<el-form class="usersForm" ref="userFormRef" :model="userForm" label-width="120px" :rules="rules">
 					<el-row>
 						<el-col :span="12">
-							<el-form-item prop="xuehao" label="学号">
-								<el-input class="list_inp" v-model="userForm.xuehao" placeholder="学号" readonly></el-input>
+							<el-form-item prop="xuehao" label="家长账号">
+								<el-input class="list_inp" v-model="userForm.xuehao" placeholder="家长账号" readonly></el-input>
 							</el-form-item>
 						</el-col>
 						<el-col :span="12">
@@ -268,6 +269,10 @@
 				newmima2: ''
 			}
 			tabIndex.value = 'updatepassword'
+			return false
+		}
+		if (item.tableName == 'jiazhanggoutong') {
+			router.push('/index/jiazhanggoutong')
 			return false
 		}
 		if(item.tableName=='examrecord'&&item.menuJump=='22'){

@@ -251,9 +251,7 @@ public class ExamrecordController {
             }
         }
 
-        EntityWrapper<XueshengchengjiEntity> ew = new EntityWrapper<XueshengchengjiEntity>();
-        ew.eq("xuehao", xuesheng.getXuehao());
-        XueshengchengjiEntity scoreRow = xueshengchengjiService.selectOne(ew);
+        XueshengchengjiEntity scoreRow = xueshengchengjiService.selectOne(new EntityWrapper<XueshengchengjiEntity>().eq("xuehao", xuesheng.getXuehao()));
         if (scoreRow == null) {
             scoreRow = new XueshengchengjiEntity();
             scoreRow.setId(new Date().getTime() + new Double(Math.floor(Math.random() * 1000)).longValue());

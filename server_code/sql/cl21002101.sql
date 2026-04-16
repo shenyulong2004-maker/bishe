@@ -88,7 +88,7 @@ DROP TABLE IF EXISTS `examquestion`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `examquestion` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `id` bigint(20) NOT NULL COMMENT '主键',
   `addtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `paperid` bigint(20) NOT NULL COMMENT '试卷id（外键）',
   `papername` varchar(200) NOT NULL COMMENT '试卷名称',
@@ -99,8 +99,9 @@ CREATE TABLE `examquestion` (
   `analysis` longtext COMMENT '答案解析',
   `type` bigint(20) DEFAULT NULL COMMENT '试题类型',
   `sequence` bigint(20) DEFAULT NULL COMMENT '试题排序，值越大排越前面',
+  `images` varchar(1000) DEFAULT NULL COMMENT '题目图片/PDF附件（逗号分隔多个文件路径）',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1709647082651 DEFAULT CHARSET=utf8 COMMENT='试题管理';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='试题管理';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -109,7 +110,7 @@ CREATE TABLE `examquestion` (
 
 LOCK TABLES `examquestion` WRITE;
 /*!40000 ALTER TABLE `examquestion` DISABLE KEYS */;
-INSERT INTO `examquestion` VALUES (1,'2024-03-05 13:53:21',1,'试卷1','1+1等于多少?','[{\"text\":\"2\",\"code\":\"A\"},{\"text\":\"11\",\"code\":\"B\"},{\"text\":\"十\",\"code\":\"C\"},{\"text\":\"王\",\"code\":\"D\"}]',20,'A','2',0,1),(2,'2024-03-05 13:53:21',1,'试卷1','2-1等于1，对吗?','[{\"text\":\"对\",\"code\":\"A\"},{\"text\":\"错\",\"code\":\"B\"}]',20,'A','2-1等于1',2,2),(3,'2024-03-05 13:53:21',1,'试卷1','下面哪些数是质数？。','[{\"text\":\"2\",\"code\":\"A\"},{\"text\":\"3\",\"code\":\"B\"},{\"text\":\"4\",\"code\":\"C\"},{\"text\":\"5\",\"code\":\"D\"}]',30,'A,B,D','2,3,5属于质数',1,3),(4,'2024-03-05 13:53:21',1,'试卷1','最小的自然是( )。','[]',30,'0','最小的自然数是0',3,4),(1709647082650,'2024-03-05 13:58:02',1,'试卷1','1+1=2','[{\"text\":\"对\",\"code\":\"A\"},{\"text\":\"错\",\"code\":\"B\"}]',10,'对','1',2,1);
+INSERT INTO `examquestion` (`id`,`addtime`,`paperid`,`papername`,`questionname`,`options`,`score`,`answer`,`analysis`,`type`,`sequence`) VALUES (1,'2024-03-05 13:53:21',1,'试卷1','1+1等于多少?','[{\"text\":\"2\",\"code\":\"A\"},{\"text\":\"11\",\"code\":\"B\"},{\"text\":\"十\",\"code\":\"C\"},{\"text\":\"王\",\"code\":\"D\"}]',20,'A','2',0,1),(2,'2024-03-05 13:53:21',1,'试卷1','2-1等于1，对吗?','[{\"text\":\"对\",\"code\":\"A\"},{\"text\":\"错\",\"code\":\"B\"}]',20,'A','2-1等于1',2,2),(3,'2024-03-05 13:53:21',1,'试卷1','下面哪些数是质数？。','[{\"text\":\"2\",\"code\":\"A\"},{\"text\":\"3\",\"code\":\"B\"},{\"text\":\"4\",\"code\":\"C\"},{\"text\":\"5\",\"code\":\"D\"}]',30,'A,B,D','2,3,5属于质数',1,3),(4,'2024-03-05 13:53:21',1,'试卷1','最小的自然是( )。','[]',30,'0','最小的自然数是0',3,4),(1709647082650,'2024-03-05 13:58:02',1,'试卷1','1+1=2','[{\"text\":\"对\",\"code\":\"A\"},{\"text\":\"错\",\"code\":\"B\"}]',10,'对','1',2,1);
 /*!40000 ALTER TABLE `examquestion` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -134,6 +135,7 @@ CREATE TABLE `examrecord` (
   `analysis` longtext COMMENT '答案解析',
   `myscore` bigint(20) DEFAULT NULL COMMENT '试题得分',
   `myanswer` varchar(200) DEFAULT NULL COMMENT '考生答案',
+  `myanswerfiles` text COMMENT '解答题作答附件，多个用逗号分隔',
   `userid` bigint(20) NOT NULL COMMENT '用户id',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1709647125865 DEFAULT CHARSET=utf8 COMMENT='考试记录';
@@ -145,7 +147,7 @@ CREATE TABLE `examrecord` (
 
 LOCK TABLES `examrecord` WRITE;
 /*!40000 ALTER TABLE `examrecord` DISABLE KEYS */;
-INSERT INTO `examrecord` VALUES (1709647111943,'2024-03-05 13:58:31','1',1,'试卷1',1,'1+1等于多少?','[{\"text\":\"2\",\"code\":\"A\"},{\"text\":\"11\",\"code\":\"B\"},{\"text\":\"十\",\"code\":\"C\"},{\"text\":\"王\",\"code\":\"D\"}]',20,'A','2',0,'C',1709647024367),(1709647115096,'2024-03-05 13:58:34','1',1,'试卷1',1709647082650,'1+1=2','[{\"text\":\"对\",\"code\":\"A\"},{\"text\":\"错\",\"code\":\"B\"}]',10,'对','1',0,'B',1709647024367),(1709647118353,'2024-03-05 13:58:38','1',1,'试卷1',2,'2-1等于1，对吗?','[{\"text\":\"对\",\"code\":\"A\"},{\"text\":\"错\",\"code\":\"B\"}]',20,'A','2-1等于1',20,'A',1709647024367),(1709647123113,'2024-03-05 13:58:42','1',1,'试卷1',3,'下面哪些数是质数？。','[{\"text\":\"2\",\"code\":\"A\"},{\"text\":\"3\",\"code\":\"B\"},{\"text\":\"4\",\"code\":\"C\"},{\"text\":\"5\",\"code\":\"D\"}]',30,'A,B,D','2,3,5属于质数',0,'B,C',1709647024367),(1709647125864,'2024-03-05 13:58:45','1',1,'试卷1',4,'最小的自然是( )。','[]',30,'0','最小的自然数是0',30,'0',1709647024367);
+INSERT INTO `examrecord` (`id`,`addtime`,`username`,`paperid`,`papername`,`questionid`,`questionname`,`options`,`score`,`answer`,`analysis`,`myscore`,`myanswer`,`userid`) VALUES (1709647111943,'2024-03-05 13:58:31','1',1,'试卷1',1,'1+1等于多少?','[{\"text\":\"2\",\"code\":\"A\"},{\"text\":\"11\",\"code\":\"B\"},{\"text\":\"十\",\"code\":\"C\"},{\"text\":\"王\",\"code\":\"D\"}]',20,'A','2',0,'C',1709647024367),(1709647115096,'2024-03-05 13:58:34','1',1,'试卷1',1709647082650,'1+1=2','[{\"text\":\"对\",\"code\":\"A\"},{\"text\":\"错\",\"code\":\"B\"}]',10,'对','1',0,'B',1709647024367),(1709647118353,'2024-03-05 13:58:38','1',1,'试卷1',2,'2-1等于1，对吗?','[{\"text\":\"对\",\"code\":\"A\"},{\"text\":\"错\",\"code\":\"B\"}]',20,'A','2-1等于1',20,'A',1709647024367),(1709647123113,'2024-03-05 13:58:42','1',1,'试卷1',3,'下面哪些数是质数？。','[{\"text\":\"2\",\"code\":\"A\"},{\"text\":\"3\",\"code\":\"B\"},{\"text\":\"4\",\"code\":\"C\"},{\"text\":\"5\",\"code\":\"D\"}]',30,'A,B,D','2,3,5属于质数',0,'B,C',1709647024367),(1709647125864,'2024-03-05 13:58:45','1',1,'试卷1',4,'最小的自然是( )。','[]',30,'0','最小的自然数是0',30,'0',1709647024367);
 /*!40000 ALTER TABLE `examrecord` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -259,7 +261,7 @@ CREATE TABLE `token` (
 
 LOCK TABLES `token` WRITE;
 /*!40000 ALTER TABLE `token` DISABLE KEYS */;
-INSERT INTO `token` VALUES (1,1,'admin','users','管理员','8vdt8eq0akru319m7s3o7xjr8phk0iru','2024-03-05 13:57:19','2024-03-05 14:57:20'),(2,1709646985612,'3','jiaoshi','管理员','y93fyp994u3tkx7ay8n2gc412lt92ii5','2024-03-05 13:57:41','2024-03-05 14:59:02'),(3,1709647024367,'1','xuesheng','学生','nl9bpvlmyjvthrl5jlkwpwc3p6d52vqq','2024-03-05 13:58:16','2024-03-05 14:59:35'),(4,1709647003639,'2','jiazhang','家长','oo15fwusvm64whsfsfh3ux9hr3ivhjny','2024-03-05 13:59:47','2024-03-05 14:59:47');
+INSERT INTO `token` VALUES (1,1,'admin','users','管理员','8vdt8eq0akru319m7s3o7xjr8phk0iru','2024-03-05 13:57:19','2024-03-05 14:57:20'),(2,1709646985612,'3','jiaoshi','管理员','y93fyp994u3tkx7ay8n2gc412lt92ii5','2024-03-05 13:57:41','2024-03-05 14:59:02'),(3,1709647024367,'1','xuesheng','学生','nl9bpvlmyjvthrl5jlkwpwc3p6d52vqq','2024-03-05 13:58:16','2024-03-05 14:59:35');
 /*!40000 ALTER TABLE `token` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -352,6 +354,145 @@ LOCK TABLES `xueshengchengji` WRITE;
 INSERT INTO `xueshengchengji` VALUES (101,'2024-03-05 13:53:21',1,'学号1','姓名1','班级1','教师工号1','教师姓名1','2024-03-05 21:53:21'),(102,'2024-03-05 13:53:21',2,'学号2','姓名2','班级2','教师工号2','教师姓名2','2024-03-05 21:53:21'),(103,'2024-03-05 13:53:21',3,'学号3','姓名3','班级3','教师工号3','教师姓名3','2024-03-05 21:53:21'),(104,'2024-03-05 13:53:21',4,'学号4','姓名4','班级4','教师工号4','教师姓名4','2024-03-05 21:53:21'),(105,'2024-03-05 13:53:21',5,'学号5','姓名5','班级5','教师工号5','教师姓名5','2024-03-05 21:53:21'),(106,'2024-03-05 13:53:21',6,'学号6','姓名6','班级6','教师工号6','教师姓名6','2024-03-05 21:53:21'),(1709647160179,'2024-03-05 13:59:20',50,'1','1','101','3','3老师','2024-03-05 21:59:07');
 /*!40000 ALTER TABLE `xueshengchengji` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `homework`
+--
+
+DROP TABLE IF EXISTS `homework`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `homework` (
+  `id` bigint(20) NOT NULL COMMENT '主键',
+  `content` longtext NOT NULL COMMENT '作业内容',
+  `is_permanent` tinyint(1) DEFAULT '0' COMMENT '是否永久保存',
+  `attachment_url` varchar(500) DEFAULT NULL COMMENT '附件地址',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_homework_create_time` (`create_time`),
+  KEY `idx_homework_is_permanent` (`is_permanent`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='作业';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `homework`
+--
+
+LOCK TABLES `homework` WRITE;
+/*!40000 ALTER TABLE `homework` DISABLE KEYS */;
+/*!40000 ALTER TABLE `homework` ENABLE KEYS */;
+UNLOCK TABLES;
+--
+-- Table structure for table `jiazhangjiaoshigoutong`
+--
+
+DROP TABLE IF EXISTS `jiazhangjiaoshigoutong`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `jiazhangjiaoshigoutong` (
+  `id` bigint(20) NOT NULL COMMENT '主键',
+  `addtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `from_role` varchar(50) NOT NULL COMMENT '发送方角色',
+  `from_id` bigint(20) NOT NULL COMMENT '发送方id',
+  `from_name` varchar(200) DEFAULT NULL COMMENT '发送方名称',
+  `to_role` varchar(50) NOT NULL COMMENT '接收方角色',
+  `to_id` bigint(20) NOT NULL COMMENT '接收方id',
+  `to_name` varchar(200) DEFAULT NULL COMMENT '接收方名称',
+  `content` longtext NOT NULL COMMENT '沟通内容',
+  `is_read` tinyint(1) DEFAULT '0' COMMENT '是否已读',
+  PRIMARY KEY (`id`),
+  KEY `idx_jzg_from` (`from_role`,`from_id`),
+  KEY `idx_jzg_to` (`to_role`,`to_id`),
+  KEY `idx_jzg_addtime` (`addtime`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='家长教师沟通';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `jiazhangjiaoshigoutong`
+--
+
+LOCK TABLES `jiazhangjiaoshigoutong` WRITE;
+/*!40000 ALTER TABLE `jiazhangjiaoshigoutong` DISABLE KEYS */;
+/*!40000 ALTER TABLE `jiazhangjiaoshigoutong` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `parent_meeting`
+--
+
+DROP TABLE IF EXISTS `parent_meeting`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `parent_meeting` (
+  `id` bigint(20) NOT NULL COMMENT '主键',
+  `meeting_type` tinyint(2) NOT NULL DEFAULT '1' COMMENT '会议类型：1家长一对一预约 2教师群体家长会',
+  `title` varchar(200) DEFAULT NULL COMMENT '会议标题',
+  `creator_role` varchar(20) NOT NULL COMMENT '创建者角色：parent/teacher',
+  `creator_id` bigint(20) NOT NULL COMMENT '创建者ID',
+  `parent_id` bigint(20) DEFAULT NULL COMMENT '家长ID（单聊）',
+  `teacher_id` bigint(20) NOT NULL COMMENT '教师ID',
+  `meeting_time` datetime NOT NULL COMMENT '会议时间',
+  `status` tinyint(2) NOT NULL DEFAULT '0' COMMENT '状态：0待确认 1已确认 2已完成 3已取消',
+  `room_id` varchar(100) DEFAULT NULL COMMENT '会议室ID',
+  `scope` varchar(20) NOT NULL DEFAULT 'single' COMMENT '范围：single/group',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_pm_parent_time` (`parent_id`,`meeting_time`),
+  KEY `idx_pm_teacher_time` (`teacher_id`,`meeting_time`),
+  KEY `idx_pm_status` (`status`),
+  KEY `idx_pm_creator` (`creator_role`,`creator_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='在线家长会/会议预约';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `parent_meeting`
+--
+
+LOCK TABLES `parent_meeting` WRITE;
+/*!40000 ALTER TABLE `parent_meeting` DISABLE KEYS */;
+INSERT INTO `parent_meeting` (`id`,`meeting_type`,`title`,`creator_role`,`creator_id`,`parent_id`,`teacher_id`,`meeting_time`,`status`,`room_id`,`scope`,`create_time`) VALUES
+(1713274800001,1,'一对一家长沟通','parent',1709647024367,1709647024367,91,DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL (7 - WEEKDAY(CURDATE())) DAY), '%Y-%m-%d 19:00:00'),0,'ROOM-WEEK-01','single',NOW()),
+(1713274800002,1,'一对一家长沟通','parent',1709647024367,1709647024367,92,DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL (8 - WEEKDAY(CURDATE())) DAY), '%Y-%m-%d 10:00:00'),0,'ROOM-WEEK-02','single',NOW()),
+(1713274800003,1,'一对一家长沟通','parent',1709647024367,1709647024367,93,DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL (9 - WEEKDAY(CURDATE())) DAY), '%Y-%m-%d 19:30:00'),0,'ROOM-WEEK-03','single',NOW()),
+(1713274800004,2,'本周班级家长会','teacher',91,NULL,91,DATE_FORMAT(DATE_ADD(CURDATE(), INTERVAL (10 - WEEKDAY(CURDATE())) DAY), '%Y-%m-%d 20:00:00'),0,'ROOM-GROUP-01','group',NOW());
+/*!40000 ALTER TABLE `parent_meeting` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `parent_meeting_attendee`
+--
+
+DROP TABLE IF EXISTS `parent_meeting_attendee`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `parent_meeting_attendee` (
+  `id` bigint(20) NOT NULL COMMENT '主键',
+  `meeting_id` bigint(20) NOT NULL COMMENT '会议ID',
+  `parent_id` bigint(20) NOT NULL COMMENT '家长ID',
+  `join_status` tinyint(2) NOT NULL DEFAULT '0' COMMENT '参会状态：0待确认 1已确认 2已拒绝',
+  `confirm_time` datetime DEFAULT NULL COMMENT '确认时间',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_meeting_parent` (`meeting_id`,`parent_id`),
+  KEY `idx_pma_parent` (`parent_id`),
+  KEY `idx_pma_status` (`join_status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='会议参会家长';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `parent_meeting_attendee`
+--
+
+LOCK TABLES `parent_meeting_attendee` WRITE;
+/*!40000 ALTER TABLE `parent_meeting_attendee` DISABLE KEYS */;
+INSERT INTO `parent_meeting_attendee` (`id`,`meeting_id`,`parent_id`,`join_status`,`confirm_time`,`create_time`) VALUES
+(1713275800001,1713274800001,1709647024367,0,NULL,NOW()),
+(1713275800002,1713274800002,1709647024367,0,NULL,NOW()),
+(1713275800003,1713274800003,1709647024367,0,NULL,NOW()),
+(1713275800004,1713274800004,1709647024367,0,NULL,NOW());
+/*!40000 ALTER TABLE `parent_meeting_attendee` ENABLE KEYS */;
+UNLOCK TABLES;
+
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -362,6 +503,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-03-09  8:17:34
-iusersusersxueshengxueshengxueshengchengjixueshengchengjinformation_schema
-examrecord
+-- Dump completed on 2024-03-09  8:17:34cl21002101

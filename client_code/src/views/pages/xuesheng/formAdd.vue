@@ -10,8 +10,8 @@
 		<el-form ref="formRef" :model="form" class="add_form" label-width="120px" :rules="rules">
 			<el-row>
 				<el-col :span="12">
-					<el-form-item label="学号" prop="xuehao">
-						<el-input class="list_inp" v-model="form.xuehao" placeholder="学号"
+					<el-form-item label="家长账号" prop="xuehao">
+						<el-input class="list_inp" v-model="form.xuehao" placeholder="家长账号"
 							type="text" :readonly="!isAdd||disabledForm.xuehao?true:false" />
 					</el-form-item>
 				</el-col>
@@ -102,7 +102,7 @@
 	const router = useRouter()
 	//基础信息
 	const tableName = 'xuesheng'
-	const formName = '学生'
+	const formName = '家长'
 	//基础信息
 	const breadList = ref([{
 		name: formName

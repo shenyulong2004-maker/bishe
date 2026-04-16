@@ -78,6 +78,60 @@
 				break;
 			}
 		}
+		if (menuList.value && Array.isArray(menuList.value.backMenu) && (role.value === '学生' || role.value === '教师')) {
+			let exists = false
+			for (let i = 0; i < menuList.value.backMenu.length; i++) {
+				const section = menuList.value.backMenu[i]
+				if (section && Array.isArray(section.child)) {
+					for (let j = 0; j < section.child.length; j++) {
+						if (section.child[j] && section.child[j].tableName === 'jiazhanggoutong') {
+							exists = true
+							break
+						}
+					}
+				}
+				if (exists) break
+			}
+			if (!exists) {
+				menuList.value.backMenu.push({
+					menu: '沟通管理',
+					fontClass: 'icon-common27',
+					child: [{
+						menu: '家长-教师沟通',
+						tableName: 'jiazhanggoutong',
+						menuJump: '列表',
+						buttons: ['查看']
+					}]
+				})
+			}
+		}
+		if (menuList.value && Array.isArray(menuList.value.backMenu) && (role.value === '学生' || role.value === '教师')) {
+			let meetingExists = false
+			for (let i = 0; i < menuList.value.backMenu.length; i++) {
+				const section = menuList.value.backMenu[i]
+				if (section && Array.isArray(section.child)) {
+					for (let j = 0; j < section.child.length; j++) {
+						if (section.child[j] && section.child[j].tableName === 'parent/meeting') {
+							meetingExists = true
+							break
+						}
+					}
+				}
+				if (meetingExists) break
+			}
+			if (!meetingExists) {
+				menuList.value.backMenu.push({
+					menu: '在线家长会',
+					fontClass: 'icon-common39',
+					child: [{
+						menu: role.value === '教师' ? '家长会管理' : '会议预约',
+						tableName: 'parent/meeting',
+						menuJump: '列表',
+						buttons: ['查看', '新增']
+					}]
+				})
+			}
+		}
 		// styleChange()
 	}
 	const menuHandler = (name,menuJump) => {

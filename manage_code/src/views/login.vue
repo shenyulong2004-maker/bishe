@@ -21,12 +21,12 @@
 						用户类型：
 					</div>
 				  <el-select v-model="loginForm.role" placeholder="请选择用户类型">
-				    <el-option v-for="(item,index) in userList" :label="item.roleName" :value="item.roleName"></el-option>
+				    <el-option v-for="(item,index) in userList" :label="getRoleLabel(item.roleName)" :value="item.roleName"></el-option>
 				  </el-select>
 				</div>
 				<div class="btn_view">
 					<el-button class="login" v-if="loginType==1" type="success" @click="handleLogin">登录</el-button>
-					<el-button class="register" type="primary" @click="handleRegister('xuesheng')">注册学生</el-button>
+					<el-button class="register" type="primary" @click="handleRegister('xuesheng')">注册家长</el-button>
 					<el-button class="register" type="primary" @click="handleRegister('jiaoshi')">注册教师</el-button>
 				</div>
 			</el-form>
@@ -51,6 +51,11 @@
 	})
 	const tableName = ref('')
 	const loginType = ref(1)
+	const roleLabelMap = {
+		xuesheng: '家长',
+		学生: '家长',
+	}
+	const getRoleLabel = (roleName) => roleLabelMap[roleName] || roleName
 	const context = getCurrentInstance()?.appContext.config.globalProperties;
 	//动态背景
 	import canvasBg from "@/assets/js/canvas-bg-2.js";

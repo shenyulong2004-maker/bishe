@@ -38,7 +38,7 @@
 					</div>
 				</div>
 				<div class="info_item">
-					<div class="info_label">学号</div>
+					<div class="info_label">家长账号</div>
 					<div  class="info_text" >{{detail.xuehao}}</div>
 				</div>
 				<div class="info_item">
@@ -91,7 +91,7 @@
 	const router = useRouter()
 	//基础信息
 	const tableName = 'xuesheng'
-	const formName = '学生'
+	const formName = '家长'
 	//基础信息
 	const breadList = ref([{
 		name: formName

@@ -64,10 +64,14 @@ export default {
       }
 
       try {
-        const response = await fetch('http://localhost:3001/saveHomework', {
+        const payload = {
+          ...this.form,
+          isPermanent: this.form.isPermanent ? 1 : 0
+        };
+        const response = await fetch(`${process.env.VUE_APP_BASE_API_URL}${process.env.VUE_APP_BASE_API}/homework/saveHomework`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(this.form)
+          body: JSON.stringify(payload)
         });
 
         const result = await response.json();
@@ -86,7 +90,7 @@ export default {
 
     async getHomework() {
       try {
-        const response = await fetch('http://localhost:3001/getHomework');
+        const response = await fetch(`${process.env.VUE_APP_BASE_API_URL}${process.env.VUE_APP_BASE_API}/homework/getHomework`);
         const result = await response.json();
         if (result.success) {
           this.homeworkList = result.data;
