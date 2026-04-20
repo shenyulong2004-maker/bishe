@@ -21,6 +21,8 @@ public interface ParentMeetingService extends IService<ParentMeetingEntity> {
 
     Map<String, Object> confirmByParent(Long parentId, Long id);
 
+    Map<String, Object> confirmByTeacher(Long teacherId, Long id);
+
     Map<String, Object> finishByTeacher(Long teacherId, Long id);
 
     Map<String, Object> cancelMeeting(Long userId, String role, String tableName, Long id);

@@ -50,6 +50,13 @@
 
             <el-button
               link
+              type="success"
+              v-if="isTeacher && Number(scope.row.status) === 0"
+              @click="confirmMeeting(scope.row.id)"
+            >确认会议</el-button>
+
+            <el-button
+              link
               type="warning"
               v-if="isTeacher && Number(scope.row.status) === 1"
               @click="finishMeeting(scope.row.id)"

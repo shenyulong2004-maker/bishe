@@ -14,9 +14,15 @@
       </el-form-item>
 
       <el-form-item label="会议时间">
-        <el-select v-model="form.meetingTime" placeholder="请选择时间" style="width:100%">
-          <el-option v-for="item in slotOptions" :key="item" :label="item" :value="item" />
-        </el-select>
+        <el-date-picker
+          v-model="form.meetingTime"
+          type="datetime"
+          placeholder="请选择时间"
+          value-format="YYYY-MM-DD HH:mm:ss"
+          format="YYYY-MM-DD HH:mm:ss"
+          :disabled-date="disabledMeetingDate"
+          style="width:100%"
+        />
       </el-form-item>
 
       <el-form-item label="会议室ID">
@@ -50,8 +56,8 @@
       </template>
 
       <el-form-item>
-        <el-button type="primary" @click="submit">提交</el-button>
-        <el-button @click="goBack">返回</el-button>
+        <el-button type="primary" :loading="submitting" @click="submit">提交</el-button>
+        <el-button :disabled="submitting" @click="goBack">返回</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -67,14 +73,15 @@ const router = useRouter()
 const sessionTable = computed(() => context?.$toolUtil.storageGet('sessionTable'))
 const isParent = computed(() => sessionTable.value === 'xuesheng')
 
-const slotOptions = ref([
-  '2026-04-16 19:00:00',
-  '2026-04-18 10:00:00',
-  '2026-04-20 19:30:00'
-])
+const disabledMeetingDate = (time) => {
+  const now = new Date()
+  now.setHours(0, 0, 0, 0)
+  return time.getTime() < now.getTime()
+}
 
 const parentOptions = ref([])
 const teacherOptions = ref([])
+const submitting = ref(false)
 
 const form = ref({
   title: '',
@@ -105,46 +112,61 @@ const loadParents = async () => {
 }
 
 const submit = async () => {
+  if (submitting.value) return
+
   if (!form.value.meetingTime) {
     context?.$toolUtil.message('请选择会议时间', 'error')
     return
   }
 
-  if (isParent.value) {
-    if (!form.value.teacherId) {
-      context?.$toolUtil.message('请选择教师', 'error')
-      return
-    }
-    await context?.$http({
-      url: 'api/parent/meetings/book',
-      method: 'post',
-      data: {
-        title: form.value.title,
-        teacherId: Number(form.value.teacherId),
-        meetingTime: form.value.meetingTime,
-        roomId: form.value.roomId
-      }
-    })
-    context?.$toolUtil.message('预约成功', 'success')
-  } else {
-    if (!form.value.parentIds || form.value.parentIds.length === 0) {
-      context?.$toolUtil.message('请选择参会家长', 'error')
-      return
-    }
-    await context?.$http({
-      url: 'api/parent/meetings/group',
-      method: 'post',
-      data: {
-        title: form.value.title,
-        meetingTime: form.value.meetingTime,
-        roomId: form.value.roomId,
-        parentIds: form.value.parentIds
-      }
-    })
-    context?.$toolUtil.message('群体家长会创建成功', 'success')
+  if (new Date(form.value.meetingTime).getTime() <= Date.now()) {
+    context?.$toolUtil.message('会议时间必须晚于当前时间', 'error')
+    return
   }
 
-  router.push('/parent/meeting')
+  try {
+    submitting.value = true
+
+    if (isParent.value) {
+      if (!form.value.teacherId) {
+        context?.$toolUtil.message('请选择教师', 'error')
+        return
+      }
+      await context?.$http({
+        url: 'api/parent/meetings/book',
+        method: 'post',
+        data: {
+          title: form.value.title,
+          teacherId: Number(form.value.teacherId),
+          meetingTime: form.value.meetingTime,
+          roomId: form.value.roomId
+        }
+      })
+      context?.$toolUtil.message('预约成功', 'success')
+    } else {
+      if (!form.value.parentIds || form.value.parentIds.length === 0) {
+        context?.$toolUtil.message('请选择参会家长', 'error')
+        return
+      }
+      await context?.$http({
+        url: 'api/parent/meetings/group',
+        method: 'post',
+        data: {
+          title: form.value.title,
+          meetingTime: form.value.meetingTime,
+          roomId: form.value.roomId,
+          parentIds: form.value.parentIds
+        }
+      })
+      context?.$toolUtil.message('群体家长会创建成功', 'success')
+    }
+
+    router.push('/parent/meeting')
+  } catch (err) {
+    context?.$toolUtil.message(err?.response?.data?.msg || err?.message || '提交失败', 'error')
+  } finally {
+    submitting.value = false
+  }
 }
 
 const goBack = () => router.push('/parent/meeting')

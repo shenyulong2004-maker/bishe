@@ -63,12 +63,9 @@
 				<el-table-column label="头像" width="120" :resizable='true' :sortable='true' align="left" header-align="left">
 					<template #default="scope">
 						<div v-if="scope.row.touxiang">
-							<el-image v-if="scope.row.touxiang.substring(0,4)=='http'" preview-teleported
-								:preview-src-list="[scope.row.touxiang.split(',')[0]]"
-								:src="scope.row.touxiang.split(',')[0]" style="width:100px;height:100px"></el-image>
-							<el-image v-else preview-teleported
-								:preview-src-list="[$config.url+scope.row.touxiang.split(',')[0]]"
-								:src="$config.url+scope.row.touxiang.split(',')[0]" style="width:100px;height:100px">
+							<el-image preview-teleported
+								:preview-src-list="[getImageSrc(scope.row.touxiang)]"
+								:src="getImageSrc(scope.row.touxiang)" style="width:100px;height:100px">
 							</el-image>
 						</div>
 						<div v-else>无图片</div>
@@ -157,6 +154,20 @@
 	const searchQuery = ref({})
 	const selRows = ref([])
 	const listLoading = ref(false)
+	const getImageSrc = (raw) => {
+		if (!raw) return ''
+		let first = String(raw).split(',')[0] || ''
+		first = first.trim().replace(/\\/g, '/')
+		if (!first) return ''
+		if (/^https?:\/\//i.test(first)) return first
+		const base = String(context?.$config?.url || '').replace(/\/$/, '')
+		if (first.startsWith('file/')) {
+			const fileName = first.replace(/^file\//, '')
+			return `${base}/file/download?fileName=${encodeURIComponent(fileName)}`
+		}
+		const path = first.replace(/^\//, '')
+		return `${base}/${path}`
+	}
 	const listChange = (row) =>{
 		nextTick(()=>{
 			table.value.clearSelection()

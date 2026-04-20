@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="exam_page">
 		<div class="exam_top">
 			<div class="examTopLeft">
 				{{examDetail.name}} (共{{questionList.length}}题)
@@ -115,7 +115,6 @@
 	const route = useRoute()
 	const context = getCurrentInstance()?.appContext.config.globalProperties;
 	const baseUrl = context?.$config.url || ''
-	//初始化
 	const id = ref(0)
 	const init = () => {
 		if (route.query.id) {
@@ -125,7 +124,6 @@
 			getQuestionList()
 		}
 	}
-	//获取用户信息
 	const user = ref({})
 	const getSession = () => {
 		context?.$http({
@@ -135,7 +133,6 @@
 			user.value = res.data.data
 		})
 	}
-	//获取试卷详情
 	const examDetail = ref({})
 	const examTime = ref(0)
 	const timeInter = ref(null)
@@ -155,52 +152,11 @@
 		var time = examTime.value
 		if (null != time && "" != time) {
 			if (time > 60 && time < 60 * 60) {
-				time =
-					parseInt(time / 60.0) +
-					"分钟" +
-					parseInt((parseFloat(time / 60.0) - parseInt(time / 60.0)) * 60) +
-					"秒";
+				time = parseInt(time / 60.0) + "分钟" + parseInt((parseFloat(time / 60.0) - parseInt(time / 60.0)) * 60) + "秒";
 			} else if (time >= 60 * 60 && time < 60 * 60 * 24) {
-				time =
-					parseInt(time / 3600.0) +
-					"小时" +
-					parseInt(
-						(parseFloat(time / 3600.0) - parseInt(time / 3600.0)) * 60
-					) +
-					"分钟" +
-					parseInt(
-						(parseFloat(
-								(parseFloat(time / 3600.0) - parseInt(time / 3600.0)) * 60
-							) -
-							parseInt(
-								(parseFloat(time / 3600.0) - parseInt(time / 3600.0)) * 60
-							)) *
-						60
-					) +
-					"秒";
+				time = parseInt(time / 3600.0) + "小时" + parseInt((parseFloat(time / 3600.0) - parseInt(time / 3600.0)) * 60) + "分钟" + parseInt((parseFloat((parseFloat(time / 3600.0) - parseInt(time / 3600.0)) * 60) - parseInt((parseFloat(time / 3600.0) - parseInt(time / 3600.0)) * 60)) * 60) + "秒";
 			} else if (time >= 60 * 60 * 24) {
-				time =
-					parseInt(time / 3600.0 / 24) +
-					"天" +
-					parseInt(
-						(parseFloat(time / 3600.0 / 24) - parseInt(time / 3600.0 / 24)) *
-						24
-					) +
-					"小时" +
-					parseInt(
-						(parseFloat(time / 3600.0) - parseInt(time / 3600.0)) * 60
-					) +
-					"分钟" +
-					parseInt(
-						(parseFloat(
-								(parseFloat(time / 3600.0) - parseInt(time / 3600.0)) * 60
-							) -
-							parseInt(
-								(parseFloat(time / 3600.0) - parseInt(time / 3600.0)) * 60
-							)) *
-						60
-					) +
-					"秒";
+				time = parseInt(time / 3600.0 / 24) + "天" + parseInt((parseFloat(time / 3600.0 / 24) - parseInt(time / 3600.0 / 24)) * 24) + "小时" + parseInt((parseFloat(time / 3600.0) - parseInt(time / 3600.0)) * 60) + "分钟" + parseInt((parseFloat((parseFloat(time / 3600.0) - parseInt(time / 3600.0)) * 60) - parseInt((parseFloat(time / 3600.0) - parseInt(time / 3600.0)) * 60)) * 60) + "秒";
 			} else {
 				if (parseInt(time) <= 0) {
 					time = "0秒";
@@ -211,10 +167,8 @@
 		}
 		return time;
 	})
-	//交卷状态
 	const submitType = ref(false)
 	const endType = ref(false)
-	//试题
 	const questionList = ref([])
 	const getQuestionList = () => {
 		context?.$http({
@@ -237,7 +191,6 @@
 			questionList.value = res.data.data.list
 		})
 	}
-	//获取选项
 	const codeChange = (type) => {
 		let arr = ['A', 'B', 'C', 'D']
 		return arr[type]
@@ -246,13 +199,11 @@
 		let arr = ['对', '错']
 		return arr[type]
 	}
-	//多选题
 	const type1Change = (e) => {
 		const sorted = [...e].sort()
 		questionList.value[currentIndex.value].myanswers = sorted
 		questionList.value[currentIndex.value].myanswer = sorted.join(',')
 	}
-	//退出考试
 	const previewImg = (url) => {
 		window.open(url)
 	}
@@ -276,7 +227,6 @@
 			history.back()
 		})
 	}
-	//结束考试
 	const finishSyncing = ref(false)
 	const finishExamSync = () => {
 		if (finishSyncing.value || !examDetail.value?.id) return
@@ -292,7 +242,6 @@
 	const endExam = () => {
 		history.back()
 	}
-	//分数统计
 	const totalScore = computed(() => {
 		return questionList.value.reduce((sum, item) => sum + (Number(item.score) || 0), 0)
 	})
@@ -319,7 +268,6 @@
 		if (percent >= 60) return '及格'
 		return '不及格'
 	}
-	//提交考试记录
 	const saverecord = (row) => {
 		let arr = {
 			userid: user.value.id,
@@ -333,8 +281,7 @@
 			answer: row.answer,
 			analysis: row.analysis,
 			myanswer: row.myanswer,
-			myscore: row.myanswer == row
-				.answer ? row.score : 0,
+			myscore: row.myanswer == row.answer ? row.score : 0,
 		}
 		context?.$http({
 			url: 'examrecord/save',
@@ -343,7 +290,6 @@
 		}).then(res => {})
 	}
 	const currentIndex = ref(0)
-	//提交
 	const saveClick = () => {
 		if (!questionList.value[currentIndex.value].myanswer) {
 			context?.$toolUtil.message('请输入答案', 'error')
@@ -366,6 +312,11 @@
 </script>
 
 <style lang="scss" scoped>
+	.exam_page {
+		min-height: 100vh;
+		background: url(http://clfile.zggen.cn/20231120/3003369554f34c828841c05292b6461a.jpg) fixed no-repeat center top / cover, #ac699c;
+	}
+
 	.exam_top {
 		padding: 0 8%;
 		z-index: 9;
@@ -380,24 +331,19 @@
 		align-items: center;
 		position: fixed;
 		height: 60px;
-		
-		// 考试名称
 		.examTopLeft {
 			width: calc(100% / 3);
 			font-size: 16px;
 			text-align: left;
 		}
-		//时间
 		.examTopCenter {
 			width: calc(100% / 3);
 			font-size: 16px;
 			text-align: center;
 		}
-		// 退出考试盒子
 		.examTopRight {
 			width: calc(100% / 3);
 			text-align: right;
-			// 按钮
 			:deep(.el-button--danger) {
 				border: 0;
 				cursor: pointer;
@@ -410,270 +356,24 @@
 				font-size: 14px;
 				height: 32px;
 			}
-			// 按钮悬浮
 			:deep(.el-button--danger:hover) {
 				color: #ff0;
 			}
 		}
 	}
 
-	// 答题区域
 	.question_list {
 		border: 0px solid #19a97b;
 		border-radius: 0px;
 		box-shadow: none;
 		padding: 60px 7% 80px;
 		margin: 0 auto;
-		background: url(http://clfile.zggen.cn/20231120/3003369554f34c828841c05292b6461a.jpg) fixed no-repeat left top / cover,#ac699c;
+		background: transparent;
 		width: 100%;
+		min-height: calc(100vh - 60px);
 		text-align: left;
-		// 答题盒子
-		.question {
-			border-radius: 0px;
-			padding: 20px;
-			margin: 0 0 20px;
-			color: #333;
-			background: rgba(255, 255, 255, .9);
-			width: 100%;
-			border-color: rgba(254, 182, 203, 0.5);
-			border-width: 0px;
-			border-style: solid;
-			// 题目
-			.questionTitle {
-				width: 100%;
-				// 单选题
-				:deep(.el-tag--success) {
-					background-color: #f0f9eb;
-					color: #67c23a;
-					border-color: #e1f3d8;
-				}
-				// 判断题
-				:deep(.el-tag--danger) {
-					background-color: #fef0f0;
-					color: #f56c6c;
-					border-color: #fde2e2;
-				}
-				// 填空题
-				:deep(.el-tag--info) {
-					background-color: #f4f4f5;
-					color: #909399;
-					border-color: #e9e9eb;
-				}
-				// 多选题
-				:deep(.el-tag--warning) {
-					background-color: #fdf6ec;
-					color: #e6a23c;
-					border-color: #faecd8;
-				}
-			}
-			// 题目图片区域
-			.question_images {
-				padding: 8px 0;
-				.question_image_item {
-					margin-bottom: 8px;
-					img {
-						cursor: pointer;
-						box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-						&:hover { opacity: 0.85; }
-					}
-					.pdf_attachment {
-						display: flex;
-						gap: 8px;
-					}
-				}
-			}
-			// 选项列表
-			.optionList {
-				padding: 10px 0;
-				text-indent: 2rem;
-
-				.option {
-					padding: 0 0 10px;
-				}
-			}
-			// 答案盒子
-			.answer {
-				padding: 10px 0;
-				// 输入框
-				:deep(.answer_inp) {
-					border: 1px solid #ddd;
-					border-radius: 0px;
-					padding: 0 10px;
-					color: inherit;
-					background: rgba(255, 255, 255, 1);
-					width: calc(100% - 120px);
-					line-height: 36px;
-					box-sizing: border-box;
-					height: 36px;
-					//去掉默认样式
-					.el-input__wrapper{
-						border: none;
-						box-shadow: none;
-						background: none;
-						border-radius: 0;
-						height: 100%;
-						padding: 0;
-					}
-					.is-focus {
-						box-shadow: none !important;
-					}
-				}
-				// 下拉框
-				:deep(.el-select) {
-					border: 1px solid #ddd;
-					border-radius: 0px;
-					padding: 0 10px;
-					background: rgba(255, 255, 255, 1);
-					width: calc(100% - 120px);
-					line-height: 36px;
-					box-sizing: border-box;
-					//去掉默认样式
-					.select-trigger {
-						height: 100%;
-						.el-input {
-							height: 100%;
-							.el-input__wrapper {
-								border: none;
-								box-shadow: none;
-								background: none;
-								border-radius: 0;
-								height: 100%;
-							}
-							.is-focus {
-								box-shadow: none !important;
-							}
-						}
-					}
-				}
-				// 答案正确
-				:deep(.el-tag--success) {
-					background-color: #f0f9eb;
-					color: #67c23a;
-					border-color: #e1f3d8;
-				}
-				// 答案错误
-				:deep(.el-tag--danger) {
-					background-color: #fef0f0;
-					color: #f56c6c;
-					border-color: #fde2e2;
-				}
-			}
-			// 解析盒子
-			:deep(.analysis_view) {
-				border: 1px solid #ddd;
-				border-radius: 0px;
-				background: rgba(255, 255, 255, 1);
-				height: auto;
-				// 标题
-				.el-collapse-item__header {
-					border: 0;
-					padding: 0 10px;
-					color: #333;
-					background: none;
-					height: 40px;
-					// 图标
-					.el-icon {
-						color: #999;
-					}
-				}
-				.el-collapse-item__wrap {
-					border-bottom: none;
-				}
-				// 内容区
-				.el-collapse-item__content {
-					padding: 0 0 10px;
-					background: #fff;
-					border-color: #ddd;
-					border-width: 0 0 1px;
-					border-style: solid;
-					// 正确答案
-					.right_view {
-						color: #000;
-						text-indent: 2rem;
-						font-size: 14px;
-					}
-					// 解析
-					.analysis {
-						color: #000;
-						text-indent: 2rem;
-						font-size: 14px;
-					}
-				}
-			}
-		}
-		// 按钮盒子
-		.btn_view{
-			text-align: center;
-			// 提交
-			:deep(.el-button--success) {
-				border: 0;
-				cursor: pointer;
-				border-radius: 0px;
-				padding: 0 24px;
-				margin: 0 10px 0 0;
-				outline: none;
-				color: #fff;
-				background: #42b983;
-				width: auto;
-				font-size: 14px;
-				height: 36px;
-			}
-			// 提交-悬浮
-			:deep(.el-button--success:hover) {
-			}
-			// 下一题
-			:deep(.el-button--warning) {
-				border: 0;
-				cursor: pointer;
-				border-radius: 0px;
-				padding: 0 24px;
-				margin: 0 10px 0 0;
-				outline: none;
-				color: #fff;
-				background: #8461c6;
-				width: auto;
-				font-size: 14px;
-				height: 36px;
-			}
-			// 下一题-悬浮
-			:deep(.el-button--warning:hover) {
-			}
-			// 查看解析
-			:deep(.el-button--primary) {
-				border: 0;
-				cursor: pointer;
-				border-radius: 0px;
-				padding: 0 24px;
-				margin: 0 10px 0 0;
-				color: #fff;
-				background: #19a97b;
-				width: auto;
-				font-size: 14px;
-				height: 36px;
-			}
-			// 查看解析-悬浮
-			:deep(.el-button--primary:hover) {
-			}
-			// 结束考试
-			:deep(.el-button--danger) {
-				border: 0;
-				cursor: pointer;
-				border-radius: 0px;
-				padding: 0 24px;
-				margin: 0 10px 0 0;
-				outline: none;
-				color: #fff;
-				background: rgba(230, 0, 0, 1);
-				width: auto;
-				font-size: 14px;
-				height: 36px;
-			}
-			// 结束考试-悬浮
-			:deep(.el-button--danger:hover) {
-			}
-		}
 	}
-	// 成绩盒子
+
 	.score_view {
 		border: 0px solid #000;
 		border-radius: 0;

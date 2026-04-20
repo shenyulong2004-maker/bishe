@@ -1,0 +1,105 @@
+# 忽略构建缓存
+node_modules/.cache/
+dist/
+*.log
+
+# 依赖目录
+node_modules/
+
+# 构建输出
+target/
+build/
+*.war
+*.ear
+
+# 编译输出
+*.class
+*.pyc
+*.pyo
+__pycache__/
+
+# 环境变量和配置
+.env
+.env.local
+.env.*.local
+*.env
+
+# IDE 配置
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# 临时文件
+tmp/
+temp/
+*.tmp
+*.bak
+
+# 日志文件
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 测试覆盖率
+coverage/
+*.lcov
+.nyc_output/
+
+# 前端构建
+*.min.js
+*.min.css
+sourcemap/
+
+# 后端特定
+server_code/target/
+server_code/*.log
+server_code/.mvn/
+server_code/mvnw
+server_code/mvnw.cmd
+
+# 前端特定
+client_code/dist/
+client_code/build/
+client_code/.nuxt/
+client_code/.output/
+
+# 管理端特定
+manage_code/dist/
+manage_code/build/
+
+# 数据库
+*.sql
+*.db
+*.sqlite
+
+# 上传文件
+uploads/
+files/
+static/upload/
+
+# 证书和密钥
+*.key
+*.pem
+*.crt
+*.p12
+
+# 压缩包
+*.zip
+*.tar.gz
+*.rar
+
+# 系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 其他
+*.orig
+.hg/
+.svn/

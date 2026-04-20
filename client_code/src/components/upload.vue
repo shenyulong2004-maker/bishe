@@ -131,19 +131,23 @@
 	}
 	//处理上传图片
 	const fileUrlsChange = (list) => {
-		var token = context?.$toolUtil.storageGet("token");
+		var token = context?.$toolUtil.storageGet("Token");
 		var list1 = []
 		var list2 = []
 		list.forEach(function(item, index) {
 			var url = item.split("?")[0];
 			var url1 = ''
-			if (!url.startsWith("http")) {
+			if (url.startsWith("http")) {
+				url1 = url
+			} else if (url.startsWith("file/")) {
+				url1 = context?.$config.url + 'file/download?fileName=' + url.replace(/^file\//, '')
+			} else {
 				url1 = context?.$config.url + url
 			}
 			var name = index + 1;
 			var file = {
 				name: name,
-				url: url1 + "?token=" + token,
+				url: url1,
 				uid: index + 1
 			};
 			list1.push(file);

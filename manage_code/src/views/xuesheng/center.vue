@@ -80,10 +80,6 @@
 			context?.$toolUtil.message(`学号不能为空`,'error')
 			return false
 		}
-		if((!user.value.mima)){
-			context?.$toolUtil.message(`密码不能为空`,'error')
-			return false
-		}
 		if((!user.value.xingming)){
 			context?.$toolUtil.message(`姓名不能为空`,'error')
 			return false
