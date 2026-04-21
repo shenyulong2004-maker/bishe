@@ -42,6 +42,7 @@
 	//data
 	const menuList = ref([])
 	const role = ref('')
+	const loginRole = ref('')
 	const styleChange = () => {
 		nextTick(() => {
 			document.querySelectorAll('.el-menu-vertical-demo .el-sub-menu .el-menu').forEach(el => {
@@ -71,6 +72,7 @@
 			menuList.value = menus
 		}
 		role.value = context?.$toolUtil.storageGet('role')
+		loginRole.value = context?.$toolUtil.storageGet('loginRole') || role.value
 
 		for (let i = 0; i < menuList.value.length; i++) {
 			if (menuList.value[i].roleName == role.value) {
@@ -78,7 +80,7 @@
 				break;
 			}
 		}
-		if (menuList.value && Array.isArray(menuList.value.backMenu) && (role.value === '学生' || role.value === '教师')) {
+		if (menuList.value && Array.isArray(menuList.value.backMenu) && (loginRole.value === '家长' || role.value === '教师')) {
 			let exists = false
 			for (let i = 0; i < menuList.value.backMenu.length; i++) {
 				const section = menuList.value.backMenu[i]
@@ -105,7 +107,7 @@
 				})
 			}
 		}
-		if (menuList.value && Array.isArray(menuList.value.backMenu) && (role.value === '学生' || role.value === '教师')) {
+		if (menuList.value && Array.isArray(menuList.value.backMenu) && (loginRole.value === '家长' || role.value === '教师')) {
 			let meetingExists = false
 			for (let i = 0; i < menuList.value.backMenu.length; i++) {
 				const section = menuList.value.backMenu[i]

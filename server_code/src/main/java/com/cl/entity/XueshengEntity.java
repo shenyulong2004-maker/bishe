@@ -92,6 +92,11 @@ public class XueshengEntity<T> implements Serializable {
 	 */
 					
 	private String banji;
+
+	/**
+	 * 角色（学生/家长）
+	 */
+	private String role;
 	
 	
 	@JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss")
@@ -195,6 +200,19 @@ public class XueshengEntity<T> implements Serializable {
 	 */
 	public String getBanji() {
 		return banji;
+	}
+
+	/**
+	 * 设置：角色
+	 */
+	public void setRole(String role) {
+		this.role = role;
+	}
+	/**
+	 * 获取：角色
+	 */
+	public String getRole() {
+		return role;
 	}
 
 }

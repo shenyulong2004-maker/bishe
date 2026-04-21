@@ -93,6 +93,9 @@ public class XueshengController {
 			return R.error("密码格式不符合要求");
 		}
 		xuesheng.setMima(EncryptUtil.hashPassword(xuesheng.getMima()));
+		if (xuesheng.getRole() == null || xuesheng.getRole().trim().isEmpty()) {
+			xuesheng.setRole("学生");
+		}
 		Long uId = new Date().getTime();
 		xuesheng.setId(uId);
         xueshengService.insert(xuesheng);
@@ -254,6 +257,9 @@ public class XueshengController {
 			return R.error("密码格式不符合要求");
 		}
 		xuesheng.setMima(EncryptUtil.hashPassword(xuesheng.getMima()));
+		if (xuesheng.getRole() == null || xuesheng.getRole().trim().isEmpty()) {
+			xuesheng.setRole("学生");
+		}
 		xuesheng.setId(new Date().getTime());
         xueshengService.insert(xuesheng);
         return R.ok();
@@ -274,6 +280,9 @@ public class XueshengController {
 			return R.error("密码格式不符合要求");
 		}
 		xuesheng.setMima(EncryptUtil.hashPassword(xuesheng.getMima()));
+		if (xuesheng.getRole() == null || xuesheng.getRole().trim().isEmpty()) {
+			xuesheng.setRole("学生");
+		}
 		xuesheng.setId(new Date().getTime());
         xueshengService.insert(xuesheng);
         return R.ok();

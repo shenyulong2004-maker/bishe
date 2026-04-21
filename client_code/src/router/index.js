@@ -19,6 +19,7 @@ import examfailrecord from '@/views/pages/exam/examfailrecord'
 import xueshengRegister from '@/views/pages/xuesheng/register'
 import jiaoshiRegister from '@/views/pages/jiaoshi/register'
 import jiazhanggoutong from '@/views/pages/jiazhanggoutong.vue'
+import homework from '@/views/pages/homework.vue'
 
 const routes = [{
 		path: '/',
@@ -77,6 +78,9 @@ const routes = [{
 		}, {
 			path: 'jiazhanggoutong',
 			component: jiazhanggoutong
+		}, {
+			path: 'homework',
+			component: homework
 		}
 		]
 	},

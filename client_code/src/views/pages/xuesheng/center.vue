@@ -7,7 +7,10 @@
 			<div class="usersTabView">
 				<div class="usersTab" :class="tabIndex=='center'?'usersTabActive':''" @click="tabClick({tableName:'center'})">个人中心</div>
 				<div class="usersTab " :class="tabIndex=='updatepassword'?'usersTabActive':''" @click="tabClick({tableName:'updatepassword'})">修改密码</div>
-				<div class="usersTab" @click="tabClick({tableName:'jiazhanggoutong'})">家长-教师沟通</div>
+				<div class="usersTab" v-if="userForm.role === '家长'" @click="tabClick({tableName:'jiazhanggoutong'})">家长-教师沟通</div>
+				<div class="usersTab" v-if="userForm.role === '学生' || userForm.role === '家长'" @click="tabClick({tableName:'homework'})">我的作业</div>
+				<div class="usersTab" v-if="userForm.role === '学生' || userForm.role === '家长'" @click="tabClick({tableName:'exam'})">我的考试</div>
+				<div class="usersTab" v-if="userForm.role === '学生' || userForm.role === '家长'" @click="tabClick({tableName:'chengji'})">我的成绩</div>
 				<div v-for="(item,index) in menuList" :key="index" class="usersTab" @mouseenter="usersTabHover(index)"
 					@mouseleave="usersTabLeave">
 					{{item.menu}}
@@ -23,13 +26,18 @@
 				<el-form class="usersForm" ref="userFormRef" :model="userForm" label-width="120px" :rules="rules">
 					<el-row>
 						<el-col :span="12">
-							<el-form-item prop="xuehao" label="家长账号">
-								<el-input class="list_inp" v-model="userForm.xuehao" placeholder="家长账号" readonly></el-input>
+							<el-form-item prop="xuehao" :label="userForm.role === '家长' ? '家长账号' : '学生账号'">
+								<el-input class="list_inp" v-model="userForm.xuehao" :placeholder="userForm.role === '家长' ? '家长账号' : '学生账号'" readonly></el-input>
 							</el-form-item>
 						</el-col>
 						<el-col :span="12">
 							<el-form-item prop="xingming" label="姓名">
 								<el-input class="list_inp" v-model="userForm.xingming" placeholder="姓名" ></el-input>
+							</el-form-item>
+						</el-col>
+						<el-col :span="12">
+							<el-form-item prop="role" label="角色">
+								<el-input class="list_inp" v-model="userForm.role" placeholder="角色" readonly></el-input>
 							</el-form-item>
 						</el-col>
 						<el-col :span="12">
@@ -273,6 +281,18 @@
 		}
 		if (item.tableName == 'jiazhanggoutong') {
 			router.push('/index/jiazhanggoutong')
+			return false
+		}
+		if (item.tableName == 'homework') {
+			router.push('/index/homework')
+			return false
+		}
+		if (item.tableName == 'exam') {
+			router.push('/index/exampaperList')
+			return false
+		}
+		if (item.tableName == 'chengji') {
+			router.push('/index/xueshengchengjiList')
 			return false
 		}
 		if(item.tableName=='examrecord'&&item.menuJump=='22'){

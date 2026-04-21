@@ -26,7 +26,8 @@
 				</div>
 				<div class="btn_view">
 					<el-button class="login" v-if="loginType==1" type="success" @click="handleLogin">登录</el-button>
-					<el-button class="register" type="primary" @click="handleRegister('xuesheng')">注册家长</el-button>
+					<el-button class="register" type="primary" @click="handleRegister('xuesheng','学生')">注册学生</el-button>
+					<el-button class="register" type="primary" @click="handleRegister('xuesheng','家长')">注册家长</el-button>
 					<el-button class="register" type="primary" @click="handleRegister('jiaoshi')">注册教师</el-button>
 				</div>
 			</el-form>
@@ -52,8 +53,9 @@
 	const tableName = ref('')
 	const loginType = ref(1)
 	const roleLabelMap = {
-		xuesheng: '家长',
-		学生: '家长',
+		xuesheng: '学生',
+		学生: '学生',
+		家长: '家长',
 	}
 	const getRoleLabel = (roleName) => roleLabelMap[roleName] || roleName
 	const context = getCurrentInstance()?.appContext.config.globalProperties;
@@ -66,7 +68,10 @@
 	// 	})
 	// })
 	//注册
-    const handleRegister = (tableName) => {
+    const handleRegister = (tableName, role = '') => {
+    	if (tableName === 'xuesheng' && role) {
+    		context?.$toolUtil.storageSet('registerRole', role)
+    	}
     	context?.$router.push(`/${tableName}Register`)
     	
     }
@@ -91,6 +96,10 @@
 				return;
 			}
 			for (let i = 0; i < menus.value.length; i++) {
+				if (loginForm.value.role === '家长') {
+					tableName.value = 'xuesheng';
+					break;
+				}
 				if (menus.value[i] && menus.value[i].roleName === loginForm.value.role && menus.value[i].tableName) {
 					tableName.value = menus.value[i].tableName;
 					break;
@@ -121,7 +130,8 @@
 			method: 'post'
 		}).then(res => {
 			context?.$toolUtil.storageSet("Token", res.data.token);
-			context?.$toolUtil.storageSet("role", loginForm.value.role);
+			context?.$toolUtil.storageSet("loginRole", loginForm.value.role);
+			context?.$toolUtil.storageSet("role", loginForm.value.role === '家长' ? '学生' : loginForm.value.role);
 			context?.$toolUtil.storageSet("sessionTable", tableName.value);
 			context?.$toolUtil.storageSet("adminName", loginForm.value.username);
 			context?.$toolUtil.message('登录成功', 'success')
@@ -150,12 +160,18 @@
         params: params
       }).then(res => {
           menus.value = JSON.parse(res.data.data.list[0].menujson)
-		  menus.value = Array.isArray(menus.value) ? menus.value.filter(item => item && item.tableName != 'jiazhang' && item.roleName != '家长') : []
+		  menus.value = Array.isArray(menus.value) ? menus.value.filter(item => item && item.tableName != 'jiazhang') : []
+          userList.value = []
           for (let i = 0; i < menus.value.length; i++) {
             if (menus.value[i].hasBackLogin=='是' && menus.value[i].tableName != 'jiazhang') {
               userList.value.push(menus.value[i])
             }
           }
+		  const hasXuesheng = userList.value.some(item => item && item.tableName === 'xuesheng' && item.roleName === '学生')
+		  const hasParent = userList.value.some(item => item && item.tableName === 'xuesheng' && item.roleName === '家长')
+		  if (hasXuesheng && !hasParent) {
+			userList.value.push({ roleName: '家长', tableName: 'xuesheng', hasBackLogin: '是' })
+		  }
 			if (userList.value.length) {
 				loginForm.value.role = userList.value[0].roleName
 			}

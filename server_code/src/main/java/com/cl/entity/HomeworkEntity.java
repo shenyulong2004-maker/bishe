@@ -27,6 +27,15 @@ public class HomeworkEntity implements Serializable {
     /** 附件地址 */
     private String attachmentUrl;
 
+    /** 提交者ID */
+    private Long submitterId;
+
+    /** 提交者角色 */
+    private String submitterRole;
+
+    /** 提交者姓名 */
+    private String submitterName;
+
     @JsonFormat(locale = "zh", timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat
     private Date createTime;
@@ -69,5 +78,29 @@ public class HomeworkEntity implements Serializable {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public Long getSubmitterId() {
+        return submitterId;
+    }
+
+    public void setSubmitterId(Long submitterId) {
+        this.submitterId = submitterId;
+    }
+
+    public String getSubmitterRole() {
+        return submitterRole;
+    }
+
+    public void setSubmitterRole(String submitterRole) {
+        this.submitterRole = submitterRole;
+    }
+
+    public String getSubmitterName() {
+        return submitterName;
+    }
+
+    public void setSubmitterName(String submitterName) {
+        this.submitterName = submitterName;
     }
 }

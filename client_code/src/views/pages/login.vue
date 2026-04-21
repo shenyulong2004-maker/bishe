@@ -3,7 +3,7 @@
 		<div class="auth__card" role="main">
 			<header class="auth__header">
 				<h1 class="auth__title">家校合作平台登录</h1>
-				<p class="auth__subtitle">家长 / 教师账号均可登录</p>
+				<p class="auth__subtitle">学生 / 家长 / 教师账号均可登录</p>
 			</header>
 
 			<el-form :model="loginForm" class="auth__form" @submit.prevent="handleLogin">
@@ -63,7 +63,8 @@
 						记住密码
 					</el-checkbox>
 					<div class="register_view">
-						<span class="register_link" @click="handleRegister('xuesheng')">注册家长</span>
+						<span class="register_link" @click="handleRegister('xuesheng','学生')">注册学生</span>
+						<span class="register_link" @click="handleRegister('xuesheng','家长')">注册家长</span>
 						<span class="register_link" @click="handleRegister('jiaoshi')">注册教师</span>
 					</div>
 				</div>
@@ -101,8 +102,9 @@
 	const passwordInputId = 'front-login-password'
 	const roleSelectId = 'front-login-role'
 	const displayRoleMap = {
-		xuesheng: '家长',
-		学生: '家长',
+		xuesheng: '学生/家长',
+		学生: '学生',
+		家长: '家长',
 	}
 	const getRoleLabel = (roleName) => displayRoleMap[roleName] || roleName
 	const errors = ref({
@@ -170,7 +172,10 @@
 		login()
 	}
 	//注册
-	const handleRegister = (tableName) => {
+	const handleRegister = (tableName, role = '') => {
+		if (tableName === 'xuesheng' && role) {
+			context?.$toolUtil.storageSet('registerRole', role)
+		}
 		context?.$router.push(`/${tableName}Register`)
 	}
 	const login = () => {

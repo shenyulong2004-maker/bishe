@@ -28,9 +28,11 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.cl.annotation.IgnoreAuth;
 
 import com.cl.entity.XueshengchengjiEntity;
+import com.cl.entity.XueshengEntity;
 import com.cl.entity.view.XueshengchengjiView;
 
 import com.cl.service.XueshengchengjiService;
+import com.cl.service.XueshengService;
 import com.cl.service.TokenService;
 import com.cl.utils.PageUtils;
 import com.cl.utils.R;
@@ -50,6 +52,8 @@ import java.io.IOException;
 public class XueshengchengjiController {
     @Autowired
     private XueshengchengjiService xueshengchengjiService;
+    @Autowired
+    private XueshengService xueshengService;
 
 
 
@@ -66,6 +70,11 @@ public class XueshengchengjiController {
 		HttpServletRequest request){
 		String tableName = request.getSession().getAttribute("tableName").toString();
 		if(tableName.equals("xuesheng")) {
+
+
+
+
+
 			xueshengchengji.setXuehao((String)request.getSession().getAttribute("username"));
 		}
 		if(tableName.equals("jiaoshi")) {

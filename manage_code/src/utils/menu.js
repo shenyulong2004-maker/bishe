@@ -7,7 +7,7 @@ const menu = {
 			const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw
 			if (!Array.isArray(parsed)) return null
 			return parsed
-				.filter(role => role && role.tableName != 'jiazhang' && role.roleName != '家长')
+				.filter(role => role && role.tableName != 'jiazhang')
 				.map(role => {
 					const next = { ...role }
 					const filterSections = (sections) => {

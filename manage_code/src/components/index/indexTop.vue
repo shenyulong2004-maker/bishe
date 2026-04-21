@@ -13,8 +13,8 @@
 		<div class="top_right_view">
 			<el-dropdown class="avatar-container right-menu-item" trigger="hover">
 				<div class="avatar-wrapper">
-					<div class="nickname">欢迎 {{$toolUtil.storageGet('adminName')}}</div>
-					<img class="user-avatar" src="@/assets/img/avatar.png">
+					<div class="nickname">欢迎 {{$toolUtil.storageGet('adminName')}} {{displayRoleName}}</div>
+					<img class="user-avatar" :src="avatarUrl">
 					<el-icon class="el-icon--right">
 						<arrow-down />
 					</el-icon>
@@ -57,6 +57,7 @@
 	import {
 		useRouter
 	} from 'vue-router';
+	import defaultAvatar from '@/assets/img/avatar.png'
 	const props = defineProps({
 		collapse: Boolean
 	})
@@ -70,6 +71,18 @@
 	const emit = defineEmits(['collapseChange'])
 	const role = context?.$toolUtil.storageGet('sessionTable')
 	const roleName = context?.$toolUtil.storageGet('role')
+	const loginRole = context?.$toolUtil.storageGet('loginRole')
+	const displayRoleName = loginRole || roleName
+	const avatarUrl = ref(defaultAvatar)
+	const normalizeAvatar = (raw) => {
+		if (!raw) return defaultAvatar
+		if (/^https?:\/\//i.test(raw) || raw.startsWith('data:')) return raw
+		return `${context?.$config.url}${raw}`
+	}
+	const cacheHeadportrait = context?.$toolUtil.storageGet('headportrait')
+	if (cacheHeadportrait) {
+		avatarUrl.value = normalizeAvatar(cacheHeadportrait)
+	}
 	const toggleClick = () => {
 		emit('collapseChange')
 	}
@@ -79,6 +92,11 @@
 			method: 'get'
 		}).then(res=>{
 			context?.$toolUtil.storageSet('userid',res.data.data.id)
+			const portrait = res?.data?.data?.touxiang || ''
+			if (portrait) {
+				context?.$toolUtil.storageSet('headportrait', portrait)
+			}
+			avatarUrl.value = normalizeAvatar(portrait)
 		})
 	}
 	// 退出登录
@@ -190,6 +208,7 @@
 						width: 32px;
 						height: 32px;
 						border: 1px solid #E5E7EB;
+						object-fit: cover;
 					}
 					// 图标
 					.el-icon--right {

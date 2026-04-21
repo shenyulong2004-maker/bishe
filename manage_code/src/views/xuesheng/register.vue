@@ -5,10 +5,10 @@
 			<el-form :model="registerForm" class="register_form">
 				<div class="title_view">{{projectName}}注册</div>
 				<div class="list_item">
-					<div class="list_label">学号：</div>
+					<div class="list_label">账号：</div>
 					<el-input class="list_inp"
 						 v-model="registerForm.xuehao" 
-						 placeholder="请输入学号"
+						 placeholder="请输入账号"
 						 type="text"
 						/>
 				</div>
@@ -71,6 +71,13 @@
 						 type="text"
 						/>
 				</div>
+				<div class="list_item">
+					<div class="list_label">角色：</div>
+					<el-radio-group v-model="registerForm.role" class="role_radio_group">
+						<el-radio label="学生">学生</el-radio>
+						<el-radio label="家长">家长</el-radio>
+					</el-radio-group>
+				</div>
 				<div class="list_btn">
 					<el-button class="register" type="success" @click="handleRegister">注册</el-button>
 					<div class="r-login" @click="close">已有账号，直接登录</div>
@@ -107,10 +114,15 @@
 	
 	const registerForm = ref({
         xingbie: '',
+		role: '学生',
 	})
 	const xueshengxingbieLists = ref([])
 	const init=()=>{
 		xueshengxingbieLists.value = "男,女".split(',')
+		const registerRole = context?.$toolUtil.storageGet('registerRole')
+		if (registerRole === '学生' || registerRole === '家长') {
+			registerForm.value.role = registerRole
+		}
 	}
     const touxiangUploadSuccess=(fileUrls)=> {
         registerForm.value.touxiang = fileUrls;
@@ -120,7 +132,7 @@
 	const handleRegister = () => {
 		let url = tableName.value +"/register";
 		if((!registerForm.value.xuehao)){
-			context?.$toolUtil.message(`学号不能为空`,'error')
+			context?.$toolUtil.message(`账号不能为空`,'error')
 			return false
 		}
 		if((!registerForm.value.mima)){
@@ -148,6 +160,7 @@
 			method:'post',
 			data:registerForm.value
 		}).then(res=>{
+			context?.$toolUtil.storageRemove('registerRole')
 			context?.$toolUtil.message('注册成功','success', obj=>{
 				context?.$router.push({
 					path: "/login"

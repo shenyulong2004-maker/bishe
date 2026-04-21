@@ -1,24 +1,31 @@
 <template>
   <div class="homework-container">
-    <h2>作业提交</h2>
+    <h2 v-if="isStudent">作业提交</h2>
+    <h2 v-else>我的作业</h2>
     
-    <div class="form-group">
-      <label>作业内容：</label>
-      <textarea v-model="form.content" placeholder="请输入作业内容" rows="6"></textarea>
+    <div v-if="isStudent">
+      <div class="form-group">
+        <label>作业内容：</label>
+        <textarea v-model="form.content" placeholder="请输入作业内容" rows="6"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>附件地址：</label>
+        <input v-model="form.attachmentUrl" type="text" placeholder="请输入附件地址或URL">
+      </div>
+
+      <div class="form-group checkbox">
+        <input v-model="form.isPermanent" type="checkbox" id="permanent">
+        <label for="permanent">是否永久保存</label>
+      </div>
+
+      <button @click="submitHomework" class="btn-submit">提交作业</button>
+      <div v-if="message" :class="['message', messageType]">{{ message }}</div>
     </div>
 
-    <div class="form-group">
-      <label>附件地址：</label>
-      <input v-model="form.attachmentUrl" type="text" placeholder="请输入附件地址或URL">
+    <div v-else class="no-permission">
+      <p>仅学生/家长角色可以提交作业</p>
     </div>
-
-    <div class="form-group checkbox">
-      <input v-model="form.isPermanent" type="checkbox" id="permanent">
-      <label for="permanent">是否永久保存</label>
-    </div>
-
-    <button @click="submitHomework" class="btn-submit">提交作业</button>
-    <div v-if="message" :class="['message', messageType]">{{ message }}</div>
 
     <hr>
     <h3>已提交作业</h3>
@@ -28,6 +35,7 @@
         <div class="item-header">
           <span class="time">{{ formatTime(item.createTime) }}</span>
           <span v-if="item.isPermanent" class="badge">永久</span>
+          <span v-if="item.submitterName" class="submitter">{{ item.submitterName }}</span>
         </div>
         <div class="item-content">{{ item.content }}</div>
         <div v-if="item.attachmentUrl" class="item-attachment">
@@ -50,13 +58,34 @@ export default {
       },
       homeworkList: [],
       message: '',
-      messageType: ''
+      messageType: '',
+      userRole: '',
+      userId: null
     };
   },
+  computed: {
+    isStudent() {
+      return this.userRole === '学生' || this.userRole === '家长';
+    }
+  },
   mounted() {
+    this.getUserInfo();
     this.getHomework();
   },
   methods: {
+    async getUserInfo() {
+      try {
+        const sessionTable = localStorage.getItem('frontSessionTable') || 'xuesheng';
+        const response = await fetch(`${process.env.VUE_APP_BASE_API_URL}${process.env.VUE_APP_BASE_API}/${sessionTable}/session`);
+        const result = await response.json();
+        if (result.success || result.code === 0) {
+          this.userRole = result.data.role || '学生';
+          this.userId = result.data.id;
+        }
+      } catch (error) {
+        console.error('获取用户信息失败', error);
+      }
+    },
     async submitHomework() {
       if (!this.form.content.trim()) {
         this.showMessage('请输入作业内容', 'error');
@@ -68,14 +97,14 @@ export default {
           ...this.form,
           isPermanent: this.form.isPermanent ? 1 : 0
         };
-        const response = await fetch(`${process.env.VUE_APP_BASE_API_URL}${process.env.VUE_APP_BASE_API}/homework/saveHomework`, {
+        const response = await fetch(`${process.env.VUE_APP_BASE_API_URL}${process.env.VUE_APP_BASE_API}/homework/save`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
 
         const result = await response.json();
-        if (result.success) {
+        if (result.success || result.code === 0) {
           this.showMessage('作业提交成功', 'success');
           this.form = { content: '', attachmentUrl: '', isPermanent: false };
           this.getHomework();
@@ -90,9 +119,9 @@ export default {
 
     async getHomework() {
       try {
-        const response = await fetch(`${process.env.VUE_APP_BASE_API_URL}${process.env.VUE_APP_BASE_API}/homework/getHomework`);
+        const response = await fetch(`${process.env.VUE_APP_BASE_API_URL}${process.env.VUE_APP_BASE_API}/homework/list`);
         const result = await response.json();
-        if (result.success) {
+        if (result.success || result.code === 0) {
           this.homeworkList = result.data;
         }
       } catch (error) {
@@ -247,6 +276,11 @@ hr {
   font-size: 12px;
 }
 
+.submitter {
+  color: #666;
+  font-weight: bold;
+}
+
 .item-content {
   color: #333;
   line-height: 1.6;
@@ -267,5 +301,12 @@ hr {
 
 .item-attachment a:hover {
   text-decoration: underline;
+}
+
+.no-permission {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+  font-size: 16px;
 }
 </style>

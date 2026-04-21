@@ -4,10 +4,10 @@
 			<el-form :model="registerForm" class="register_form">
 				<div class="title_view">{{projectName}}注册</div>
 				<div class="list_item">
-					<div class="list_label">家长账号：</div>
+					<div class="list_label">账号：</div>
 					<input class="list_inp"
 					 v-model="registerForm.xuehao" 
-					 placeholder="请输入家长账号"
+					 placeholder="请输入账号"
 					 type="text"
 					 />
 				</div>
@@ -70,6 +70,13 @@
 					 type="text"
 					 />
 				</div>
+				<div class="list_item">
+					<div class="list_label">角色：</div>
+					<el-radio-group v-model="registerForm.role" class="role_radio_group">
+						<el-radio label="学生">学生</el-radio>
+						<el-radio label="家长">家长</el-radio>
+					</el-radio-group>
+				</div>
 				<div class="list_btn">
 					<el-button class="register" type="success" @click="handleRegister">注册</el-button>
 					<div class="r-login" @click="close">已有账号，直接登录</div>
@@ -86,28 +93,29 @@
 	} from 'vue';
 	const context = getCurrentInstance()?.appContext.config.globalProperties;
 	const projectName = context?.$project.projectName
-	//获取注册类型
 	import { useRoute } from 'vue-router';
 	const route = useRoute()
 	const tableName = ref('xuesheng')
 	
-	
 	const registerForm = ref({
         xingbie: '',
+        role: '学生',
 	})
 	const xueshengxingbieLists = ref([])
 	const init=()=>{
 		xueshengxingbieLists.value = "男,女".split(',')
+		const registerRole = context?.$toolUtil.storageGet('registerRole')
+		if (registerRole === '学生' || registerRole === '家长') {
+			registerForm.value.role = registerRole
+		}
 	}
     const touxiangUploadSuccess=(fileUrls)=> {
         registerForm.value.touxiang = fileUrls;
     }
-	// 多级联动参数
-	//注册按钮
 	const handleRegister = () => {
 		let url = tableName.value +"/register";
 		if((!registerForm.value.xuehao)){
-			context?.$toolUtil.message(`家长账号不能为空`,'error')
+			context?.$toolUtil.message(`账号不能为空`,'error')
 			return false
 		}
 		if((!registerForm.value.mima)){
@@ -139,6 +147,7 @@
 			method:'post',
 			data:registerForm.value
 		}).then(res=>{
+			context?.$toolUtil.storageRemove('registerRole')
 			context?.$toolUtil.message('注册成功','success', obj=>{
 				context?.$router.push({
 					path: "/login"
@@ -146,7 +155,6 @@
 			})
 		})
 	}
-	//公共方法
 	const isValidPassword = (pwd) => {
 		if (!pwd) return false
 		return pwd.length >= 1 && pwd.length <= 64
@@ -154,8 +162,8 @@
 	const getUUID=()=> {
 		return new Date().getTime();
 	}
-	//返回登录
 	const close = () => {
+		context?.$toolUtil.storageRemove('registerRole')
 		context?.$router.push({
 			path: "/login"
 		});
@@ -175,7 +183,6 @@
 		align-items: center;
 		position: relative;
 		background-position: center center;
-		// 表单盒子
 		.register_form {
 			border-radius: 12px;
 			padding: 40px 60px;
@@ -188,7 +195,6 @@
 			justify-content: center;
 			flex-wrap: wrap;
 		}
-		// 标题样式
 		.title_view {
 			padding: 0 0 30px;
 			margin: 0;
@@ -199,14 +205,12 @@
 			font-size: 24px;
 			text-align: center;
 		}
-		// item盒子
 		.list_item {
 			margin: 0 0 20px;
 			display: flex;
 			width: 100%;
 			justify-content: flex-start;
 			align-items: center;
-			// label
 			.list_label {
 				color: #374151;
 				width: 100px;
@@ -214,141 +218,6 @@
 				box-sizing: border-box;
 				text-align: right;
 				padding-right: 15px;
-			}
-			// 输入框
-			:deep(.list_inp) {
-				border: 1px solid #D1D5DB;
-				border-radius: 8px;
-				padding: 0 12px;
-				width: calc(100% - 100px);
-				line-height: 40px;
-				box-sizing: border-box;
-				height: 40px;
-				background: #FFFFFF;
-				//去掉默认样式
-				.el-input__wrapper{
-					border: none;
-					box-shadow: none;
-					background: none;
-					border-radius: 0;
-					height: 100%;
-					padding: 0;
-				}
-				.is-focus {
-					box-shadow: none !important;
-				}
-				&:hover {
-					border-color: #165DFF;
-				}
-			}
-		}
-		//下拉框样式
-		:deep(.list_sel) {
-			border: 1px solid #D1D5DB;
-			border-radius: 8px;
-			padding: 0 12px;
-			background: #fff;
-			width: calc(100% - 100px);
-			line-height: 40px;
-			box-sizing: border-box;
-			height: 40px;
-			//去掉默认样式
-			.select-trigger{
-				height: 100%;
-				.el-input{
-					height: 100%;
-					.el-input__wrapper{
-						border: none;
-						box-shadow: none;
-						background: none;
-						border-radius: 0;
-						height: 100%;
-						padding: 0;
-					}
-					.is-focus {
-						box-shadow: none !important;
-					}
-				}
-			}
-			&:hover {
-				border-color: #165DFF;
-			}
-		}
-		//图片上传样式
-		.list_file_list  {
-			//提示语
-			:deep(.el-upload__tip){
-				margin: 7px 0 0;
-				color: #9CA3AF;
-				display: flex;
-				font-size: 14px;
-				justify-content: flex-start;
-				align-items: center;
-			}
-			//外部盒子
-			:deep(.el-upload--picture-card){
-				border: 1px solid #D1D5DB;
-				cursor: pointer;
-				background-color: #fff;
-				border-radius: 8px;
-				width: 120px;
-				line-height: 70px;
-				text-align: center;
-				height: 80px;
-				//图标
-				.el-icon{
-					color: #9CA3AF;
-					font-size: 24px;
-				}
-				&:hover {
-					border-color: #165DFF;
-				}
-			}
-			:deep(.el-upload-list__item) {
-				border: 1px solid #D1D5DB;
-				cursor: pointer;
-				background-color: #fff;
-				border-radius: 8px;
-				width: 120px;
-				line-height: 70px;
-				text-align: center;
-				height: 80px;
-			}
-		}
-		//按钮盒子
-		.list_btn {
-			margin: 30px 0 0;
-			display: flex;
-			width: 100%;
-			justify-content: center;
-			align-items: center;
-			flex-wrap: wrap;
-			//注册按钮
-			.register {
-					border: none;
-					border-radius: 8px;
-					margin: 0 0 20px;
-					color: #fff;
-					background: #165DFF;
-					width: 100%;
-					font-size: 16px;
-					font-weight: 600;
-					height: 44px;
-					&:hover {
-						background: #4080FF;
-					}
-			}
-			//已有账号
-			.r-login {
-				cursor: pointer;
-				padding: 0;
-				color: #165DFF;
-				width: auto;
-				font-size: 14px;
-				text-align: center;
-				&:hover {
-					text-decoration: underline;
-				}
 			}
 		}
 	}

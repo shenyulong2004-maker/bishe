@@ -57,7 +57,11 @@
       </div>
     </div>
 
-    <el-form :inline="true" class="list_search" v-else>
+    <div class="no-permission" v-if="isStudent">
+      <p>学生角色无法使用家长沟通功能</p>
+    </div>
+
+    <el-form :inline="true" class="list_search" v-if="isParent">
       <div class="search_view">
         <div class="search_label">选择教师：</div>
         <div class="search_box">
@@ -71,7 +75,7 @@
       </div>
     </el-form>
 
-    <div class="chat-card" v-if="!isTeacher">
+    <div class="chat-card" v-if="isParent">
       <div class="chat-list" v-if="conversationList.length">
         <div class="chat-item" v-for="item in conversationList" :key="item.id" :class="item.fromId===myId && item.fromRole===myTable ? 'mine' : 'other'">
           <div class="meta">
@@ -100,6 +104,7 @@ const context = getCurrentInstance()?.appContext.config.globalProperties
 
 const myTable = ref('')
 const myId = ref(null)
+const myRole = ref('')
 const teacherList = ref([])
 const selectedTeacherId = ref(null)
 
@@ -110,8 +115,9 @@ const conversationList = ref([])
 const content = ref('')
 let timer = null
 
-const isParent = computed(() => myTable.value === 'xuesheng')
+const isParent = computed(() => myTable.value === 'xuesheng' && myRole.value === '家长')
 const isTeacher = computed(() => myTable.value === 'jiaoshi')
+const isStudent = computed(() => myTable.value === 'xuesheng' && myRole.value === '学生')
 
 const roleName = (r) => r === 'xuesheng' ? '家长' : (r === 'jiaoshi' ? '教师' : r)
 
@@ -127,6 +133,7 @@ const getSession = async () => {
     method: 'get'
   })
   myId.value = res.data.data.id
+  myRole.value = res.data.data.role || '学生'
 }
 
 const loadTeachers = async () => {
@@ -391,5 +398,11 @@ onUnmounted(() => {
   color: #999;
   text-align: center;
   padding: 40px 0;
+}
+.no-permission {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+  font-size: 16px;
 }
 </style>
